@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fram Vision - 로그인</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../CSS/login.css">
+</head>
+
+<body>
+
+<header>
+
+    <a href="index.html" class="logo">
+
+        <div class="logo-icon">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+
+        <div>
+            <h2>Fram <span>Vision</span></h2>
+            <p>AI로 지키는 안전한 의료</p>
+        </div>
+
+    </a>
+
+    <div class="header-right">
+        처음이신가요?
+        <a href="signup.html">회원가입</a>
+    </div>
+
+</header>
+
+
+<main class="page">
+
+    <section class="intro">
+
+        <h1>
+            더 안전한 약,<br>
+            더 나은 내일
+        </h1>
+
+        <p>
+            AI와 데이터로<br>
+            병동 고위험군 의약품을<br>
+            더 안전하고 효율적으로 관리합니다.
+        </p>
+
+
+        <div class="feature-box">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-video"></i>
+            </div>
+
+            <div>
+                <h3>AI 실시간 모니터링</h3>
+                <p>영상 분석으로 의약품 이동을 실시간으로 감지</p>
+            </div>
+
+        </div>
+
+
+        <div class="feature-box">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-file-lines"></i>
+            </div>
+
+            <div>
+                <h3>전표 자동 인식</h3>
+                <p>OCR로 전표를 읽고 의약품 정보를 추출</p>
+            </div>
+
+        </div>
+
+
+        <div class="feature-box">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <div>
+                <h3>이상 감지 및 알림</h3>
+                <p>불일치 등 이상 상황 발생 시 즉시 알림</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="form-area">
+
+        <div class="login-card">
+
+            <h2>로그인</h2>
+
+            <p>
+                Fram Vision에 오신 것을 환영합니다.<br>
+                계정으로 로그인하여 서비스를 이용하세요.
+            </p>
+
+
+            <form id="loginForm">
+
+                <div class="input-box">
+
+                    <i class="fa-regular fa-envelope"></i>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="이메일을 입력하세요"
+                        required>
+
+                </div>
+
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="비밀번호를 입력하세요"
+                        required>
+
+                </div>
+
+
+                <div class="options">
+
+                    <label>
+                        <input type="checkbox">
+                        로그인 상태 유지
+                    </label>
+
+                    <a href="#">
+                        비밀번호 찾기
+                    </a>
+
+                </div>
+
+
+                <button class="login-btn" type="submit">
+                    로그인
+                </button>
+
+                <div id="message" class="message"></div>
+
+            </form>
+
+
+            <div class="bottom-link">
+                계정이 없으신가요?
+                <a href="signup.html">회원가입</a>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script src="../js/login.js"></script>
+
+</body>
+</html>

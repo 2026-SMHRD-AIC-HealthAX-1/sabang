@@ -1,0 +1,13 @@
+.anomaly-banner[hidden] { display: none; }
+.anomaly-banner { position: sticky; top: 12px; z-index: 20; display: flex; align-items: center; gap: 18px; padding: 20px 22px; margin-bottom: 22px; background: #fff2f2; border: 1px solid #f4b5b8; border-left: 5px solid #e0444d; border-radius: 12px; box-shadow: 0 6px 22px #842b2b12; color: #92232b; }
+.anomaly-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.anomaly-copy strong { font-size: 17px; }
+.anomaly-copy p { margin: 8px 0; font-size: 15px; }
+.anomaly-copy small { color: #85565b; }
+.anomaly-banner a, .anomaly-banner button, #anomaly-rows button { border: 1px solid #e6a3a7; border-radius: 7px; background: white; color: #92232b; padding: 9px 12px; cursor: pointer; font: inherit; font-size: 13px; }
+.anomaly-banner a { background: #b72f3b; color: white; border-color: #b72f3b; }
+.anomaly-history { overflow-x: auto; }
+.anomaly-history table { min-width: 650px; }
+.dark-mode .anomaly-banner { background: #42262d; color: #ffd6d9; border-color: #ad5a65; }
+.dark-mode .anomaly-copy small { color: #e7bbc0; }
+@media (max-width: 700px) { .anomaly-banner { flex-wrap: wrap; padding: 16px; gap: 12px; } .anomaly-copy { flex-basis: 100%; } }

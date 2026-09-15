@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fram Vision - 회원가입</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../CSS/signup.css">
+</head>
+
+<body>
+
+<header>
+
+    <a href="index.html" class="logo">
+
+        <div class="logo-icon">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+
+        <div>
+            <h2>Fram <span>Vision</span></h2>
+            <p>AI로 지키는 안전한 의료</p>
+        </div>
+
+    </a>
+
+    <div class="header-right">
+        이미 계정이 있으신가요?
+        <a href="login.html">로그인</a>
+    </div>
+
+</header>
+
+
+<main class="page">
+
+    <section class="intro">
+
+        <h1>
+            더 안전한 약,<br>
+            더 나은 내일
+        </h1>
+
+        <p>
+            AI가 만드는<br>
+            더 안전한 의료 환경에<br>
+            지금 함께하세요.
+        </p>
+
+
+        <div class="feature-box">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <div>
+                <h3>신뢰할 수 있는 관리</h3>
+                <p>AI와 데이터로 의약품을 더 안전하게</p>
+            </div>
+
+        </div>
+
+
+        <div class="feature-box">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-file-lines"></i>
+            </div>
+
+            <div>
+                <h3>효율적인 업무</h3>
+                <p>전표 자동화로 줄어드는 업무 부담</p>
+            </div>
+
+        </div>
+
+
+        <div class="feature-box">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-shield-heart"></i>
+            </div>
+
+            <div>
+                <h3>더 나은 환자 안전</h3>
+                <p>정확한 관리로 안전한 의료 환경 구축</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="form-area">
+
+        <div class="signup-card">
+
+            <h2>회원가입</h2>
+
+            <p>
+                Fram Vision과 함께<br>
+                더 안전한 의료 환경을 만들어가세요.
+            </p>
+
+
+            <form id="signupForm">
+
+                <div class="input-box">
+
+                    <i class="fa-regular fa-user"></i>
+
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="이름을 입력하세요"
+                        required>
+
+                </div>
+
+
+                <div class="input-box">
+
+                    <i class="fa-regular fa-envelope"></i>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="이메일을 입력하세요"
+                        required>
+
+                </div>
+
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="비밀번호를 입력하세요"
+                        required>
+
+                </div>
+
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="passwordConfirm"
+                        placeholder="비밀번호를 다시 입력하세요"
+                        required>
+
+                </div>
+
+
+                <div class="agreement">
+
+                    <input
+                        type="checkbox"
+                        id="agree">
+
+                    <label for="agree">
+                        <a href="#">이용약관</a> 및
+                        <a href="#">개인정보처리방침</a>에 동의합니다.
+                    </label>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="signup-btn">
+
+                    회원가입
+
+                </button>
+
+                <div
+                    id="message"
+                    class="message">
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script src="../js/signup.js"></script>
+
+</body>
+</html>

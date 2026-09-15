@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>이상 알림</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet" href="../CSS/style.css">
+
+<link rel="stylesheet" href="../CSS/anomaly.css">
+</head>
+
+
+<body data-page="alerts">
+
+<div id="header"></div>
+
+<div class="layout">
+
+<div id="sidebar"></div>
+
+
+<main class="main">
+
+<div class="page-header">
+
+<h1>🔔 이상 알림</h1>
+
+<p>
+AI가 감지한 재고 이상 및 전표 불일치 내역입니다.
+</p>
+
+</div>
+
+
+<section class="card table-card anomaly-history">
+
+<div class="card-title" id="anomaly-count">
+최근 이상 감지
+</div>
+
+<table><thead><tr><th>시간</th><th>의약품</th><th>내용</th><th>유형</th><th>처리상태</th></tr></thead><tbody id="anomaly-rows"></tbody></table>
+
+</section>
+
+</main>
+
+</div>
+
+<script src="../js/common.js"></script>
+
+<script src="../js/anomaly-store.js"></script>
+<script src="../js/anomaly-ui.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,589 @@
+/* =========================
+   페이지 기본 구성
+========================= */
+
+.profile-main {
+    max-width: 1600px;
+    width: 100%;
+    min-width: 0;
+}
+
+.profile-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.profile-eyebrow {
+    font-size: 10px;
+    color: #1474ed;
+    letter-spacing: 1.8px;
+    font-weight: bold;
+    margin-bottom: 9px;
+}
+
+.profile-heading h1 {
+    font-size: 26px;
+    margin-bottom: 9px;
+}
+
+.profile-heading > div > p:last-child {
+    font-size: 13px;
+    color: #60758e;
+}
+
+.profile-back {
+    border: 1px solid #dbe5f1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 11px 15px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.profile-notice {
+    font-size: 12px;
+    line-height: 1.7;
+    border: 1px solid #dbe8fc;
+    background: #edf5ff;
+    border-radius: 8px;
+    padding: 12px 15px;
+    color: #426485;
+    margin-bottom: 18px;
+}
+
+/* =========================
+   상단 내 계정 요약
+========================= */
+
+.profile-banner {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    background: #fff;
+    border: 1px solid #e4eaf2;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 21px;
+}
+
+.profile-avatar {
+    width: 59px;
+    height: 59px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #edf5ff;
+    color: #1474ed;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.profile-identity {
+    min-width: 0;
+}
+
+.profile-identity h2 {
+    font-size: 20px;
+    margin-bottom: 7px;
+    overflow-wrap: anywhere;
+}
+
+.profile-identity p {
+    font-size: 13px;
+    color: #60758e;
+    overflow-wrap: anywhere;
+}
+
+.profile-team {
+    margin-left: auto;
+    background: #f4f7fb;
+    border-radius: 6px;
+    padding: 8px 11px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* =========================
+   회원 정보 / 구독결제 카드
+========================= */
+
+.profile-columns {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 21px;
+    align-items: start;
+}
+
+.profile-card {
+    background: #fff;
+    border: 1px solid #e4eaf2;
+    border-radius: 12px;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.profile-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 22px 24px;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.profile-section-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    background: #edf5ff;
+    color: #1474ed;
+    display: grid;
+    place-items: center;
+}
+
+.profile-card-heading h2 {
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+
+.profile-card-heading p {
+    font-size: 12px;
+    color: #60758e;
+}
+
+.billing-icon {
+    background: #edf9f2;
+    color: #16834d;
+}
+
+.sample-label {
+    font-size: 10px;
+    color: #9a6100;
+    background: #fff7e8;
+    padding: 5px 8px;
+    border-radius: 5px;
+    margin-left: auto;
+}
+
+/* =========================
+   개인정보 입력 폼
+========================= */
+
+#profileForm {
+    padding: 24px;
+}
+
+#profileFields {
+    border: 0;
+    min-width: 0;
+    padding: 0;
+}
+
+#profileFields > label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 0 9px;
+}
+
+#profileFields input {
+    font: inherit;
+    font-size: 14px;
+    display: block;
+    width: 100%;
+    border: 1px solid #d8e2ee;
+    border-radius: 7px;
+    height: 45px;
+    padding: 0 12px;
+    background: #fff;
+    color: inherit;
+    margin-bottom: 20px;
+}
+
+#profileFields input[readonly] {
+    background: #f4f7fb;
+    color: #60758e;
+    margin-bottom: 8px;
+}
+
+.field-help {
+    font-size: 11px;
+    color: #60758e;
+    margin-bottom: 23px;
+}
+
+.profile-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    padding: 20px 0;
+    border-top: 1px solid #edf1f5;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.profile-meta span {
+    display: block;
+    font-size: 11px;
+    color: #60758e;
+    margin-bottom: 8px;
+}
+
+.profile-meta strong {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.profile-password {
+    padding: 21px 0;
+}
+
+.profile-password span {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.profile-password p {
+    font-size: 11px;
+    color: #60758e;
+    line-height: 1.8;
+    margin-top: 9px;
+}
+
+/* =========================
+   저장 버튼 및 안내 메시지
+========================= */
+
+.profile-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid #edf1f5;
+    padding-top: 20px;
+}
+
+.profile-form-footer p {
+    font-size: 11px;
+    color: #60758e;
+}
+
+.profile-save {
+    border: 0;
+    border-radius: 7px;
+    background: #1474ed;
+    color: #fff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 12px 17px;
+    cursor: pointer;
+}
+
+.profile-save:hover {
+    background: #0963d3;
+}
+
+fieldset:disabled .profile-save {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.profile-main a:focus-visible,
+.profile-main button:focus-visible,
+.profile-main input:focus-visible {
+    outline: 3px solid #84baff;
+    outline-offset: 3px;
+}
+
+.profile-message {
+    font-size: 12px;
+    color: #276749;
+    line-height: 1.8;
+    margin-top: 14px;
+}
+
+.profile-message:empty {
+    display: none;
+}
+
+/* =========================
+   구독 요금 표시
+========================= */
+
+.subscription-plan {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    background: #edf5ff;
+    border: 1px solid #deebfc;
+    border-radius: 9px;
+    margin: 24px;
+    padding: 22px;
+}
+
+.subscription-plan span {
+    font-size: 11px;
+    color: #5077a7;
+}
+
+.subscription-plan h3 {
+    font-size: 18px;
+    margin-top: 7px;
+}
+
+.subscription-price {
+    font-size: 25px;
+    color: #1474ed;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.subscription-price small {
+    font-size: 11px;
+    margin-left: 4px;
+    font-weight: normal;
+}
+
+/* =========================
+   결제 상세 정보
+========================= */
+
+.billing-details {
+    padding: 0 24px;
+}
+
+.billing-details > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid #edf1f5;
+    padding: 17px 0;
+    font-size: 12px;
+}
+
+.billing-details dt {
+    color: #60758e;
+}
+
+.billing-details dd {
+    text-align: right;
+}
+
+.billing-demo {
+    font-size: 11px;
+    color: #60758e;
+}
+
+.billing-note {
+    display: flex;
+    gap: 8px;
+    background: #f4f7fb;
+    border-radius: 8px;
+    padding: 14px;
+    margin: 24px;
+    color: #60758e;
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+.billing-note i {
+    margin-top: 3px;
+}
+
+/* =========================
+   가입 정보 없음 / 오류 안내
+========================= */
+
+.profile-empty {
+    margin: 22px 24px 0;
+    border: 1px dashed #cbd9eb;
+    padding: 17px;
+    border-radius: 8px;
+}
+
+.profile-empty strong {
+    font-size: 13px;
+}
+
+.profile-empty p {
+    font-size: 12px;
+    color: #60758e;
+    line-height: 1.8;
+    margin: 9px 0;
+}
+
+.profile-empty-links {
+    display: flex;
+    gap: 15px;
+    color: #1474ed;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.account-error {
+    color: #a33b34;
+    font-size: 12px;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #f0d1ce;
+    border-radius: 8px;
+}
+
+/* =========================
+   다크 모드
+========================= */
+
+body.dark-mode .profile-card,
+body.dark-mode .profile-banner,
+body.dark-mode .profile-back {
+    background: #1e293b;
+    border-color: #37465d;
+    color: #e2e8f0;
+}
+
+body.dark-mode #profileFields input {
+    background: #162235;
+    border-color: #41536d;
+    color: #e2e8f0;
+}
+
+body.dark-mode .profile-team,
+body.dark-mode .billing-note {
+    background: #162235;
+}
+
+body.dark-mode .profile-heading p,
+body.dark-mode .profile-card p,
+body.dark-mode .profile-meta span,
+body.dark-mode .billing-details dt,
+body.dark-mode .profile-identity p {
+    color: #aabbd0;
+}
+
+body.font-large .profile-main {
+    font-size: 18px;
+}
+
+/* =========================
+   태블릿 화면
+========================= */
+
+@media (max-width: 1150px) {
+    .profile-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-heading {
+        align-items: start;
+    }
+}
+
+/* =========================
+   모바일 화면
+========================= */
+
+@media (max-width: 700px) {
+    body[data-page="profile"] .header-title,
+    body[data-page="profile"] #currentTime {
+        display: none;
+    }
+
+    body[data-page="profile"] .header-right {
+        padding-right: 12px;
+        gap: 14px;
+    }
+
+    body[data-page="profile"] .logo-area {
+        width: auto;
+        padding: 0 12px;
+    }
+
+    body[data-page="profile"] .logo-text p {
+        display: none;
+    }
+
+    body[data-page="profile"] .layout {
+        display: block;
+    }
+
+    body[data-page="profile"] .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        padding: 12px;
+    }
+
+    body[data-page="profile"] .menu {
+        display: flex;
+        overflow-x: auto;
+        gap: 6px;
+    }
+
+    body[data-page="profile"] .menu-item {
+        white-space: nowrap;
+        margin: 0;
+        padding: 10px;
+    }
+
+    body[data-page="profile"] .sidebar-bottom {
+        display: none;
+    }
+
+    .profile-main {
+        padding: 20px !important;
+        margin: 0 !important;
+    }
+
+    .profile-heading {
+        flex-direction: column;
+    }
+
+    .profile-banner {
+        padding: 18px;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .profile-team {
+        margin-left: 0;
+    }
+
+    .profile-card-heading {
+        padding: 18px;
+    }
+
+    #profileForm {
+        padding: 18px;
+    }
+
+    .subscription-plan {
+        margin: 18px;
+        padding: 15px;
+    }
+
+    .subscription-price {
+        font-size: 22px;
+    }
+
+    .billing-details {
+        padding: 0 18px;
+    }
+
+    .billing-note {
+        margin: 18px;
+    }
+
+    .profile-form-footer {
+        align-items: start;
+        flex-direction: column;
+    }
+
+    .profile-card-heading p {
+        line-height: 1.6;
+    }
+}

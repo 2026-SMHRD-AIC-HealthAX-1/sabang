@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>사용자 관리</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
+
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="../CSS/style.css">
+
+    <link rel="stylesheet" href="../CSS/users.css">
+
+</head>
+
+
+<body data-page="users">
+
+
+    <!-- 공통 헤더 -->
+    <div id="header"></div>
+
+
+
+    <div class="layout">
+
+
+        <!-- 공통 사이드바 -->
+        <div id="sidebar"></div>
+
+
+
+        <main class="main">
+
+
+            <!-- 페이지 제목 -->
+            <div class="page-header">
+
+                <h1>
+                    👤 사용자 관리
+                </h1>
+
+                <p>
+                    약품관리 시스템을 사용하는 담당자를 관리합니다.
+                </p>
+
+            </div>
+
+
+
+            <!-- ==================================================
+                 사용자 관리 콘텐츠
+            ================================================== -->
+
+            <div class="users-content">
+
+
+
+                <!-- ==================================================
+                     왼쪽 : 사용자 목록
+                ================================================== -->
+
+                <section
+                    class="card table-card"
+                    aria-labelledby="users-title"
+                >
+
+
+                    <h2
+                        class="card-title"
+                        id="users-title"
+                    >
+
+                        <i
+                            class="fa-solid fa-users"
+                            aria-hidden="true"
+                        ></i>
+
+                        사용자 목록
+
+                    </h2>
+
+
+
+                    <div class="users-table-wrapper">
+
+
+                        <table>
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th scope="col">
+                                        사용자 ID
+                                    </th>
+
+                                    <th scope="col">
+                                        이름
+                                    </th>
+
+                                    <th scope="col">
+                                        이메일
+                                    </th>
+
+                                    <th scope="col">
+                                        소속
+                                    </th>
+
+                                    <th scope="col">
+                                        권한
+                                    </th>
+
+                                    <th scope="col">
+                                        상태
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+
+                            <tbody id="userTableBody">
+
+
+                                <!-- 예시 사용자 1 -->
+
+                                <tr>
+
+                                    <td>
+                                        admin01
+                                    </td>
+
+                                    <td>
+                                        김지은
+                                    </td>
+
+                                    <td>
+                                        jieun@hospital.com
+                                    </td>
+
+                                    <td>
+                                        약품관리팀
+                                    </td>
+
+                                    <td>
+                                        관리자
+                                    </td>
+
+                                    <td>
+                                        사용중
+                                    </td>
+
+                                </tr>
+
+
+
+                                <!-- 예시 사용자 2 -->
+
+                                <tr>
+
+                                    <td>
+                                        user01
+                                    </td>
+
+                                    <td>
+                                        이현우
+                                    </td>
+
+                                    <td>
+                                        hyunwoo@hospital.com
+                                    </td>
+
+                                    <td>
+                                        약제팀
+                                    </td>
+
+                                    <td>
+                                        사용자
+                                    </td>
+
+                                    <td>
+                                        사용중
+                                    </td>
+
+                                </tr>
+
+
+                            </tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+
+                </section>
+
+
+
+
+                <!-- ==================================================
+                     오른쪽 : 사용자 추가
+                ================================================== -->
+
+                <section
+                    class="card user-add-card"
+                    aria-labelledby="user-add-title"
+                >
+
+
+                    <h2
+                        class="card-title"
+                        id="user-add-title"
+                    >
+
+                        <i
+                            class="fa-solid fa-user-plus"
+                            aria-hidden="true"
+                        ></i>
+
+                        사용자 추가
+
+                    </h2>
+
+
+
+                    <div class="user-add-body">
+
+
+                        <p class="user-add-description">
+
+                            시스템에 회원가입한 사용자의 이름을 검색한 뒤
+                            사용자 목록에 추가할 수 있습니다.
+
+                        </p>
+
+
+
+                        <!-- 검색 영역 -->
+
+                        <div class="search-box">
+
+
+                            <input
+                                type="text"
+                                id="userSearchInput"
+                                placeholder="사용자 이름을 입력하세요"
+                                autocomplete="off"
+                            >
+
+
+                            <button
+                                type="button"
+                                class="search-btn"
+                                id="searchUserBtn"
+                            >
+
+                                <i
+                                    class="fa-solid fa-magnifying-glass"
+                                ></i>
+
+                                검색
+
+                            </button>
+
+
+                        </div>
+
+
+
+                        <!-- ==================================================
+                             검색 성공
+                        ================================================== -->
+
+                        <div
+                            class="search-result"
+                            id="searchResult"
+                        >
+
+
+                            <div class="result-user">
+
+
+                                <!-- 사용자 아이콘 -->
+
+                                <div class="user-icon">
+
+                                    <i
+                                        class="fa-solid fa-user"
+                                    ></i>
+
+                                </div>
+
+
+
+                                <!-- 사용자 정보 -->
+
+                                <div class="result-info">
+
+
+                                    <div
+                                        class="result-name"
+                                        id="resultName"
+                                    >
+                                    </div>
+
+
+                                    <div
+                                        class="result-email"
+                                        id="resultEmail"
+                                    >
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+                            <!-- 사용자 추가 -->
+
+                            <button
+                                type="button"
+                                class="add-user-btn"
+                                id="addUserBtn"
+                            >
+
+                                <i
+                                    class="fa-solid fa-user-plus"
+                                ></i>
+
+                                사용자 목록에 추가
+
+                            </button>
+
+
+                        </div>
+
+
+
+                        <!-- ==================================================
+                             검색 실패
+                        ================================================== -->
+
+                        <div
+                            class="search-message"
+                            id="searchMessage"
+                        >
+
+                            회원가입된 사용자를 찾을 수 없습니다.
+
+                        </div>
+
+
+                    </div>
+
+
+                </section>
+
+
+            </div>
+
+
+        </main>
+
+
+    </div>
+
+
+
+    <!-- 공통 JS -->
+    <script src="../js/common.js"></script>
+
+
+
+    <script src="../js/users.js"></script>
+
+
+</body>
+
+</html>

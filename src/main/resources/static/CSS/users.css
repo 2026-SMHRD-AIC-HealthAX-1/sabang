@@ -1,0 +1,415 @@
+/* ==================================================
+           사용자 관리 전체 영역
+        ================================================== */
+
+        .users-content {
+            display: grid;
+
+            /* 왼쪽 50% / 오른쪽 50% */
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+            gap: 20px;
+
+            width: 100%;
+            align-items: start;
+        }
+
+
+        /* 카드 */
+        .users-content > .card {
+            width: 100%;
+            min-width: 0;
+            min-height: 450px;
+
+            margin-top: 0;
+
+            box-sizing: border-box;
+        }
+
+
+        .users-content .card-title {
+            margin: 0;
+
+            font-size: 18px;
+        }
+
+
+
+        /* ==================================================
+           왼쪽 사용자 목록
+        ================================================== */
+
+        .users-table-wrapper {
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+
+        .users-table-wrapper table {
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+
+        .users-table-wrapper th,
+        .users-table-wrapper td {
+            padding: 14px 12px;
+
+            white-space: nowrap;
+
+            text-align: left;
+
+            font-size: 14px;
+
+            border-bottom: 1px solid #edf1f5;
+        }
+
+
+        .users-table-wrapper th {
+            background: #f7f9fc;
+
+            color: #536b88;
+
+            font-weight: 600;
+        }
+
+
+        .users-table-wrapper td {
+            color: #243b5a;
+        }
+
+
+
+        /* ==================================================
+           오른쪽 사용자 추가
+        ================================================== */
+
+        .user-add-body {
+            padding: 24px;
+        }
+
+
+        .user-add-description {
+            margin: 0 0 24px;
+
+            color: #6b819d;
+
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+
+
+        /* ==================================================
+           사용자 검색
+        ================================================== */
+
+        .search-box {
+            display: flex;
+
+            width: 100%;
+
+            gap: 10px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .search-box input {
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 13px 14px;
+
+            border: 1px solid #dce4ee;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            outline: none;
+
+            box-sizing: border-box;
+        }
+
+
+        .search-box input:focus {
+            border-color: #1474ed;
+
+            box-shadow: 0 0 0 3px rgba(20, 116, 237, 0.08);
+        }
+
+
+        .search-btn {
+            flex-shrink: 0;
+
+            padding: 0 20px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #1474ed;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        .search-btn:hover {
+            background: #0e63cf;
+        }
+
+
+
+        /* ==================================================
+           검색 결과
+        ================================================== */
+
+        .search-result {
+            display: none;
+
+            padding: 22px;
+
+            border: 1px solid #e4eaf1;
+
+            border-radius: 12px;
+
+            background: #f8fbff;
+        }
+
+
+        .search-result.active {
+            display: block;
+        }
+
+
+
+        /* 사용자 정보 */
+
+        .result-user {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 22px;
+        }
+
+
+
+        /* 사용자 아이콘 */
+
+        .user-icon {
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            width: 50px;
+            height: 50px;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background: #e5f0ff;
+
+            color: #1474ed;
+
+            font-size: 20px;
+        }
+
+
+
+        /* 사용자 이름 / 이메일 */
+
+        .result-info {
+            flex: 1;
+
+            min-width: 0;
+        }
+
+
+        .result-name {
+            margin-bottom: 6px;
+
+            color: #162c52;
+
+            font-size: 17px;
+
+            font-weight: 700;
+        }
+
+
+        .result-email {
+            color: #6b819d;
+
+            font-size: 14px;
+
+            overflow-wrap: anywhere;
+        }
+
+
+
+        /* ==================================================
+           사용자 추가 버튼
+        ================================================== */
+
+        .add-user-btn {
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #16a36a;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .add-user-btn:hover {
+            background: #118657;
+        }
+
+
+
+        /* ==================================================
+           검색 실패 메시지
+        ================================================== */
+
+        .search-message {
+            display: none;
+
+            margin-top: 20px;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            background: #fff4f4;
+
+            color: #d94b4b;
+
+            font-size: 14px;
+
+            text-align: center;
+        }
+
+
+        .search-message.active {
+            display: block;
+        }
+
+
+
+        /* ==================================================
+           다크 모드
+        ================================================== */
+
+        body.dark-mode .users-content > .card {
+            background: #1e293b;
+
+            color: #e2e8f0;
+
+            border-color: #334155;
+        }
+
+
+        body.dark-mode .users-table-wrapper th {
+            background: #273449;
+
+            color: #e2e8f0;
+        }
+
+
+        body.dark-mode .users-table-wrapper td {
+            color: #e2e8f0;
+
+            border-color: #334155;
+        }
+
+
+        body.dark-mode .user-add-description {
+            color: #b6c5d8;
+        }
+
+
+        body.dark-mode .search-box input {
+            background: #273449;
+
+            border-color: #475569;
+
+            color: #e2e8f0;
+        }
+
+
+        body.dark-mode .search-box input::placeholder {
+            color: #94a3b8;
+        }
+
+
+        body.dark-mode .search-result {
+            background: #273449;
+
+            border-color: #475569;
+        }
+
+
+        body.dark-mode .result-name {
+            color: #e2e8f0;
+        }
+
+
+        body.dark-mode .result-email {
+            color: #b6c5d8;
+        }
+
+
+        /* ==================================================
+           모바일
+           
+           PC에서는 항상 좌우 배치
+           휴대폰 정도의 작은 화면에서만 위아래 배치
+        ================================================== */
+
+        @media (max-width: 650px) {
+
+            .users-content {
+                grid-template-columns: 1fr;
+            }
+
+
+            .users-content > .card {
+                min-height: auto;
+            }
+
+
+            .search-box {
+                flex-direction: column;
+            }
+
+
+            .search-btn {
+                padding: 13px;
+            }
+
+        }

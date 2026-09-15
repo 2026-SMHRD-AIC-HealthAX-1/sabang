@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>실시간 모니터링</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet" href="../CSS/style.css">
+
+<link rel="stylesheet" href="../CSS/anomaly.css">
+</head>
+
+
+<body data-page="monitoring">
+
+<div id="header"></div>
+
+<div class="layout">
+
+<div id="sidebar"></div>
+
+<main class="main">
+
+<div class="page-header">
+
+<h1>📹 실시간 모니터링</h1>
+
+<p>
+AI 객체탐지를 이용하여 고위험 의약품의 이동을 실시간으로 감지합니다.
+</p>
+
+</div>
+
+
+<section class="card camera-card">
+
+<div class="camera-header">
+
+<h2>
+실시간 CCTV
+</h2>
+
+<div class="live">
+LIVE
+</div>
+
+</div>
+
+
+<div class="camera">
+
+<div id="cameraTime"
+class="camera-time">
+</div>
+
+<div class="camera-center">
+
+<i class="fa-solid fa-video"></i>
+
+&nbsp;
+
+YOLO 객체탐지 영상 연결 영역
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+<script src="../js/common.js"></script>
+
+<script src="../js/anomaly-store.js"></script>
+<script src="../js/anomaly-ui.js"></script>
+</body>
+
+</html>
