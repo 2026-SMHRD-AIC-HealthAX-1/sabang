@@ -10,14 +10,27 @@ document
             const password =
                 document.getElementById("password").value;
 
-            if(email && password) {
+            const message =
+                document.getElementById("message");
 
-                /*
-                    지금은 화면 테스트용이므로
-                    값만 입력하면 대시보드로 이동
-                */
-
-                window.location.href = "dashboard.html";
-
+            if(!email || !password) {
+                return;
             }
+
+            /*
+                가입된 이메일인지 확인 후 데모 로그인 처리.
+                실제 비밀번호 인증은 Spring 연결 시 대체 예정.
+            */
+
+            FramAccount.selectDemoAccount(email);
+
+            if (!FramAccount.current()) {
+
+                message.innerText =
+                    "가입되지 않은 이메일입니다. 회원가입 후 이용해 주세요.";
+
+                return;
+            }
+
+            window.location.href = "dashboard.html";
         });

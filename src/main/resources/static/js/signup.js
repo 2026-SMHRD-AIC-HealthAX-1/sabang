@@ -5,6 +5,12 @@ document
             event.preventDefault();
 
 
+            const name =
+                document.getElementById("name").value;
+
+            const email =
+                document.getElementById("email").value;
+
             const password =
                 document.getElementById("password").value;
 
@@ -37,12 +43,23 @@ document
 
 
             /*
-                현재는 프론트 화면 테스트용.
-                가입 완료 시 로그인 페이지로 이동.
+                가입 정보를 저장한 뒤 로그인 페이지로 이동.
+                실제 인증은 Spring 연결 시 대체 예정.
             */
 
-            alert("회원가입이 완료되었습니다.");
+            try {
 
-            window.location.href = "login.html";
+                FramAccount.register({ name, email, agreed: agree });
+
+                alert("회원가입이 완료되었습니다.");
+
+                window.location.href = "login.html";
+
+            } catch (error) {
+
+                message.innerText =
+                    error.message
+                    || "회원가입에 실패했습니다. 다시 시도해 주세요.";
+            }
 
         });
