@@ -111,6 +111,25 @@
 
             <form id="signupForm">
 
+                <div class="input-box id-box">
+
+                    <i class="fa-regular fa-id-badge"></i>
+
+                    <input
+                        type="text"
+                        id="memberId"
+                        placeholder="아이디를 입력하세요"
+                        required>
+
+                    <button type="button" id="checkIdBtn" class="dup-check-btn">
+                        중복 확인
+                    </button>
+
+                </div>
+
+                <span id="memberIdError" class="field-error"></span>
+
+
                 <div class="input-box">
 
                     <i class="fa-regular fa-user"></i>
@@ -135,6 +154,23 @@
                         required>
 
                 </div>
+
+                <span id="emailError" class="field-error"></span>
+
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-phone"></i>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        placeholder="전화번호를 입력하세요 ('-' 없이)"
+                        required>
+
+                </div>
+
+                <span id="phoneError" class="field-error"></span>
 
 
                 <div class="input-box">
@@ -199,7 +235,6 @@
 </main>
 
 
-<script src="../js/account-store.js"></script>
 <script src="../js/signup.js"></script>
 
 </body>
