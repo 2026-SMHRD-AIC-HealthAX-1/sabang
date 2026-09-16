@@ -12,6 +12,8 @@ public class Member {
     @Id
     @NonNull
     private String memberId;
+    
+    
 
     @NonNull
     private String password;
