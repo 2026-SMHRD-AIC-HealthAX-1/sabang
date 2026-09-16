@@ -184,8 +184,15 @@
         }
 
         .options a {
-            margin-left: auto;
             color: #1474ed;
+        }
+
+        .options a:first-of-type {
+            margin-left: auto;
+        }
+
+        .options a:not(:first-of-type) {
+            margin-left: 10px;
         }
 
         .login-btn {
@@ -221,6 +228,18 @@
             text-align: center;
             color: #e44248;
             font-size: 13px;
+        }
+
+        .find-page {
+            grid-template-columns: 1fr;
+        }
+
+        .result {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #1474ed;
         }
 
         @media(max-width: 850px) {
