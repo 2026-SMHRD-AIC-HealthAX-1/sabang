@@ -3,8 +3,6 @@ package com.smhrd.myapp.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,9 +15,9 @@ import jakarta.persistence.Table;
 public class Camera {
 
     // 기본키(PK) 지정 - 카메라ID
+    // IDENTITY 자동증가는 캠퍼스 오라클 DB 버전에서 지원 안 될 수 있어 제외 (필요 시 회의 후 재도입)
     @Id
     @Column(name = "CAMERA_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cameraId;
 
     // 외래키(FK) - 관리자ID, MEMBER 테이블 참조 (NOT NULL)
