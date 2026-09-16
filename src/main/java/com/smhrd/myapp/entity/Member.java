@@ -22,8 +22,6 @@ public class Member {
     private String memberId;
 
 
-    
-    
     // 비밀번호
     // DB : PASSWORD VARCHAR2(100) NOT NULL
     @Column(name = "PASSWORD", nullable = false, length = 100)
@@ -72,7 +70,6 @@ public class Member {
 
 
     // Getter / Setter
-
     public String getMemberId() {
         return memberId;
     }
