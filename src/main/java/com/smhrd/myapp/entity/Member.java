@@ -3,14 +3,17 @@ package com.smhrd.myapp.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.NonNull;
 
 @Entity
 @Table(name = "MEMBER")
 public class Member {
 
     @Id
-    private Long memberId;
+    @NonNull
+    private String memberId;
 
+    @NonNull
     private String password;
     private String email;
     private String phone;
@@ -19,11 +22,11 @@ public class Member {
     private String screenTheme;
     private Long soundId;
 
-    public Long getMemberId() {
+    public String getMemberId() {
         return memberId;
     }
 
-    public void setMemberId(Long memberId) {
+    public void setMemberId(String memberId) {
         this.memberId = memberId;
     }
 
