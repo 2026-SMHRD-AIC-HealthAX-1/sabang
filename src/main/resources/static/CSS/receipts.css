@@ -1,0 +1,48 @@
+﻿body[data-page="receipts"] #sidebar{display:flex;flex-shrink:0}
+body[data-page="receipts"] .main{min-width:0;padding:20px}
+body[data-page="receipts"] .page-header{background:none;border:0;padding:0;margin-bottom:24px}
+body[data-page="receipts"] .page-header h1{font-size:28px;margin-bottom:10px}
+body[data-page="receipts"] .page-header p{font-size:15px;line-height:1.6}
+.receipts-grid{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(0,1fr);gap:20px;align-items:stretch}
+.receipts-grid .card{border-radius:12px;overflow:hidden;min-width:0}
+.receipts-grid .card-title{font-size:23px;line-height:1.4;padding:23px 25px}
+.receipts-grid .card-title i{color:#1474ed;margin-right:8px}
+.receipt-list{min-height:850px}
+.receipt-table-scroll{overflow-x:auto}
+.receipt-table{min-width:780px}
+.receipt-table th{font-size:16px;padding:20px 12px;white-space:nowrap}
+.receipt-table td{font-size:16px;padding:18px 12px;white-space:nowrap}
+.receipt-table th:first-child,.receipt-table td:first-child{padding-left:24px}
+.receipt-table button{font:inherit;font-weight:600;padding:12px 16px;background:#1474ed;border-radius:8px}
+.receipt-table button:hover{background:#0964d7}
+.receipt-table button:focus-visible{outline:3px solid #70adff;outline-offset:3px}
+.receipt-details{display:flex;flex-direction:column;gap:20px;min-width:0;scroll-margin-top:20px}
+.receipt-details:focus-visible{outline:3px solid #70adff;outline-offset:4px;border-radius:12px}
+.receipt-image-area{padding:22px 20px;background:#f8fafc}
+.receipt-image-crop{position:relative;overflow:hidden;aspect-ratio:523 / 407}
+.receipt-image-crop img{position:absolute;width:309.17782%;height:auto;max-width:none;left:-205.54493%;top:-21.37592%}
+.receipt-image-card figcaption{font-size:15px;line-height:1.7;color:#71849e;padding:16px 25px;border-top:1px solid #edf1f5}
+.ocr-note{padding:17px 25px;color:#71849e;font-size:15px;line-height:1.4}
+.receipt-ocr-table th,.receipt-ocr-table td{font-size:16px;padding:19px 25px;line-height:1.2;text-align:left}
+.receipt-ocr-table th:last-child,.receipt-ocr-table td:last-child{width:110px;text-align:center}
+.receipt-ocr-table tbody tr:last-child td{border-bottom:0}
+@media(max-width:1250px){
+    .receipts-grid{grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr)}
+    .receipts-grid .card-title{font-size:20px;padding:20px}
+}
+@media(max-width:950px){
+    .receipts-grid{grid-template-columns:1fr}
+    .receipt-list{min-height:260px}
+    .receipt-details{max-width:650px;width:100%;justify-self:center}
+}
+@media(max-width:600px){
+    body[data-page="receipts"] .main{padding:16px 12px}
+    body[data-page="receipts"] .header{height:auto;flex-wrap:wrap}
+    body[data-page="receipts"] .logo-area{border-right:0}
+    body[data-page="receipts"] .header-right{width:100%;justify-content:flex-end;padding:0 12px 12px;gap:16px;font-size:12px}
+    body[data-page="receipts"] .sidebar-bottom{padding:20px 8px;font-size:11px}
+    .receipt-image-area{padding:14px}
+    .receipt-image-card figcaption,.ocr-note{padding:14px 18px;font-size:13px}
+    .receipt-ocr-table th,.receipt-ocr-table td{padding:18px;font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){.receipt-details{scroll-behavior:auto}}

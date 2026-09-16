@@ -1,347 +1,47 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Fram Vision - 대시보드</title>
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../CSS/style.css">
-
     <link rel="stylesheet" href="../CSS/dashboard.css">
-<link rel="stylesheet" href="../CSS/anomaly.css">
+    <link rel="stylesheet" href="../CSS/anomaly.css">
 </head>
-
 <body data-page="dashboard">
-
 <div id="header"></div>
-
 <div class="layout">
-
     <div id="sidebar"></div>
-
     <main class="main">
-
         <div class="dashboard-title">
             <h1>대시보드</h1>
             <p>Fram Vision 의약품 관리 현황을 확인합니다.</p>
         </div>
-
-        <!-- 전표 통계 -->
-
-        <section class="receipt-summary">
-
-            <div class="summary-card summary-total">
-                <div class="summary-icon">
-                    <i class="fa-solid fa-file-lines"></i>
-                </div>
-
-                <div class="summary-text">
-                    <span>전체 전표</span>
-                    <strong>156</strong>
-                    <small>건</small>
-                </div>
-            </div>
-
-
-            <div class="summary-card summary-success">
-                <div class="summary-icon">
-                    <i class="fa-solid fa-circle-check"></i>
-                </div>
-
-                <div class="summary-text">
-                    <span>매칭 완료</span>
-                    <strong>132</strong>
-                    <small>건</small>
-                </div>
-            </div>
-
-
-            <div class="summary-card summary-wait">
-                <div class="summary-icon">
-                    <i class="fa-solid fa-hourglass-half"></i>
-                </div>
-
-                <div class="summary-text">
-                    <span>매칭 대기</span>
-                    <strong>18</strong>
-                    <small>건</small>
-                </div>
-            </div>
-
-
-            <div class="summary-card summary-error">
-                <div class="summary-icon">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                </div>
-
-                <div class="summary-text">
-                    <span>오류 전표</span>
-                    <strong>6</strong>
-                    <small>건</small>
-                </div>
-            </div>
-
-        </section>
-
-
-        <!-- 아래 반반 영역 -->
-
         <div class="dashboard-content">
-
-            <!-- 왼쪽 : 오류 전표 -->
-
-            <section class="error-card">
-
-                <div class="error-header">
-
-                    <h2>
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        오류 전표 목록
-                    </h2>
-
-                    <span>최근 오류 3건</span>
-
+            <section class="ocr-card" aria-labelledby="ocr-title">
+                <div class="ocr-header">
+                    <h2 id="ocr-title"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> 최근 전표 OCR 인식 결과</h2>
+                    <p id="ocr-description">예시 데이터 · ORD-20250910-001 · 2025-09-10 · 출고 · 7병동 · 담당자 김지은</p>
                 </div>
-
-
-                <table class="error-table">
-
+                <table class="ocr-table" aria-labelledby="ocr-title" aria-describedby="ocr-description">
+                    <colgroup><col><col class="quantity-column"></colgroup>
                     <thead>
-                    <tr>
-                        <th>일자</th>
-                        <th>담당자</th>
-                    </tr>
+                        <tr><th scope="col">필요한 의약품명</th><th scope="col">개수</th></tr>
                     </thead>
-
-
                     <tbody>
-
-                    <tr>
-
-                        <td class="error-date">
-                            2026-09-10 10:18
-                        </td>
-
-                        <td>
-                            <div class="manager">
-
-                                <div class="manager-icon">
-                                    <i class="fa-solid fa-user"></i>
-                                </div>
-
-                                김지은
-
-                            </div>
-                        </td>
-
-                    </tr>
-
-
-                    <tr>
-
-                        <td class="error-date">
-                            2026-09-10 09:45
-                        </td>
-
-                        <td>
-
-                            <div class="manager">
-
-                                <div class="manager-icon">
-                                    <i class="fa-solid fa-user"></i>
-                                </div>
-
-                                박수현
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-
-                    <tr>
-
-                        <td class="error-date">
-                            2026-09-09 16:32
-                        </td>
-
-                        <td>
-
-                            <div class="manager">
-
-                                <div class="manager-icon">
-                                    <i class="fa-solid fa-user"></i>
-                                </div>
-
-                                최민수
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
+                        <tr><td>프로포폴</td><td>1개</td></tr>
+                        <tr><td>펜타닐</td><td>2개</td></tr>
+                        <tr><td>케타민</td><td>1개</td></tr>
                     </tbody>
-
                 </table>
-
             </section>
-
-
-            <!-- 오른쪽 : 실시간 변동사항 -->
-
-            <section class="ward-card">
-
-                <div class="ward-header">
-
-                    <h2>
-                        <i class="fa-solid fa-clock-rotate-left"></i>
-                        실시간 변동사항
-                    </h2>
-
-                    <span>실시간 업데이트</span>
-
-                </div>
-
-
-                <!-- 1 -->
-
-                <div class="ward-item">
-
-                    <div class="ward-time">
-                        10:24:17
-                    </div>
-
-                    <div class="ward-icon ward-out">
-                        <i class="fa-solid fa-arrow-up-right"></i>
-                    </div>
-
-                    <div class="ward-text">
-                        <strong>7병동 프로포폴 200mg 1개 출고</strong>
-                        <span>담당자 : 김지은</span>
-                    </div>
-
-                    <div class="ward-badge badge-out">
-                        출고
-                    </div>
-
-                </div>
-
-
-                <!-- 2 -->
-
-                <div class="ward-item">
-
-                    <div class="ward-time">
-                        10:23:42
-                    </div>
-
-                    <div class="ward-icon ward-in">
-                        <i class="fa-solid fa-box"></i>
-                    </div>
-
-                    <div class="ward-text">
-                        <strong>약제팀 펜타닐 50mcg 1개 입고</strong>
-                        <span>담당자 : 이현우</span>
-                    </div>
-
-                    <div class="ward-badge badge-in">
-                        입고
-                    </div>
-
-                </div>
-
-
-                <!-- 3 -->
-
-                <div class="ward-item">
-
-                    <div class="ward-time">
-                        10:22:19
-                    </div>
-
-                    <div class="ward-icon ward-warning">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                    </div>
-
-                    <div class="ward-text">
-                        <strong>5병동 미다졸람 재고 부족</strong>
-                        <span>현재 재고 : 3개</span>
-                    </div>
-
-                    <div class="ward-badge badge-warning">
-                        경고
-                    </div>
-
-                </div>
-
-
-                <!-- 4 -->
-
-                <div class="ward-item">
-
-                    <div class="ward-time">
-                        10:21:55
-                    </div>
-
-                    <div class="ward-icon ward-out">
-                        <i class="fa-solid fa-arrow-up-right"></i>
-                    </div>
-
-                    <div class="ward-text">
-                        <strong>5병동 모르핀 10mg 2개 출고</strong>
-                        <span>담당자 : 박수현</span>
-                    </div>
-
-                    <div class="ward-badge badge-out">
-                        출고
-                    </div>
-
-                </div>
-
-
-                <!-- 5 -->
-
-                <div class="ward-item">
-
-                    <div class="ward-time">
-                        10:18:47
-                    </div>
-
-                    <div class="ward-icon ward-complete">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-
-                    <div class="ward-text">
-                        <strong>7병동 전표 매칭 완료</strong>
-                        <span>ORD-20260910-001</span>
-                    </div>
-
-                    <div class="ward-badge badge-complete">
-                        완료
-                    </div>
-
-                </div>
-
-            </section>
-
+            <div class="dashboard-placeholder" aria-hidden="true"></div>
         </div>
-
     </main>
-
 </div>
-
-
 <script src="../js/common.js"></script>
-
 <script src="../js/anomaly-store.js"></script>
 <script src="../js/anomaly-ui.js"></script>
 </body>
-
 </html>

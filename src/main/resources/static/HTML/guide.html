@@ -1,115 +1,101 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Fram Vision 이용안내 — 관리자용 구독 안내와 사용자용 이용 방법을 확인하세요.">
-<title>Fram Vision | 이용안내</title>
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta name="description" content="Fram Vision 관리자와 일반 사용자의 역할, 시작 방법 및 대시보드 접근 권한을 안내합니다.">
+<title>Fram Vision | 이용 안내</title>
 <link rel="stylesheet" href="../CSS/index.css">
 <link rel="stylesheet" href="../CSS/guide.css">
 </head>
 <body>
 <a class="skip" href="#main">본문으로 바로가기</a>
-<header class="header"><div class="container header-inner"><a class="brand" href="index.html" aria-label="Fram Vision 홈"><span class="cross" aria-hidden="true">+</span><div><b>Fram <span>Vision</span></b><small>AI HEALTHCARE MONITORING</small></div></a><nav aria-label="주 메뉴"><a class="nav-link" href="index.html#overview">서비스 소개</a><a class="nav-link" href="index.html#features">주요 기능</a><div class="auth"><a class="button small" href="login.html">로그인</a><a class="button primary small" href="signup.html">회원가입</a></div></nav></div></header>
-
-<main id="main">
-
-<section class="guide-hero">
-    <div class="container">
-        <p class="kicker">USER GUIDE</p>
-        <h1>Fram Vision <span>이용안내</span></h1>
-        <p class="lead">관리자용 구독 안내와 사용자용 이용 방법을 확인하세요.</p>
+<header class="header">
+    <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="Fram Vision 홈">
+            <span class="cross" aria-hidden="true">+</span>
+            <div><b>Fram <span>Vision</span></b><small>AI HEALTHCARE MONITORING</small></div>
+        </a>
+        <nav aria-label="주 메뉴">
+            <a class="nav-link" href="index.html#overview">서비스 소개</a>
+            <a class="nav-link" href="guide.html" aria-current="page">이용 안내</a>
+            <div class="auth">
+                <a class="button small" href="login.html">로그인</a>
+                <a class="button primary small" href="signup.html">회원가입</a>
+            </div>
+        </nav>
     </div>
-</section>
+</header>
+<main id="main" class="container guide-main">
+    <section class="guide-hero" aria-labelledby="guide-title">
+        <p class="kicker">GETTING STARTED</p>
+        <h1 id="guide-title">함께 사용하는 시스템,<br><span>역할에 맞게 시작하세요.</span></h1>
+        <p class="lead">관리자는 구독하고 사용 권한을 부여합니다.<br>일반 사용자는 관리자에게 권한을 받은 뒤 대시보드를 이용합니다.</p>
+        <a class="role-link" href="#roles">내 역할 확인하기 <span aria-hidden="true">↓</span></a>
+    </section>
 
-<section class="guide-tabs container">
+    <section id="roles" class="role-grid" aria-label="역할별 이용 안내">
+        <article class="role-card admin-card" aria-labelledby="admin-title">
+            <span class="role-badge">구독 · 권한 관리</span>
+            <h2 id="admin-title">관리자</h2>
+            <p class="role-description">시스템을 구독하고, 함께 사용할 일반 사용자에게 대시보드 접근 권한을 부여하는 사용자입니다.</p>
+            <h3>관리자가 하는 일</h3>
+            <ul class="role-tasks">
+                <li>시스템 구독 및 구독 관리</li>
+                <li>하위 사용자에게 대시보드 접근 권한 부여</li>
+                <li>일반 사용자의 접근 권한 관리</li>
+            </ul>
+            <h3>이렇게 시작하세요</h3>
+            <ol class="role-steps">
+                <li><strong>계정 준비</strong><p>회원가입 후 로그인합니다.</p></li>
+                <li><strong>시스템 구독</strong><p>관리자로서 시스템을 구독합니다.</p></li>
+                <li><strong>사용자 권한 부여</strong><p>함께 사용할 일반 사용자에게 접근 권한을 부여합니다.</p></li>
+            </ol>
+        </article>
+        <article class="role-card user-card" aria-labelledby="user-title">
+            <span class="role-badge">권한을 받아 서비스 이용</span>
+            <h2 id="user-title">일반 사용자</h2>
+            <p class="role-description">관리자에게 대시보드 접근 권한을 받아 의약품 관리 업무에 시스템을 사용하는 사용자입니다.</p>
+            <h3>일반 사용자가 하는 일</h3>
+            <ul class="role-tasks">
+                <li>관리자에게 시스템 사용 권한 요청</li>
+                <li>권한을 받은 계정으로 로그인</li>
+                <li>부여받은 권한으로 대시보드 이용</li>
+            </ul>
+            <h3>이렇게 시작하세요</h3>
+            <ol class="role-steps">
+                <li><strong>계정 준비</strong><p>사용할 계정을 준비합니다.</p></li>
+                <li><strong>관리자에게 권한 요청</strong><p>관리자가 해당 계정에 접근 권한을 부여해야 합니다.</p></li>
+                <li><strong>대시보드 이용</strong><p>권한 부여 후 로그인하여 업무를 시작합니다.</p></li>
+            </ol>
+        </article>
+    </section>
 
-    <div class="tab-bar" role="tablist">
-        <button class="tab-btn active" data-tab="admin" role="tab" aria-selected="true">관리자용 안내</button>
-        <button class="tab-btn" data-tab="user" role="tab" aria-selected="false">사용자용 안내</button>
-    </div>
-
-    <div class="tab-panel" data-panel="admin">
-
-        <h2>관리자용 — 구독 안내</h2>
-        <p class="panel-lead">병동/약제팀을 관리하는 관리자 계정은 구독을 통해 Fram Vision의 전체 기능을 이용할 수 있습니다.</p>
-
-        <div class="plan-grid">
-
-            <article class="plan-card">
-                <h3>Basic</h3>
-                <p class="plan-desc">소규모 병동을 위한 기본 플랜</p>
-                <ul class="plan-features">
-                    <li>실시간 모니터링</li>
-                    <li>전표 매칭 관리</li>
-                    <li>이상 알림</li>
-                </ul>
-                <button class="button plan-btn" disabled>구독하기 (준비 중)</button>
-            </article>
-
-            <article class="plan-card featured">
-                <span class="plan-badge">추천</span>
-                <h3>Pro</h3>
-                <p class="plan-desc">여러 병동을 함께 운영하는 관리자용 플랜</p>
-                <ul class="plan-features">
-                    <li>Basic 플랜 전체 기능</li>
-                    <li>통계 분석</li>
-                    <li>직원(사용자) 등록 및 권한 관리</li>
-                </ul>
-                <button class="button primary plan-btn" disabled>구독하고 바로 결제 (준비 중)</button>
-            </article>
-
+    <section class="access-guide" aria-labelledby="access-title">
+        <div>
+            <p class="kicker">ACCESS GUIDE</p>
+            <h2 id="access-title">회원가입과 접근 권한은 별개입니다.</h2>
+            <p>일반 사용자는 회원가입만으로 대시보드 이용 권한이 생기지 않습니다.<br>관리자에게 권한을 받은 계정으로 로그인해 주세요.</p>
         </div>
+        <a class="button primary" href="login.html">로그인하기 <span aria-hidden="true">→</span></a>
+    </section>
 
-        <p class="guide-note">
-            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-            결제 및 구독 기능은 현재 준비 중입니다. 관리자 계정이 필요하시면 담당자에게 문의해 주세요.
-        </p>
-
-    </div>
-
-    <div class="tab-panel" data-panel="user" hidden>
-
-        <h2>사용자용 — 이용 방법</h2>
-        <p class="panel-lead">소속 관리자로부터 계정을 등록받은 사용자는 아래 기능을 이용할 수 있습니다.</p>
-
-        <div class="steps">
-
-            <div class="step">
-                <span class="step-num">1</span>
-                <div>
-                    <h3>회원가입 / 로그인</h3>
-                    <p>아이디와 비밀번호로 가입 후 로그인합니다.</p>
-                </div>
-            </div>
-
-            <div class="step">
-                <span class="step-num">2</span>
-                <div>
-                    <h3>실시간 모니터링 확인</h3>
-                    <p>병동의 의약품 이동 현황을 실시간으로 확인합니다.</p>
-                </div>
-            </div>
-
-            <div class="step">
-                <span class="step-num">3</span>
-                <div>
-                    <h3>전표 확인 및 이상 알림 대응</h3>
-                    <p>매칭 대기·오류 전표와 이상 알림을 확인하고 조치합니다.</p>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
+    <section class="guide-faq" aria-labelledby="faq-title">
+        <h2 id="faq-title">자주 묻는 질문</h2>
+        <details open>
+            <summary>일반 사용자도 직접 구독해야 하나요?</summary>
+            <p>구독은 관리자가 진행합니다. 일반 사용자는 관리자가 부여한 권한으로 시스템을 이용합니다.</p>
+        </details>
+        <details open>
+            <summary>가입했는데 대시보드에 들어갈 수 없어요.</summary>
+            <p>관리자에게 현재 로그인한 계정의 접근 권한을 확인해 달라고 요청해 주세요. 권한을 받은 계정과 로그인한 계정이 같은지도 확인해 주세요.</p>
+        </details>
+        <details open>
+            <summary>사용 권한은 누구에게 요청하나요?</summary>
+            <p>소속 조직에서 시스템을 구독하고 사용자 권한을 관리하는 관리자에게 요청해 주세요.</p>
+        </details>
+    </section>
 </main>
 <footer class="footer"><div class="container footer-inner"><div><b>Fram Vision</b><span>안전한 약, 더 나은 내일.</span></div><div>© 2026 Fram Vision. All rights reserved.</div></div></footer>
-
-<script src="../js/guide.js"></script>
 </body>
 </html>
