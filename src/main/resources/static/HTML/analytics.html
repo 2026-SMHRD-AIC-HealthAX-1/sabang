@@ -3,94 +3,120 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<title>통계 분석</title>
+    <title>통계 분석</title>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="../CSS/style.css">
+
+    <link rel="stylesheet" href="../CSS/analytics.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 
 </head>
 
 
 <body data-page="analytics">
 
-<div id="header"></div>
+    <div id="header"></div>
 
-<div class="layout">
+    <div class="layout">
 
-<div id="sidebar"></div>
-
-
-<main class="main">
-
-<div class="page-header">
-
-<h1>📊 통계 분석</h1>
-
-<p>
-입·출고 및 이상 감지 데이터를 분석합니다.
-</p>
-
-</div>
+        <div id="sidebar"></div>
 
 
-<div class="content-grid">
+        <main class="main">
 
-<div class="card info-card">
+            <div class="page-header">
 
-<h3>오늘 입고</h3>
+                <h1>📊 통계 분석</h1>
 
-<div class="number">
-24건
-</div>
+                <p>
+                    입·출고 및 이상 감지 데이터를 분석합니다.
+                </p>
 
-</div>
-
-
-<div class="card info-card">
-
-<h3>오늘 출고</h3>
-
-<div class="number">
-31건
-</div>
-
-</div>
+            </div>
 
 
-<div class="card info-card">
+            <!--
+                엑셀 피벗테이블처럼 항목을 여러 개 동시에 체크해서 조합할 수 있게 한다.
+                통계 항목은 회의 내용에 따라 앞으로 바뀔 수 있어서, 집계 로직은
+                analytics.js에서 원본 데이터를 받아 체크된 조합대로 그때그때 계산한다.
+            -->
 
-<h3>이상 감지</h3>
+            <div class="analytics-filters">
 
-<div class="number">
-3건
-</div>
+                <div class="filter-group">
 
-</div>
+                    <span class="filter-label">항목 선택 (여러 개 선택 가능)</span>
 
-</div>
+                    <label class="filter-check">
+                        <input type="checkbox" data-dimension="wardName" checked>
+                        병동
+                    </label>
+
+                    <label class="filter-check">
+                        <input type="checkbox" data-dimension="medicineName" checked>
+                        의약품
+                    </label>
+
+                    <label class="filter-check">
+                        <input type="checkbox" data-dimension="day">
+                        일별
+                    </label>
+
+                    <label class="filter-check">
+                        <input type="checkbox" data-dimension="week">
+                        주별
+                    </label>
+
+                    <label class="filter-check">
+                        <input type="checkbox" data-dimension="month">
+                        월별
+                    </label>
+
+                    <label class="filter-check">
+                        <input type="checkbox" id="qtyMeasureCheck" checked>
+                        수량
+                    </label>
+
+                </div>
+
+            </div>
 
 
-<section class="card table-card">
+            <section class="card table-card">
 
-<div class="empty">
+                <div id="analyticsEmpty" class="empty" hidden>
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span id="analyticsEmptyText">표시할 출고 데이터가 없습니다.</span>
+                </div>
 
-<i class="fa-solid fa-chart-column"></i>
+                <canvas id="analyticsChart" height="110"></canvas>
 
-향후 Chart.js 그래프가 들어갈 영역입니다.
+            </section>
 
-</div>
 
-</section>
+            <section class="card table-card analytics-table-card">
 
-</main>
+                <table id="analyticsTable">
+                    <thead>
+                        <tr id="analyticsTableHead"></tr>
+                    </thead>
+                    <tbody id="analyticsTableBody"></tbody>
+                </table>
 
-</div>
+            </section>
 
-<script src="../js/common.js"></script>
+        </main>
+
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/analytics.js"></script>
 
 </body>
 
