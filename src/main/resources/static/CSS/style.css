@@ -522,6 +522,10 @@ td {
     color: #92a4b9;
 }
 
+.empty[hidden] {
+    display: none;
+}
+
 .empty i {
     font-size: 45px;
     margin-bottom: 15px;

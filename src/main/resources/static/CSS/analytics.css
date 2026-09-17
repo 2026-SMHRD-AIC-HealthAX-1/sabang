@@ -1,0 +1,80 @@
+.analytics-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    background: white;
+    border: 1px solid #e5ebf2;
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+.filter-group[hidden] {
+    display: none;
+}
+
+.filter-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #647b99;
+    margin-right: 4px;
+}
+
+.filter-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #33465e;
+    cursor: pointer;
+    user-select: none;
+}
+
+.filter-check input {
+    width: 16px;
+    height: 16px;
+    accent-color: #1474ed;
+    cursor: pointer;
+}
+
+#analyticsChart {
+    padding: 20px;
+}
+
+.analytics-table-card {
+    margin-top: 18px;
+    padding: 20px;
+    overflow-x: auto;
+}
+
+#analyticsTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+#analyticsTable th,
+#analyticsTable td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #edf1f5;
+    white-space: nowrap;
+}
+
+#analyticsTable th {
+    background: #f7f9fc;
+    color: #536b88;
+    font-weight: 600;
+}
+
+#analyticsTable td {
+    color: #243b5a;
+}
