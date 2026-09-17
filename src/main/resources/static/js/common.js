@@ -215,11 +215,14 @@ const menuHtml = menus.map(menu => {
             : menu.ko;
 
 
+    const isAdminOnly = adminOnlyMenuIds.includes(menu.id);
+
     return `
 
         <a href="${menu.url}"
            data-menu-id="${menu.id}"
-           class="menu-item ${page === menu.id ? "active" : ""}">
+           class="menu-item ${page === menu.id ? "active" : ""}"
+           ${isAdminOnly ? "hidden" : ""}>
 
             <i class="fa-solid ${menu.icon}"></i>
 
@@ -278,14 +281,14 @@ document.getElementById("sidebar").innerHTML = `
             return;
         }
 
-        if (!me.isAdmin) {
+        if (me.isAdmin) {
 
             adminOnlyMenuIds.forEach(id => {
 
                 const item = document.querySelector(`.menu-item[data-menu-id="${id}"]`);
 
                 if (item) {
-                    item.remove();
+                    item.hidden = false;
                 }
             });
         }
