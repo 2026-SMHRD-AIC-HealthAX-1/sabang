@@ -87,38 +87,6 @@ const language =
 
 /*
 ===========================================
-    메뉴 생성
-===========================================
-*/
-
-const menuHtml = menus.map(menu => {
-
-    const menuName =
-        language === "en"
-            ? menu.en
-            : menu.ko;
-
-
-    return `
-
-        <a href="${menu.url}"
-           class="menu-item ${page === menu.id ? "active" : ""}">
-
-            <i class="fa-solid ${menu.icon}"></i>
-
-            <span>
-                ${menuName}
-            </span>
-
-        </a>
-
-    `;
-
-}).join("");
-
-
-/*
-===========================================
     HEADER
 ===========================================
 */
@@ -199,6 +167,13 @@ document.getElementById("header").innerHTML = `
 
         </a>
 
+
+        <button id="headerLogoutBtn" class="header-logout-btn" type="button" title="로그아웃" aria-label="로그아웃">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+        </button>
+
     </div>
 
 </header>
@@ -208,11 +183,90 @@ document.getElementById("header").innerHTML = `
 
 /*
 ===========================================
-    SIDEBAR
+    로그아웃
 ===========================================
 */
 
-document.getElementById("sidebar").innerHTML = `
+document.getElementById("headerLogoutBtn").addEventListener("click", async function() {
+
+    await fetch("/api/auth/logout", { method: "POST" });
+
+    window.location.href = "index.html";
+});
+
+
+/*
+===========================================
+    SIDEBAR
+
+    이 레이아웃(공통 헤더/사이드바)을 쓰는 모든 내부 페이지는
+    hasAccess(관리자 또는 권한을 부여받은 직원)가 있어야 접근 가능하다.
+    hasAccess가 없으면 index.html로 돌려보낸다.
+
+    이상 알림 / 사용자 관리는 그중에서도 관리자(유효 구독 보유)만
+    접근 가능하므로 메뉴에서 추가로 숨긴다.
+===========================================
+*/
+
+const adminOnlyMenuIds = ["alerts", "users"];
+
+(async () => {
+
+    let isAdmin = false;
+
+    try {
+
+        const response = await fetch("/api/auth/me");
+
+        if (!response.ok) {
+            window.location.replace("index.html");
+            return;
+        }
+
+        const me = await response.json();
+
+        if (!me.hasAccess) {
+            window.location.replace("index.html");
+            return;
+        }
+
+        isAdmin = !!me.isAdmin;
+
+    } catch (error) {
+        window.location.replace("index.html");
+        return;
+    }
+
+    const visibleMenus = menus.filter(menu => {
+        return isAdmin || !adminOnlyMenuIds.includes(menu.id);
+    });
+
+    const menuHtml = visibleMenus.map(menu => {
+
+        const menuName =
+            language === "en"
+                ? menu.en
+                : menu.ko;
+
+
+        return `
+
+            <a href="${menu.url}"
+               class="menu-item ${page === menu.id ? "active" : ""}">
+
+                <i class="fa-solid ${menu.icon}"></i>
+
+                <span>
+                    ${menuName}
+                </span>
+
+            </a>
+
+        `;
+
+    }).join("");
+
+    document.getElementById("sidebar").innerHTML = `
 
 <aside class="sidebar">
 
@@ -238,6 +292,8 @@ document.getElementById("sidebar").innerHTML = `
 </aside>
 
 `;
+
+})();
 
 
 /*

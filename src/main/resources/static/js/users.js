@@ -1,437 +1,194 @@
 /*
-        ==========================================================
-        DB 연결 전 테스트용 회원가입 사용자
-
-        나중에는 이 배열을 삭제하고
-
-        Spring
-            ↓
-        Controller
-            ↓
-        Service
-            ↓
-        Repository
-            ↓
-        Oracle
-
-        방식으로 회원 정보를 검색하면 됩니다.
-        ==========================================================
-        */
-
-
-        const registeredUsers = [
-
-            {
-                id: "user02",
-
-                name: "박민수",
-
-                email: "minsu@hospital.com",
-
-                department: "약품관리팀",
-
-                role: "사용자"
-            },
-
-
-            {
-                id: "user03",
-
-                name: "최서연",
-
-                email: "seoyeon@hospital.com",
-
-                department: "간호팀",
-
-                role: "사용자"
-            },
-
-
-            {
-                id: "user04",
-
-                name: "정도현",
-
-                email: "dohyun@hospital.com",
-
-                department: "약제팀",
-
-                role: "사용자"
-            },
-
-
-            {
-                id: "user05",
-
-                name: "김유진",
-
-                email: "yujin@hospital.com",
-
-                department: "병동",
-
-                role: "사용자"
-            }
-
-        ];
-
-
-
-        /*
-        ==========================================================
-        HTML 요소 가져오기
-        ==========================================================
-        */
-
-
-        const searchInput =
-            document.getElementById("userSearchInput");
-
-
-        const searchBtn =
-            document.getElementById("searchUserBtn");
-
-
-        const searchResult =
-            document.getElementById("searchResult");
-
-
-        const searchMessage =
-            document.getElementById("searchMessage");
-
-
-        const resultName =
-            document.getElementById("resultName");
-
-
-        const resultEmail =
-            document.getElementById("resultEmail");
-
-
-        const addUserBtn =
-            document.getElementById("addUserBtn");
-
-
-        const userTableBody =
-            document.getElementById("userTableBody");
-
-
-
-        /*
-        검색해서 선택된 사용자를 저장하는 변수
-        */
-
-        let selectedUser = null;
-
-
-
-        /*
-        ==========================================================
-        사용자 검색
-        ==========================================================
-        */
-
-
-        function searchUser() {
-
-
-            /* 검색창 값 */
-
-            const keyword =
-                searchInput.value.trim();
-
-
-
-            /*
-            이름을 입력하지 않았을 경우
-            */
-
-            if (keyword === "") {
-
-
-                searchResult.classList.remove(
-                    "active"
-                );
-
-
-                searchMessage.textContent =
-                    "검색할 사용자 이름을 입력해주세요.";
-
-
-                searchMessage.classList.add(
-                    "active"
-                );
-
-
-                return;
-
-            }
-
-
-
-            /*
-            registeredUsers 배열에서
-            입력한 이름과 같은 사용자 검색
-            */
-
-
-            selectedUser =
-                registeredUsers.find(
-                    function(user) {
-
-                        return user.name === keyword;
-
-                    }
-                );
-
-
-
-            /*
-            사용자를 찾은 경우
-            */
-
-            if (selectedUser) {
-
-
-                resultName.textContent =
-                    selectedUser.name;
-
-
-                resultEmail.textContent =
-                    selectedUser.email;
-
-
-                searchMessage.classList.remove(
-                    "active"
-                );
-
-
-                searchResult.classList.add(
-                    "active"
-                );
-
-            }
-
-
-            /*
-            사용자를 찾지 못한 경우
-            */
-
-            else {
-
-
-                selectedUser = null;
-
-
-                searchResult.classList.remove(
-                    "active"
-                );
-
-
-                searchMessage.textContent =
-                    "회원가입된 사용자를 찾을 수 없습니다.";
-
-
-                searchMessage.classList.add(
-                    "active"
-                );
-
-            }
-
+===========================================
+    사용자 관리 화면
+
+    회원 목록(GET /api/staff/candidates)을 불러와서
+    이름으로 검색하고, 권한부여(POST /api/staff)로
+    대시보드 접근 권한을 부여한다.
+===========================================
+*/
+
+let candidates = [];
+let selectedUser = null;
+
+const searchInput = document.getElementById("userSearchInput");
+const searchBtn = document.getElementById("searchUserBtn");
+const searchResult = document.getElementById("searchResult");
+const searchMessage = document.getElementById("searchMessage");
+const resultName = document.getElementById("resultName");
+const resultEmail = document.getElementById("resultEmail");
+const addUserBtn = document.getElementById("addUserBtn");
+const userTableBody = document.getElementById("userTableBody");
+
+async function loadCandidates() {
+
+    const response = await fetch("/api/staff/candidates");
+
+    if (!response.ok) {
+        return;
+    }
+
+    candidates = await response.json();
+
+    renderGrantedTable();
+}
+
+function renderGrantedTable() {
+
+    const granted = candidates.filter(user => user.granted);
+
+    userTableBody.innerHTML = granted.map(user => `
+        <tr>
+            <td>${user.memberId}</td>
+            <td>${user.memberName}</td>
+            <td>${user.email}</td>
+            <td>-</td>
+            <td>사용자</td>
+            <td>
+                사용중
+                <button type="button" class="revoke-btn" data-staff-id="${user.memberId}">
+                    권한 회수
+                </button>
+            </td>
+        </tr>
+    `).join("");
+
+    userTableBody.querySelectorAll(".revoke-btn").forEach(button => {
+        button.addEventListener("click", () => revokeAccess(button.dataset.staffId));
+    });
+}
+
+/*
+===========================================
+    권한 회수
+===========================================
+*/
+
+async function revokeAccess(staffId) {
+
+    const confirmed = confirm("이 사용자의 대시보드 접근 권한을 회수하시겠습니까?");
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(`/api/staff/${staffId}`, { method: "DELETE" });
+
+        if (!response.ok) {
+            alert("권한 회수에 실패했습니다.");
+            return;
         }
 
+        await loadCandidates();
 
+    } catch (error) {
 
-        /*
-        ==========================================================
-        사용자 목록에 추가
-        ==========================================================
-        */
+        alert("권한 회수에 실패했습니다. 다시 시도해 주세요.");
+    }
+}
 
+/*
+===========================================
+    사용자 검색
+===========================================
+*/
 
-        function addUser() {
+function searchUser() {
 
+    const keyword = searchInput.value.trim();
 
-            if (!selectedUser) {
+    if (keyword === "") {
 
-                return;
+        searchResult.classList.remove("active");
 
-            }
+        searchMessage.textContent = "검색할 사용자 이름을 입력해주세요.";
+        searchMessage.classList.add("active");
 
+        return;
+    }
 
+    selectedUser = candidates.find(user => user.memberId === keyword) || null;
 
-            /*
-            이미 사용자 목록에 등록된 사람인지 확인
-            */
+    if (selectedUser) {
 
+        resultName.textContent = selectedUser.memberName;
+        resultEmail.textContent = selectedUser.email;
 
-            const rows =
-                userTableBody.querySelectorAll("tr");
+        searchMessage.classList.remove("active");
+        searchResult.classList.add("active");
 
+    } else {
 
+        searchResult.classList.remove("active");
 
-            for (let row of rows) {
+        searchMessage.textContent = "회원가입된 사용자를 찾을 수 없습니다.";
+        searchMessage.classList.add("active");
+    }
+}
 
+/*
+===========================================
+    사용자 목록에 추가 (권한 부여)
+===========================================
+*/
 
-                const userId =
-                    row.children[0].textContent.trim();
+async function addUser() {
 
+    if (!selectedUser) {
+        return;
+    }
 
+    if (selectedUser.granted) {
+        alert("이미 사용자 목록에 등록되어 있습니다.");
+        return;
+    }
 
-                if (userId === selectedUser.id) {
+    try {
 
+        const response = await fetch("/api/staff", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ staffId: selectedUser.memberId })
+        });
 
-                    alert(
-                        "이미 사용자 목록에 등록되어 있습니다."
-                    );
+        const data = await response.json();
 
-
-                    return;
-
-                }
-
-            }
-
-
-
-            /*
-            새로운 tr 생성
-            */
-
-
-            const newRow =
-                document.createElement("tr");
-
-
-
-            /*
-            새로운 사용자 정보 넣기
-            */
-
-
-            newRow.innerHTML = `
-
-                <td>
-                    ${selectedUser.id}
-                </td>
-
-                <td>
-                    ${selectedUser.name}
-                </td>
-
-                <td>
-                    ${selectedUser.email}
-                </td>
-
-                <td>
-                    ${selectedUser.department}
-                </td>
-
-                <td>
-                    ${selectedUser.role}
-                </td>
-
-                <td>
-                    사용중
-                </td>
-
-            `;
-
-
-
-            /*
-            왼쪽 사용자 목록에 추가
-            */
-
-
-            userTableBody.appendChild(
-                newRow
-            );
-
-
-
-            /*
-            추가 완료 알림
-            */
-
-
-            alert(
-                selectedUser.name +
-                " 사용자가 사용자 목록에 추가되었습니다."
-            );
-
-
-
-            /*
-            검색창 초기화
-            */
-
-
-            searchInput.value = "";
-
-
-            searchResult.classList.remove(
-                "active"
-            );
-
-
-            searchMessage.classList.remove(
-                "active"
-            );
-
-
-            selectedUser = null;
-
+        if (!response.ok) {
+            alert(data.message || "권한 부여에 실패했습니다.");
+            return;
         }
 
+        alert(selectedUser.memberName + " 사용자가 사용자 목록에 추가되었습니다.");
 
+        searchInput.value = "";
+        searchResult.classList.remove("active");
+        searchMessage.classList.remove("active");
+        selectedUser = null;
 
-        /*
-        ==========================================================
-        검색 버튼
-        ==========================================================
-        */
+        await loadCandidates();
 
+    } catch (error) {
 
-        searchBtn.addEventListener(
-            "click",
-            searchUser
-        );
+        alert("권한 부여에 실패했습니다. 다시 시도해 주세요.");
+    }
+}
 
+/*
+===========================================
+    이벤트 연결
+===========================================
+*/
 
+searchBtn.addEventListener("click", searchUser);
+addUserBtn.addEventListener("click", addUser);
 
-        /*
-        ==========================================================
-        사용자 추가 버튼
-        ==========================================================
-        */
+searchInput.addEventListener("keydown", function(event) {
 
+    if (event.key === "Enter") {
+        searchUser();
+    }
+});
 
-        addUserBtn.addEventListener(
-            "click",
-            addUser
-        );
-
-
-
-        /*
-        ==========================================================
-        검색창에서 Enter 눌러도 검색
-        ==========================================================
-        */
-
-
-        searchInput.addEventListener(
-            "keydown",
-
-            function(event) {
-
-
-                if (event.key === "Enter") {
-
-                    searchUser();
-
-                }
-
-            }
-
-        );
+loadCandidates();

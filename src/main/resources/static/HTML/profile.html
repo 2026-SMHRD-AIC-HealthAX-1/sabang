@@ -214,12 +214,30 @@
                         ></p>
 
                     </form>
+
+                    <!-- 회원탈퇴 -->
+                    <div class="danger-zone">
+                        <div>
+                            <h3>회원탈퇴</h3>
+                            <p>탈퇴하면 계정과 구독·권한 정보가 모두 삭제되며 되돌릴 수 없습니다.</p>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="withdrawBtn"
+                            class="withdraw-btn"
+                        >
+                            회원탈퇴
+                        </button>
+                    </div>
                 </section>
 
-                <!-- 오른쪽: 구독결제 정보 -->
+                <!-- 오른쪽: 구독결제 정보 (관리자 전용, billing.js가 표시 여부 결정) -->
                 <section
+                    id="billingSection"
                     class="profile-card"
                     aria-labelledby="billingTitle"
+                    hidden
                 >
                     <div class="profile-card-heading">
                         <span
@@ -237,7 +255,7 @@
                             </p>
                         </div>
 
-                        <span class="sample-label">예시</span>
+                        <span id="billingSampleLabel" class="sample-label">예시</span>
                     </div>
 
                     <!-- 구독 요금 -->
@@ -258,7 +276,7 @@
                         <div>
                             <dt>구독 상태</dt>
 
-                            <dd>
+                            <dd id="billingStatus">
                                 <span class="billing-demo">
                                     예시 · 실제 구독 조회 전
                                 </span>
@@ -268,7 +286,7 @@
                         <div>
                             <dt>최근 결제일</dt>
 
-                            <dd>
+                            <dd id="billingLastPayment">
                                 <time datetime="2026-09-01">
                                     2026. 09. 01
                                 </time>
@@ -278,7 +296,7 @@
                         <div>
                             <dt>다음 결제 예정일</dt>
 
-                            <dd>
+                            <dd id="billingNextPayment">
                                 <time datetime="2026-10-01">
                                     2026. 10. 01
                                 </time>
@@ -287,16 +305,16 @@
 
                         <div>
                             <dt>결제 금액</dt>
-                            <dd>99,000원</dd>
+                            <dd id="billingAmount">99,000원</dd>
                         </div>
 
                         <div>
                             <dt>결제수단</dt>
-                            <dd>신용카드 · **** 1234</dd>
+                            <dd id="billingMethod">신용카드</dd>
                         </div>
                     </dl>
 
-                    <div class="billing-note">
+                    <div id="billingNote" class="billing-note">
                         <i
                             class="fa-solid fa-circle-info"
                             aria-hidden="true"
@@ -318,6 +336,8 @@
     <script src="../js/common.js"></script>
     <script src="../js/account-store.js"></script>
     <script src="../js/profile.js"></script>
+    <script src="../js/billing.js"></script>
+    <script src="../js/withdraw.js"></script>
 
 </body>
 </html>

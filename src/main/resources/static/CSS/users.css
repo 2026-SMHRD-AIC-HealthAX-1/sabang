@@ -81,6 +81,34 @@
         }
 
 
+        .revoke-btn {
+            margin-left: 10px;
+
+            padding: 5px 10px;
+
+            border: 1px solid #e4a5a9;
+
+            border-radius: 6px;
+
+            background: white;
+
+            color: #c73743;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .revoke-btn:hover {
+            background: #c73743;
+
+            color: white;
+        }
+
+
 
         /* ==================================================
            오른쪽 사용자 추가

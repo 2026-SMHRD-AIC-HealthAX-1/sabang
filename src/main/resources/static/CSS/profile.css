@@ -587,3 +587,44 @@ body.font-large .profile-main {
         line-height: 1.6;
     }
 }
+
+.danger-zone {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 24px;
+    padding: 18px 20px;
+    border: 1px solid #f4c6c9;
+    border-radius: 10px;
+    background: #fff6f6;
+}
+
+.danger-zone h3 {
+    font-size: 14px;
+    color: #c73743;
+    margin-bottom: 4px;
+}
+
+.danger-zone p {
+    font-size: 12px;
+    color: #8a6a6b;
+}
+
+.withdraw-btn {
+    flex-shrink: 0;
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid #e4a5a9;
+    border-radius: 7px;
+    background: white;
+    color: #c73743;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.withdraw-btn:hover {
+    background: #c73743;
+    color: white;
+}

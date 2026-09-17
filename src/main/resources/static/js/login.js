@@ -30,7 +30,7 @@ document
                 return;
             }
 
-            window.location.href = "index.html";
+            window.location.href = data.hasAccess ? "dashboard.html" : "index.html";
 
         } catch (error) {
 

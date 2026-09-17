@@ -17,6 +17,18 @@
 .role-badge{display:inline-block;padding:7px 12px;border-radius:999px;background:#edf5ff;color:var(--blue);font-size:11px;font-weight:600}
 .user-card .role-badge{background:#edf9f2;color:#078450}
 .role-card h2{font-size:27px;letter-spacing:-.7px;margin:16px 0 14px}
+.admin-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0 14px}
+.admin-title-row h2{margin:0}
+.payment-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.payment-modal[hidden]{display:none}
+.payment-modal-backdrop{position:absolute;inset:0;background:rgba(15,30,60,.45)}
+.payment-modal-box{position:relative;background:#fff;border-radius:14px;padding:28px;width:min(360px,100%);box-shadow:0 24px 60px rgba(0,0,0,.25)}
+.payment-modal-box h2{margin:0 0 8px;font-size:20px}
+.payment-modal-desc{font-size:12px;color:var(--muted);margin:0 0 20px}
+.payment-modal-box label{display:block;font-size:13px;font-weight:600;margin-bottom:8px}
+.payment-modal-box select{width:100%;height:44px;border:1px solid var(--line);border-radius:8px;padding:0 12px;font-size:14px;margin-bottom:20px}
+.payment-modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.payment-message{margin:14px 0 0;font-size:12px;color:#e44248;text-align:right}
 .role-description{font-size:13px;color:var(--muted);line-height:1.9;margin:0 0 26px}
 .role-card h3{font-size:15px;margin:0 0 14px;font-weight:600}
 .role-tasks{padding-left:19px;margin:0 0 26px;color:var(--muted);font-size:13px;line-height:1.9}

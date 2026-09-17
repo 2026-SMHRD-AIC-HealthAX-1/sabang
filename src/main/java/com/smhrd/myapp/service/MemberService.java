@@ -35,6 +35,11 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+    // 회원탈퇴: 구독/권한 데이터는 호출하는 쪽(AuthController)에서 먼저 정리한 뒤 호출해야 함
+    public void delete(String memberId) {
+        memberRepository.deleteById(memberId);
+    }
+
     // 아이디/이메일/전화번호 중복 확인
     public boolean isDuplicate(String field, String value) {
 

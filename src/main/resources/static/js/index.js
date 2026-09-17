@@ -28,7 +28,7 @@ async function applyAuthState() {
 
             await fetch("/api/auth/logout", { method: "POST" });
 
-            window.location.reload();
+            window.location.href = "index.html";
         });
 
         signupBtn.textContent = "이용안내";

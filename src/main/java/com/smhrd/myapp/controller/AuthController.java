@@ -1,7 +1,9 @@
 package com.smhrd.myapp.controller;
 
 import com.smhrd.myapp.entity.Member;
+import com.smhrd.myapp.service.HospitalStaffService;
 import com.smhrd.myapp.service.MemberService;
+import com.smhrd.myapp.service.SubscriptionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +17,22 @@ public class AuthController {
     private static final String SESSION_MEMBER_ID = "memberId";
 
     private final MemberService memberService;
+    private final SubscriptionService subscriptionService;
+    private final HospitalStaffService hospitalStaffService;
 
-    public AuthController(MemberService memberService) {
+    public AuthController(
+            MemberService memberService,
+            SubscriptionService subscriptionService,
+            HospitalStaffService hospitalStaffService
+    ) {
         this.memberService = memberService;
+        this.subscriptionService = subscriptionService;
+        this.hospitalStaffService = hospitalStaffService;
+    }
+
+    // 관리자(유효 구독 보유) 또는 권한을 부여받은 직원이면 대시보드 접근 가능
+    private boolean hasDashboardAccess(String memberId) {
+        return subscriptionService.isActiveAdmin(memberId) || hospitalStaffService.hasAccess(memberId);
     }
 
     // 아이디/이메일/전화번호 중복 확인
@@ -65,13 +80,35 @@ public class AuthController {
 
         return ResponseEntity.ok(Map.of(
                 "memberId", member.getMemberId(),
-                "memberName", member.getMemberName()
+                "memberName", member.getMemberName(),
+                "isAdmin", subscriptionService.isActiveAdmin(member.getMemberId()),
+                "hasAccess", hasDashboardAccess(member.getMemberId())
         ));
     }
 
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpSession session) {
+
+        session.invalidate();
+
+        return ResponseEntity.ok(Map.of("success", true));
+    }
+
+    // 회원탈퇴: 구독/권한 관련 데이터를 먼저 정리한 뒤 회원 삭제 (FK 제약 위반 방지)
+    @DeleteMapping("/me")
+    public ResponseEntity<?> withdraw(HttpSession session) {
+
+        String memberId = (String) session.getAttribute(SESSION_MEMBER_ID);
+
+        if (memberId == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
+        }
+
+        subscriptionService.deleteAllByAdmin(memberId);
+        hospitalStaffService.deleteAllGrantedBy(memberId);
+        hospitalStaffService.deleteAllAccessOf(memberId);
+        memberService.delete(memberId);
 
         session.invalidate();
 
@@ -97,7 +134,10 @@ public class AuthController {
 
         return ResponseEntity.ok(Map.of(
                 "memberId", member.getMemberId(),
-                "memberName", member.getMemberName()
+                "memberName", member.getMemberName(),
+                "email", member.getEmail(),
+                "isAdmin", subscriptionService.isActiveAdmin(member.getMemberId()),
+                "hasAccess", hasDashboardAccess(member.getMemberId())
         ));
     }
 

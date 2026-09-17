@@ -20,8 +20,8 @@
             <a class="nav-link" href="index.html#overview">서비스 소개</a>
             <a class="nav-link" href="guide.html" aria-current="page">이용 안내</a>
             <div class="auth">
-                <a class="button small" href="login.html">로그인</a>
-                <a class="button primary small" href="signup.html">회원가입</a>
+                <a id="authLoginBtn" class="button small" href="login.html">로그인</a>
+                <a id="authSignupBtn" class="button primary small" href="signup.html">회원가입</a>
             </div>
         </nav>
     </div>
@@ -37,7 +37,10 @@
     <section id="roles" class="role-grid" aria-label="역할별 이용 안내">
         <article class="role-card admin-card" aria-labelledby="admin-title">
             <span class="role-badge">구독 · 권한 관리</span>
-            <h2 id="admin-title">관리자</h2>
+            <div class="admin-title-row">
+                <h2 id="admin-title">관리자</h2>
+                <button type="button" id="openPaymentBtn" class="button primary small">결제하기</button>
+            </div>
             <p class="role-description">시스템을 구독하고, 함께 사용할 일반 사용자에게 대시보드 접근 권한을 부여하는 사용자입니다.</p>
             <h3>관리자가 하는 일</h3>
             <ul class="role-tasks">
@@ -96,6 +99,44 @@
         </details>
     </section>
 </main>
+
+<!-- 결제 팝업: 실제 결제는 하지 않는 데모 -->
+<div id="paymentModal" class="payment-modal" hidden>
+    <div class="payment-modal-backdrop" id="paymentModalBackdrop"></div>
+    <div class="payment-modal-box" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+        <h2 id="paymentModalTitle">구독 결제</h2>
+        <p class="payment-modal-desc">실제 결제는 진행되지 않는 데모 화면입니다.</p>
+
+        <form id="paymentForm">
+            <label for="paymentMonths">구독 기간</label>
+            <select id="paymentMonths" required>
+                <option value="1">1개월 - 99,000원</option>
+                <option value="3">3개월 - 270,000원</option>
+                <option value="6">6개월 - 510,000원</option>
+                <option value="12">1년 - 950,000원</option>
+            </select>
+
+            <label for="paymentMethod">결제수단</label>
+            <select id="paymentMethod" required>
+                <option value="credit_card">신용카드</option>
+                <option value="bank_transfer">계좌이체</option>
+                <option value="kakao_pay">카카오페이</option>
+                <option value="virtual_account">무통장입금</option>
+            </select>
+
+            <div class="payment-modal-actions">
+                <button type="button" id="closePaymentBtn" class="button">취소</button>
+                <button type="submit" class="button primary">결제하기</button>
+            </div>
+
+            <p id="paymentMessage" class="payment-message"></p>
+        </form>
+    </div>
+</div>
+
 <footer class="footer"><div class="container footer-inner"><div><b>Fram Vision</b><span>안전한 약, 더 나은 내일.</span></div><div>© 2026 Fram Vision. All rights reserved.</div></div></footer>
+
+<script src="../js/index.js"></script>
+<script src="../js/payment.js"></script>
 </body>
 </html>
