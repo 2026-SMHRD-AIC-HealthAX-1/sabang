@@ -49,6 +49,12 @@ AI 객체탐지를 이용하여 고위험 의약품의 이동을 실시간으로
 LIVE
 </div>
 
+<!-- 관리자에게만 표시 (기본 숨김 - 깜빡임 방지) -->
+<button id="cameraManageBtn" class="camera-manage-btn" type="button" hidden>
+    <i class="fa-solid fa-gear"></i>
+    카메라 관리
+</button>
+
 </div>
 
 
@@ -61,31 +67,28 @@ class="camera-time">
 <!-- 현재 카메라 번호 -->
     <div id="cameraName"
          class="camera-name">
-        CAM 01
     </div>
-    
+
 <!-- 왼쪽 버튼 -->
-    <button class="camera-btn camera-prev"
-            onclick="prevCamera()">
-
+    <button class="camera-btn camera-prev" id="cameraPrevBtn">
         <i class="fa-solid fa-chevron-left"></i>
-
     </button>
-    
+
 <!-- 실시간 카메라 영상 -->
 <img
 	id="cameraVideo"
-    src="http://localhost:8000/video/0"
     class="camera-video"
     alt="실시간 CCTV"
 >
 
+<!-- 카메라가 하나도 없을 때 -->
+<div id="cameraEmpty" class="camera-empty" hidden>
+    등록된 카메라가 없습니다.
+</div>
+
 <!-- 오른쪽 버튼 -->
-	<button class="camera-btn camera-next"
-            onclick="nextCamera()">
-
+	<button class="camera-btn camera-next" id="cameraNextBtn">
         <i class="fa-solid fa-chevron-right"></i>
-
     </button>
 
 </div>
@@ -96,81 +99,38 @@ class="camera-time">
 
 </div>
 
+<!-- 카메라 관리 패널 (관리자 전용) -->
+<div id="cameraManageModal" class="camera-modal" hidden>
+
+    <div class="camera-modal-backdrop" id="cameraModalBackdrop"></div>
+
+    <div class="camera-modal-box">
+
+        <h2>카메라 관리</h2>
+
+        <ul id="cameraManageList" class="camera-manage-list"></ul>
+
+        <form id="cameraAddForm" class="camera-add-form">
+
+            <input type="text" id="cameraAddInput" placeholder="새 카메라 이름 (예: CAM 03)" required>
+
+            <button type="submit" class="camera-add-btn">추가</button>
+
+        </form>
+
+        <p id="cameraManageMessage" class="camera-manage-message"></p>
+
+        <button type="button" id="cameraModalCloseBtn" class="camera-modal-close-btn">닫기</button>
+
+    </div>
+
+</div>
+
 <script src="../js/common.js"></script>
 
 <script src="../js/anomaly-store.js"></script>
 <script src="../js/anomaly-ui.js"></script>
-<script>
-
-// 카메라 목록
-    const cameras = [
-
-        {
-            name: "CAM 01",
-            url: "http://localhost:8000/video/0"
-        },
-
-        {
-            name: "CAM 02",
-            url: "http://localhost:8000/video/1"
-        }
-    ];
-
-    // 현재 카메라 번호
-    let currentCamera = 0;
-
-    // 카메라 화면 변경
-
-    function changeCamera() {
-
-        const cameraVideo =
-            document.getElementById("cameraVideo");
-
-        const cameraName =
-            document.getElementById("cameraName");
-
-
-        cameraVideo.src =
-            cameras[currentCamera].url;
-
-        cameraName.textContent =
-            cameras[currentCamera].name;
-    }
-
-
-    // 다음 카메라
-
-    function nextCamera() {
-
-        currentCamera++;
-
-        // 마지막 카메라 다음에는
-        // 다시 첫 번째 카메라
-        if (currentCamera >= cameras.length) {
-
-            currentCamera = 0;
-        }
-
-        changeCamera();
-    }
-
-    // 이전 카메라
-    function prevCamera() {
-
-        currentCamera--;
-
-        // 첫 번째 이전에는
-        // 마지막 카메라
-        if (currentCamera < 0) {
-
-            currentCamera =
-                cameras.length - 1;
-        }
-
-        changeCamera();
-    }
-
-</script>
+<script src="../js/monitoring.js"></script>
 
 </body>
 

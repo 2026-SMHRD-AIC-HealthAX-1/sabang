@@ -4,7 +4,10 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -44,6 +47,25 @@ public class Medicine {
     // DB : REGISTER_DATE DATE
     @Column(name = "REGISTER_DATE")
     private LocalDate registerDate;
+
+
+    // 구역(Zone) 지정 - 어느 카메라 화면에 이 의약품 구역이 있는지 (NULL 허용)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CAMERA_ID")
+    private Camera camera;
+
+    // 구역 위치/크기 - 카메라 화면 대비 %(0~100)로 저장 (해상도 달라져도 안 깨지게)
+    @Column(name = "REGION_X")
+    private Double regionX;
+
+    @Column(name = "REGION_Y")
+    private Double regionY;
+
+    @Column(name = "REGION_WIDTH")
+    private Double regionWidth;
+
+    @Column(name = "REGION_HEIGHT")
+    private Double regionHeight;
 
 
     // Getter / Setter
@@ -87,5 +109,45 @@ public class Medicine {
     public void setRegisterDate(LocalDate registerDate) {
         this.registerDate = registerDate;
     }
-	
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
+    public Double getRegionX() {
+        return regionX;
+    }
+
+    public void setRegionX(Double regionX) {
+        this.regionX = regionX;
+    }
+
+    public Double getRegionY() {
+        return regionY;
+    }
+
+    public void setRegionY(Double regionY) {
+        this.regionY = regionY;
+    }
+
+    public Double getRegionWidth() {
+        return regionWidth;
+    }
+
+    public void setRegionWidth(Double regionWidth) {
+        this.regionWidth = regionWidth;
+    }
+
+    public Double getRegionHeight() {
+        return regionHeight;
+    }
+
+    public void setRegionHeight(Double regionHeight) {
+        this.regionHeight = regionHeight;
+    }
+
 }

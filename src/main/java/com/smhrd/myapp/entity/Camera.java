@@ -29,9 +29,13 @@ public class Camera {
     @Column(name = "CAMERA_NAME", length = 100, nullable = false)
     private String cameraName;
 
-    // 연결상태 - 연결/연결끊김 등의 상태 (NULL 허용, 최대 20자)
+    // 연결상태 코드 - "0"=정상연결, "1"=실패, "2"=인식안됨 (NULL 허용, 최대 20자)
     @Column(name = "CONNECTION_STATUS", length = 20)
     private String connectionStatus;
+
+    // 실제 영상 스트림 주소 (예: http://localhost:8000/video/0)
+    @Column(name = "STREAM_URL", length = 255)
+    private String streamUrl;
 
     // 기본 생성자 (JPA는 파라미터 없는 생성자가 필수예요)
     public Camera() {
@@ -69,5 +73,13 @@ public class Camera {
 
     public void setConnectionStatus(String connectionStatus) {
         this.connectionStatus = connectionStatus;
+    }
+
+    public String getStreamUrl() {
+        return streamUrl;
+    }
+
+    public void setStreamUrl(String streamUrl) {
+        this.streamUrl = streamUrl;
     }
 }

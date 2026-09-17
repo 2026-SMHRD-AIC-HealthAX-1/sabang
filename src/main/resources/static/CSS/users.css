@@ -441,3 +441,371 @@
             }
 
         }
+
+
+/* ==================================================
+   구역(Zone) 설정
+================================================== */
+
+.zone-card {
+    margin-top: 22px;
+    padding: 20px;
+}
+
+.zone-body {
+    display: flex;
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.zone-camera-area {
+    flex: 1.4;
+    min-width: 0;
+}
+
+.zone-camera-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.zone-camera-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: #33465e;
+}
+
+.zone-camera-switch-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #d7e1ef;
+    border-radius: 6px;
+    background: white;
+    color: #33465e;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.zone-camera-switch-btn:hover {
+    background: #f4f8fd;
+}
+
+.zone-camera-container {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    background: #0f1e2f;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.zone-camera-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.zone-camera-video[hidden] {
+    display: none;
+}
+
+.zone-camera-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    text-align: center;
+    color: #92a4b9;
+    font-size: 13px;
+}
+
+.zone-camera-empty[hidden] {
+    display: none;
+}
+
+.zone-box {
+    position: absolute;
+    box-sizing: border-box;
+    border: 2px solid;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, .08);
+    cursor: move;
+}
+
+.zone-box-label {
+    position: absolute;
+    top: -22px;
+    left: -2px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.zone-box-handle {
+    position: absolute;
+    right: -6px;
+    bottom: -6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: nwse-resize;
+}
+
+.zone-list-area {
+    flex: 1;
+    min-width: 260px;
+    display: flex;
+    flex-direction: column;
+}
+
+.zone-list {
+    list-style: none;
+    margin: 0 0 12px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.zone-list-empty {
+    padding: 20px;
+    text-align: center;
+    color: #92a4b9;
+    font-size: 13px;
+}
+
+.zone-list-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid #e5ebf2;
+    border-radius: 8px;
+}
+
+.zone-color-dot {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.zone-name-input {
+    flex: 1;
+    min-width: 0;
+    height: 34px;
+    border: 1px solid #d7e1ef;
+    border-radius: 6px;
+    padding: 0 8px;
+    font-size: 13px;
+}
+
+.zone-camera-select {
+    flex-shrink: 0;
+    height: 34px;
+    border: 1px solid #d7e1ef;
+    border-radius: 6px;
+    padding: 0 6px;
+    font-size: 12px;
+    max-width: 92px;
+}
+
+.zone-delete-btn {
+    flex-shrink: 0;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid #e4a5a9;
+    border-radius: 6px;
+    background: white;
+    color: #c73743;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.zone-delete-btn:hover {
+    background: #c73743;
+    color: white;
+}
+
+.zone-add-btn {
+    height: 42px;
+    border: 1px dashed #1474ed;
+    border-radius: 8px;
+    background: #edf5ff;
+    color: #1474ed;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.zone-add-btn:hover {
+    background: #dcebff;
+}
+
+.zone-save-btn {
+    height: 42px;
+    border: 0;
+    border-radius: 8px;
+    background: #1474ed;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.zone-save-btn:hover {
+    background: #0d5fc9;
+}
+
+.zone-message {
+    min-height: 18px;
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: #16a34a;
+    text-align: center;
+}
+
+@media (max-width: 1150px) {
+
+    .zone-body {
+        flex-direction: column;
+    }
+
+    .zone-list-area {
+        min-width: 0;
+    }
+}
+
+
+/* ==================================================
+   약품 추가/수정 모달
+================================================== */
+
+.zone-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 60;
+    padding: 16px;
+}
+
+.zone-modal[hidden] {
+    display: none;
+}
+
+.zone-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 30, 60, .45);
+}
+
+.zone-modal-box {
+    position: relative;
+    width: min(360px, 100%);
+    background: white;
+    border-radius: 14px;
+    padding: 26px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .25);
+}
+
+.zone-modal-box h2 {
+    margin: 0 0 16px;
+    font-size: 18px;
+}
+
+.zone-modal-box label {
+    display: block;
+    margin: 12px 0 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #33465e;
+}
+
+.zone-modal-box input,
+.zone-modal-box select {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #d7e1ef;
+    border-radius: 7px;
+    padding: 0 12px;
+    font-size: 13px;
+}
+
+.zone-modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.zone-modal-cancel-btn {
+    flex: 1;
+    height: 42px;
+    border: 1px solid #d7e1ef;
+    border-radius: 7px;
+    background: white;
+    color: #33465e;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.zone-modal-submit-btn {
+    flex: 1;
+    height: 42px;
+    border: 0;
+    border-radius: 7px;
+    background: #1474ed;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.zone-modal-message {
+    min-height: 16px;
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: #e44248;
+    text-align: center;
+}
+
+.zone-edit-btn {
+    flex-shrink: 0;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid #d7e1ef;
+    border-radius: 6px;
+    background: white;
+    color: #33465e;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.zone-edit-btn:hover {
+    background: #f4f8fd;
+}
+
+.zone-name-label {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: #243b5a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

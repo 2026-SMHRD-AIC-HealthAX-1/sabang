@@ -60,6 +60,14 @@ public class HospitalStaffService {
         return hospitalStaffRepository.findByAdmin_MemberId(adminId);
     }
 
+    // 이 직원에게 권한을 부여한 관리자ID (카메라 등 관리자 소유 자원을 직원이 같이 볼 때 사용)
+    public String findAdminIdOf(String staffId) {
+
+        List<HospitalStaff> records = hospitalStaffRepository.findByStaff_MemberId(staffId);
+
+        return records.isEmpty() ? null : records.get(0).getAdmin().getMemberId();
+    }
+
     // 권한 회수
     // deleteBy 파생 쿼리는 대상을 조회한 뒤 entityManager.remove()로 지우기 때문에
     // 트랜잭션이 없으면 실패함 (No EntityManager with actual transaction available)

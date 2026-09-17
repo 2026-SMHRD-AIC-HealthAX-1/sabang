@@ -15,6 +15,8 @@ public interface HospitalStaffRepository extends JpaRepository<HospitalStaff, Lo
 
     List<HospitalStaff> findByAdmin_MemberId(String adminId);
 
+    List<HospitalStaff> findByStaff_MemberId(String staffId);
+
     // HISTORY_ID가 시퀀스/트리거로 자동 채워지지 않아 저장 전 직접 계산해야 함
     @Query("SELECT COALESCE(MAX(h.historyId), 0) FROM HospitalStaff h")
     Long findMaxId();
