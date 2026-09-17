@@ -191,6 +191,8 @@ document.getElementById("headerLogoutBtn").addEventListener("click", async funct
 
     await fetch("/api/auth/logout", { method: "POST" });
 
+    sessionStorage.removeItem("framVision.isAdmin");
+
     window.location.href = "index.html";
 });
 
@@ -199,74 +201,51 @@ document.getElementById("headerLogoutBtn").addEventListener("click", async funct
 ===========================================
     SIDEBAR
 
-    이 레이아웃(공통 헤더/사이드바)을 쓰는 모든 내부 페이지는
-    hasAccess(관리자 또는 권한을 부여받은 직원)가 있어야 접근 가능하다.
-    hasAccess가 없으면 index.html로 돌려보낸다.
+    깜빡임 없이 바로 그린 뒤, 관리자 확인이 끝나면
+    이상 알림 / 사용자 관리 항목만 조용히 숨긴다.
+    (hasAccess 자체가 없는 경우만 index.html로 돌려보낸다)
 
-    이상 알림 / 사용자 관리는 그중에서도 관리자(유효 구독 보유)만
-    접근 가능하므로 메뉴에서 추가로 숨긴다.
+    매 페이지 이동마다 서버에 다시 물어봐야 하지만, 직전에 확인한
+    결과를 세션에 기억해뒀다가 그 값으로 먼저 그리면 같은 세션 안에서
+    페이지를 옮겨다닐 때는 깜빡임 없이 바로 맞는 상태로 보인다.
+    (그 세션의 첫 페이지 로드만 확인 전까지 잠깐 숨겨진 채로 시작함)
 ===========================================
 */
 
 const adminOnlyMenuIds = ["alerts", "users"];
+const isAdminCacheKey = "framVision.isAdmin";
+const cachedIsAdmin = sessionStorage.getItem(isAdminCacheKey) === "true";
 
-(async () => {
+const menuHtml = menus.map(menu => {
 
-    let isAdmin = false;
-
-    try {
-
-        const response = await fetch("/api/auth/me");
-
-        if (!response.ok) {
-            window.location.replace("index.html");
-            return;
-        }
-
-        const me = await response.json();
-
-        if (!me.hasAccess) {
-            window.location.replace("index.html");
-            return;
-        }
-
-        isAdmin = !!me.isAdmin;
-
-    } catch (error) {
-        window.location.replace("index.html");
-        return;
-    }
-
-    const visibleMenus = menus.filter(menu => {
-        return isAdmin || !adminOnlyMenuIds.includes(menu.id);
-    });
-
-    const menuHtml = visibleMenus.map(menu => {
-
-        const menuName =
-            language === "en"
-                ? menu.en
-                : menu.ko;
+    const menuName =
+        language === "en"
+            ? menu.en
+            : menu.ko;
 
 
-        return `
+    const isAdminOnly = adminOnlyMenuIds.includes(menu.id);
 
-            <a href="${menu.url}"
-               class="menu-item ${page === menu.id ? "active" : ""}">
+    return `
 
-                <i class="fa-solid ${menu.icon}"></i>
+        <a href="${menu.url}"
+           data-menu-id="${menu.id}"
+           class="menu-item ${page === menu.id ? "active" : ""}"
+           ${isAdminOnly && !cachedIsAdmin ? "hidden" : ""}>
 
-                <span>
-                    ${menuName}
-                </span>
+            <i class="fa-solid ${menu.icon}"></i>
 
-            </a>
+            <span>
+                ${menuName}
+            </span>
 
-        `;
+        </a>
 
-    }).join("");
+    `;
 
-    document.getElementById("sidebar").innerHTML = `
+}).join("");
+
+document.getElementById("sidebar").innerHTML = `
 
 <aside class="sidebar">
 
@@ -293,6 +272,43 @@ const adminOnlyMenuIds = ["alerts", "users"];
 
 `;
 
+(async () => {
+
+    try {
+
+        const response = await fetch("/api/auth/me");
+
+        if (!response.ok) {
+            window.location.replace("index.html");
+            return;
+        }
+
+        const me = await response.json();
+
+        if (!me.hasAccess) {
+            sessionStorage.removeItem(isAdminCacheKey);
+            window.location.replace("index.html");
+            return;
+        }
+
+        sessionStorage.setItem(isAdminCacheKey, String(!!me.isAdmin));
+
+        // 캐시로 미리 그린 상태와 실제 값이 다를 때만(드묾) 반영
+        if (!!me.isAdmin !== cachedIsAdmin) {
+
+            adminOnlyMenuIds.forEach(id => {
+
+                const item = document.querySelector(`.menu-item[data-menu-id="${id}"]`);
+
+                if (item) {
+                    item.hidden = !me.isAdmin;
+                }
+            });
+        }
+
+    } catch (error) {
+        window.location.replace("index.html");
+    }
 })();
 
 

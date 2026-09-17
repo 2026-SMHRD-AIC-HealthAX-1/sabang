@@ -143,6 +143,16 @@ a {
 
 /* ================= SIDEBAR ================= */
 
+/*
+    #sidebar는 common.js가 <aside class="sidebar">를 채워 넣는 바깥 래퍼.
+    flex-shrink:0이 없으면 페이지 콘텐츠가 넓을 때 이 래퍼가 눌려서
+    안쪽 사이드바가 좁아 보일 수 있음 (전표관리 페이지에만 이 처리가 있었음).
+*/
+#sidebar {
+    display: flex;
+    flex-shrink: 0;
+}
+
 .sidebar {
     width: 185px;
     flex-shrink: 0;
@@ -164,6 +174,10 @@ a {
     padding: 0 24px;
     color: #e2ebf7;
     transition: .2s;
+}
+
+.menu-item[hidden] {
+    display: none;
 }
 
 .menu-item i {

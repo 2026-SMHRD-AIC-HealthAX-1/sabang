@@ -28,6 +28,8 @@ async function applyAuthState() {
 
             await fetch("/api/auth/logout", { method: "POST" });
 
+            sessionStorage.removeItem("framVision.isAdmin");
+
             window.location.href = "index.html";
         });
 
