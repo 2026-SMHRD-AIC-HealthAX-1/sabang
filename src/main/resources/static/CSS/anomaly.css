@@ -22,3 +22,4 @@
 .dark-mode .anomaly-copy small { color: #e7bbc0; }
 @media (max-width: 1100px) { .alert-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .anomaly-banner { flex-wrap: wrap; padding: 16px; gap: 12px; } .anomaly-copy { flex-basis: 100%; } }
+.camera-video {width: 100%; height: 100%; object-fit: contain; display: block;}
