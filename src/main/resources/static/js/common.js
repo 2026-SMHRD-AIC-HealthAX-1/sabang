@@ -191,6 +191,8 @@ document.getElementById("headerLogoutBtn").addEventListener("click", async funct
 
     await fetch("/api/auth/logout", { method: "POST" });
 
+    sessionStorage.removeItem("framVision.isAdmin");
+
     window.location.href = "index.html";
 });
 
@@ -202,10 +204,17 @@ document.getElementById("headerLogoutBtn").addEventListener("click", async funct
     깜빡임 없이 바로 그린 뒤, 관리자 확인이 끝나면
     이상 알림 / 사용자 관리 항목만 조용히 숨긴다.
     (hasAccess 자체가 없는 경우만 index.html로 돌려보낸다)
+
+    매 페이지 이동마다 서버에 다시 물어봐야 하지만, 직전에 확인한
+    결과를 세션에 기억해뒀다가 그 값으로 먼저 그리면 같은 세션 안에서
+    페이지를 옮겨다닐 때는 깜빡임 없이 바로 맞는 상태로 보인다.
+    (그 세션의 첫 페이지 로드만 확인 전까지 잠깐 숨겨진 채로 시작함)
 ===========================================
 */
 
 const adminOnlyMenuIds = ["alerts", "users"];
+const isAdminCacheKey = "framVision.isAdmin";
+const cachedIsAdmin = sessionStorage.getItem(isAdminCacheKey) === "true";
 
 const menuHtml = menus.map(menu => {
 
@@ -222,7 +231,7 @@ const menuHtml = menus.map(menu => {
         <a href="${menu.url}"
            data-menu-id="${menu.id}"
            class="menu-item ${page === menu.id ? "active" : ""}"
-           ${isAdminOnly ? "hidden" : ""}>
+           ${isAdminOnly && !cachedIsAdmin ? "hidden" : ""}>
 
             <i class="fa-solid ${menu.icon}"></i>
 
@@ -277,18 +286,22 @@ document.getElementById("sidebar").innerHTML = `
         const me = await response.json();
 
         if (!me.hasAccess) {
+            sessionStorage.removeItem(isAdminCacheKey);
             window.location.replace("index.html");
             return;
         }
 
-        if (me.isAdmin) {
+        sessionStorage.setItem(isAdminCacheKey, String(!!me.isAdmin));
+
+        // 캐시로 미리 그린 상태와 실제 값이 다를 때만(드묾) 반영
+        if (!!me.isAdmin !== cachedIsAdmin) {
 
             adminOnlyMenuIds.forEach(id => {
 
                 const item = document.querySelector(`.menu-item[data-menu-id="${id}"]`);
 
                 if (item) {
-                    item.hidden = false;
+                    item.hidden = !me.isAdmin;
                 }
             });
         }
