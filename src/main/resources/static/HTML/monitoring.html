@@ -53,16 +53,40 @@ LIVE
 
 
 <div class="camera">
-
+<!-- 실시간 시간 -->
 <div id="cameraTime"
 class="camera-time">
 </div>
 
+<!-- 현재 카메라 번호 -->
+    <div id="cameraName"
+         class="camera-name">
+        CAM 01
+    </div>
+    
+<!-- 왼쪽 버튼 -->
+    <button class="camera-btn camera-prev"
+            onclick="prevCamera()">
+
+        <i class="fa-solid fa-chevron-left"></i>
+
+    </button>
+    
+<!-- 실시간 카메라 영상 -->
 <img
-    src="http://localhost:8000/video"
+	id="cameraVideo"
+    src="http://localhost:8000/video/0"
     class="camera-video"
     alt="실시간 CCTV"
 >
+
+<!-- 오른쪽 버튼 -->
+	<button class="camera-btn camera-next"
+            onclick="nextCamera()">
+
+        <i class="fa-solid fa-chevron-right"></i>
+
+    </button>
 
 </div>
 
@@ -76,6 +100,78 @@ class="camera-time">
 
 <script src="../js/anomaly-store.js"></script>
 <script src="../js/anomaly-ui.js"></script>
+<script>
+
+// 카메라 목록
+    const cameras = [
+
+        {
+            name: "CAM 01",
+            url: "http://localhost:8000/video/0"
+        },
+
+        {
+            name: "CAM 02",
+            url: "http://localhost:8000/video/1"
+        }
+    ];
+
+    // 현재 카메라 번호
+    let currentCamera = 0;
+
+    // 카메라 화면 변경
+
+    function changeCamera() {
+
+        const cameraVideo =
+            document.getElementById("cameraVideo");
+
+        const cameraName =
+            document.getElementById("cameraName");
+
+
+        cameraVideo.src =
+            cameras[currentCamera].url;
+
+        cameraName.textContent =
+            cameras[currentCamera].name;
+    }
+
+
+    // 다음 카메라
+
+    function nextCamera() {
+
+        currentCamera++;
+
+        // 마지막 카메라 다음에는
+        // 다시 첫 번째 카메라
+        if (currentCamera >= cameras.length) {
+
+            currentCamera = 0;
+        }
+
+        changeCamera();
+    }
+
+    // 이전 카메라
+    function prevCamera() {
+
+        currentCamera--;
+
+        // 첫 번째 이전에는
+        // 마지막 카메라
+        if (currentCamera < 0) {
+
+            currentCamera =
+                cameras.length - 1;
+        }
+
+        changeCamera();
+    }
+
+</script>
+
 </body>
 
 </html>

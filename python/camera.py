@@ -5,47 +5,49 @@ from fastapi.responses import StreamingResponse
 
 
 # FastAPI 서버 생성
-
-
 app = FastAPI()
 
-# 카메라 연결
 
-# 0 = 노트북 기본 카메라
-# 1 = 외부 USB 카메라인 경우가 많음
-camera = cv2.VideoCapture(1)
+# 카메라 2대 설정
+# CAM 01 = USB 카메라
+# CAM 02 = 노트북 웹캠
+
+cameras = {
+    0: cv2.VideoCapture(1, cv2.CAP_DSHOW),  # USB 카메라
+    1: cv2.VideoCapture(0, cv2.CAP_DSHOW)   # 노트북 웹캠
+}
 
 
-# 실시간 영상 생성 함수
+# 영상 프레임 생성
 
+def generate_frames(camera_id):
 
-def generate_frames():
+    # 요청한 카메라 가져오기
+    camera = cameras.get(camera_id)
+
+    # 카메라가 존재하지 않는 경우
+    if camera is None:
+        print(f"CAM {camera_id} 없음")
+        return
 
     while True:
 
-        # 카메라에서 영상 한 프레임 읽기
+        # 카메라에서 한 프레임 읽기
         success, frame = camera.read()
 
         if not success:
-            print("카메라 영상 읽기 실패")
+            print(f"CAM {camera_id} 영상 읽기 실패")
             break
 
-
-        # 이미지를 JPG 형식으로 변환
-        success, buffer = cv2.imencode(
-            ".jpg",
-            frame
-        )
+        # JPG 형식으로 변환
+        success, buffer = cv2.imencode(".jpg", frame)
 
         if not success:
             continue
 
-
-        # JPG 데이터를 byte 형태로 변환
         frame_bytes = buffer.tobytes()
 
-
-        # 실시간 영상 스트리밍
+        # MJPEG 스트리밍
         yield (
             b"--frame\r\n"
             b"Content-Type: image/jpeg\r\n\r\n"
@@ -53,30 +55,28 @@ def generate_frames():
             + b"\r\n"
         )
 
-# 실시간 CCTV 영상
 
-@app.get("/video")
-def video():
+# 실시간 영상 API
+
+@app.get("/video/{camera_id}")
+def video(camera_id: int):
 
     return StreamingResponse(
-        generate_frames(),
+        generate_frames(camera_id),
         media_type="multipart/x-mixed-replace; boundary=frame"
     )
 
-# 카메라 연결 상태
+
+# 카메라 연결 상태 확인
 
 @app.get("/status")
 def status():
 
-    if camera.isOpened():
-
-        return {
-            "status": "connected"
-        }
-
     return {
-        "status": "disconnected"
+        "CAM 01 USB": cameras[0].isOpened(),
+        "CAM 02 LAPTOP": cameras[1].isOpened()
     }
+
 
 # 기본 페이지
 
