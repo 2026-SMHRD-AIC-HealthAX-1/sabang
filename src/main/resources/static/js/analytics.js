@@ -209,7 +209,7 @@ function render() {
     const { dimensionIds, useQty, groups } = aggregate();
 
     if (dimensionIds.length === 0) {
-        emptyMessageText.textContent = "표시할 항목을 하나 이상 선택하세요.";
+        emptyMessageText.textContent = t("selectAtLeastOneMessage");
         emptyMessage.hidden = false;
         chartCanvas.hidden = true;
         tableHead.innerHTML = "";
@@ -218,7 +218,7 @@ function render() {
     }
 
     if (outboundLog.length === 0 || groups.length === 0) {
-        emptyMessageText.textContent = "표시할 출고 데이터가 없습니다.";
+        emptyMessageText.textContent = t("noOutboundDataMessage");
         emptyMessage.hidden = false;
         chartCanvas.hidden = true;
         tableHead.innerHTML = "";

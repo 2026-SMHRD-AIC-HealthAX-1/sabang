@@ -14,36 +14,36 @@
     <div id="sidebar"></div>
     <main class="main">
         <!-- <div class="page-header">
-            <h1>전표 관리</h1>
-            <p>의약품 입·출고 전표와 OCR 인식 결과를 확인합니다.</p>
+            <h1 data-i18n="receiptsTitle">전표 관리</h1>
+            <p data-i18n="receiptsDescription">의약품 입·출고 전표와 OCR 인식 결과를 확인합니다.</p>
         </div> -->
         <div class="receipts-grid">
             <section class="card receipt-list" aria-labelledby="receipt-list-title">
-                <h2 class="card-title" id="receipt-list-title"><i class="fa-solid fa-list" aria-hidden="true"></i> 전표 목록</h2>
+                <h2 class="card-title" id="receipt-list-title"><i class="fa-solid fa-list" aria-hidden="true"></i> <span data-i18n="receiptListTitle">전표 목록</span></h2>
                 <div class="receipt-table-scroll">
                     <table class="receipt-table">
-                        <thead><tr><th scope="col">전표번호</th><th scope="col">일자</th><th scope="col">구분</th><th scope="col">병동</th><th scope="col">의약품 수</th><th scope="col">담당자</th><th scope="col">상태</th><th scope="col">작업</th></tr></thead>
-                        <tbody><tr><td><strong>ORD-20250910-001</strong></td><td>2025-09-10</td><td>출고</td><td>7병동</td><td>3종 / 4개</td><td>김지은</td><td>예시 데이터</td><td><button type="button" id="view-receipt" aria-controls="receipt-details" aria-label="ORD-20250910-001 전표 보기">보기</button></td></tr></tbody>
+                        <thead><tr><th scope="col" data-i18n="colReceiptNo">전표번호</th><th scope="col" data-i18n="colDate">일자</th><th scope="col" data-i18n="colType">구분</th><th scope="col" data-i18n="colWard">병동</th><th scope="col" data-i18n="colMedicineCount">의약품 수</th><th scope="col" data-i18n="colStaff">담당자</th><th scope="col" data-i18n="colStatus">상태</th><th scope="col" data-i18n="colAction">작업</th></tr></thead>
+                        <tbody><tr><td><strong>ORD-20250910-001</strong></td><td>2025-09-10</td><td data-i18n="typeOutbound">출고</td><td data-i18n="ward7">7병동</td><td data-i18n="medicineCount34">3종 / 4개</td><td data-i18n="staffKimJieun">김지은</td><td data-i18n="sampleData">예시 데이터</td><td><button type="button" id="view-receipt" aria-controls="receipt-details" aria-label="ORD-20250910-001 전표 보기" data-i18n="viewBtn">보기</button></td></tr></tbody>
                     </table>
                 </div>
             </section>
             <div class="receipt-details" id="receipt-details" tabindex="-1" role="region" aria-label="선택한 전표 상세">
                 <section class="card receipt-image-card" aria-labelledby="receipt-image-title">
-                    <h2 class="card-title" id="receipt-image-title"><i class="fa-solid fa-camera" aria-hidden="true"></i> 촬영한 전표 이미지</h2>
+                    <h2 class="card-title" id="receipt-image-title"><i class="fa-solid fa-camera" aria-hidden="true"></i> <span data-i18n="receiptImageTitle">촬영한 전표 이미지</span></h2>
                     <figure>
                         <div class="receipt-image-area">
                             <!-- The reference screenshot contains the supplied sample receipt. Display only that region. -->
                             <div class="receipt-image-crop"><img src="../images/receipt-reference.png" alt="의약품 출고 전표 ORD-20250910-001. 2025-09-10, 요청 병동 7병동, 담당자 김지은. 프로포폴 1개, 펜타닐 2개, 케타민 1개." width="1617" height="836"></div>
                         </div>
-                        <figcaption>예시 전표 · ORD-20250910-001 · 2025-09-10 · 7병동 · 담당자 김지은</figcaption>
+                        <figcaption data-i18n="receiptCaption">예시 전표 · ORD-20250910-001 · 2025-09-10 · 7병동 · 담당자 김지은</figcaption>
                     </figure>
                 </section>
                 <section class="card receipt-ocr-card" aria-labelledby="receipt-ocr-title">
-                    <h2 class="card-title" id="receipt-ocr-title"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> OCR 인식 결과</h2>
-                    <p class="ocr-note" id="ocr-note">예시 데이터 · 첨부 전표를 보고 입력한 결과입니다.</p>
+                    <h2 class="card-title" id="receipt-ocr-title"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> <span data-i18n="receiptOcrTitle">OCR 인식 결과</span></h2>
+                    <p class="ocr-note" id="ocr-note" data-i18n="receiptOcrNote">예시 데이터 · 첨부 전표를 보고 입력한 결과입니다.</p>
                     <table class="receipt-ocr-table" aria-labelledby="receipt-ocr-title" aria-describedby="ocr-note">
-                        <thead><tr><th scope="col">의약품명</th><th scope="col">개수</th></tr></thead>
-                        <tbody><tr><td>프로포폴</td><td>1개</td></tr><tr><td>펜타닐</td><td>2개</td></tr><tr><td>케타민</td><td>1개</td></tr></tbody>
+                        <thead><tr><th scope="col" data-i18n="colMedicineName">의약품명</th><th scope="col" data-i18n="ocrColQuantity">개수</th></tr></thead>
+                        <tbody><tr><td data-i18n="medicinePropofol">프로포폴</td><td data-i18n="qty1">1개</td></tr><tr><td data-i18n="medicineFentanyl">펜타닐</td><td data-i18n="qty2">2개</td></tr><tr><td data-i18n="medicineKetamine">케타민</td><td data-i18n="qty1">1개</td></tr></tbody>
                     </table>
                 </section>
             </div>

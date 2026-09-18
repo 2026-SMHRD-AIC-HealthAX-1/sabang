@@ -17,7 +17,7 @@
 }
 
 .profile-eyebrow {
-    font-size: 10px;
+    font-size: calc(10px * var(--font-scale, 1));
     color: #1474ed;
     letter-spacing: 1.8px;
     font-weight: bold;
@@ -25,12 +25,12 @@
 }
 
 .profile-heading h1 {
-    font-size: 26px;
+    font-size: calc(26px * var(--font-scale, 1));
     margin-bottom: 9px;
 }
 
 .profile-heading > div > p:last-child {
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     color: #60758e;
 }
 
@@ -39,12 +39,12 @@
     background: #fff;
     border-radius: 8px;
     padding: 11px 15px;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     white-space: nowrap;
 }
 
 .profile-notice {
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     line-height: 1.7;
     border: 1px solid #dbe8fc;
     background: #edf5ff;
@@ -78,7 +78,7 @@
     place-items: center;
     background: #edf5ff;
     color: #1474ed;
-    font-size: 24px;
+    font-size: calc(24px * var(--font-scale, 1));
     font-weight: bold;
 }
 
@@ -87,13 +87,13 @@
 }
 
 .profile-identity h2 {
-    font-size: 20px;
+    font-size: calc(20px * var(--font-scale, 1));
     margin-bottom: 7px;
     overflow-wrap: anywhere;
 }
 
 .profile-identity p {
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     color: #60758e;
     overflow-wrap: anywhere;
 }
@@ -103,7 +103,7 @@
     background: #f4f7fb;
     border-radius: 6px;
     padding: 8px 11px;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     white-space: nowrap;
 }
 
@@ -145,12 +145,12 @@
 }
 
 .profile-card-heading h2 {
-    font-size: 17px;
+    font-size: calc(17px * var(--font-scale, 1));
     margin-bottom: 5px;
 }
 
 .profile-card-heading p {
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     color: #60758e;
 }
 
@@ -160,7 +160,7 @@
 }
 
 .sample-label {
-    font-size: 10px;
+    font-size: calc(10px * var(--font-scale, 1));
     color: #9a6100;
     background: #fff7e8;
     padding: 5px 8px;
@@ -184,14 +184,14 @@
 
 #profileFields > label {
     display: block;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     font-weight: bold;
     margin: 0 0 9px;
 }
 
 #profileFields input {
     font: inherit;
-    font-size: 14px;
+    font-size: calc(14px * var(--font-scale, 1));
     display: block;
     width: 100%;
     border: 1px solid #d8e2ee;
@@ -210,7 +210,7 @@
 }
 
 .field-help {
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale, 1));
     color: #60758e;
     margin-bottom: 23px;
 }
@@ -226,13 +226,13 @@
 
 .profile-meta span {
     display: block;
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale, 1));
     color: #60758e;
     margin-bottom: 8px;
 }
 
 .profile-meta strong {
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     font-weight: 500;
 }
 
@@ -241,12 +241,12 @@
 }
 
 .profile-password span {
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     font-weight: bold;
 }
 
 .profile-password p {
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale, 1));
     color: #60758e;
     line-height: 1.8;
     margin-top: 9px;
@@ -266,7 +266,7 @@
 }
 
 .profile-form-footer p {
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale, 1));
     color: #60758e;
 }
 
@@ -276,7 +276,7 @@
     background: #1474ed;
     color: #fff;
     font: inherit;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     font-weight: bold;
     padding: 12px 17px;
     cursor: pointer;
@@ -299,7 +299,7 @@ fieldset:disabled .profile-save {
 }
 
 .profile-message {
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     color: #276749;
     line-height: 1.8;
     margin-top: 14px;
@@ -326,24 +326,24 @@ fieldset:disabled .profile-save {
 }
 
 .subscription-plan span {
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale, 1));
     color: #5077a7;
 }
 
 .subscription-plan h3 {
-    font-size: 18px;
+    font-size: calc(18px * var(--font-scale, 1));
     margin-top: 7px;
 }
 
 .subscription-price {
-    font-size: 25px;
+    font-size: calc(25px * var(--font-scale, 1));
     color: #1474ed;
     font-weight: bold;
     white-space: nowrap;
 }
 
 .subscription-price small {
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale, 1));
     margin-left: 4px;
     font-weight: normal;
 }
@@ -363,7 +363,7 @@ fieldset:disabled .profile-save {
     gap: 12px;
     border-bottom: 1px solid #edf1f5;
     padding: 17px 0;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
 }
 
 .billing-details dt {
@@ -375,7 +375,7 @@ fieldset:disabled .profile-save {
 }
 
 .billing-demo {
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale, 1));
     color: #60758e;
 }
 
@@ -387,7 +387,7 @@ fieldset:disabled .profile-save {
     padding: 14px;
     margin: 24px;
     color: #60758e;
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale, 1));
     line-height: 1.8;
 }
 
@@ -407,11 +407,11 @@ fieldset:disabled .profile-save {
 }
 
 .profile-empty strong {
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 .profile-empty p {
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     color: #60758e;
     line-height: 1.8;
     margin: 9px 0;
@@ -421,13 +421,13 @@ fieldset:disabled .profile-save {
     display: flex;
     gap: 15px;
     color: #1474ed;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     font-weight: bold;
 }
 
 .account-error {
     color: #a33b34;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     padding: 12px;
     margin-bottom: 15px;
     border: 1px solid #f0d1ce;
@@ -466,7 +466,7 @@ body.dark-mode .profile-identity p {
 }
 
 body.font-large .profile-main {
-    font-size: 18px;
+    font-size: calc(18px * var(--font-scale, 1));
 }
 
 /* =========================
@@ -567,7 +567,7 @@ body.font-large .profile-main {
     }
 
     .subscription-price {
-        font-size: 22px;
+        font-size: calc(22px * var(--font-scale, 1));
     }
 
     .billing-details {
@@ -601,13 +601,13 @@ body.font-large .profile-main {
 }
 
 .danger-zone h3 {
-    font-size: 14px;
+    font-size: calc(14px * var(--font-scale, 1));
     color: #c73743;
     margin-bottom: 4px;
 }
 
 .danger-zone p {
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     color: #8a6a6b;
 }
 
@@ -619,7 +619,7 @@ body.font-large .profile-main {
     border-radius: 7px;
     background: white;
     color: #c73743;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     font-weight: bold;
     cursor: pointer;
 }

@@ -28,9 +28,9 @@
 
             <!-- <div class="page-header">
 
-            <h1>📹 실시간 모니터링</h1>
+            <h1 data-i18n="monitoringTitle">📹 실시간 모니터링</h1>
 
-            <p>
+            <p data-i18n="monitoringDescription">
                 AI 객체탐지를 이용하여 고위험 의약품의 이동을 실시간으로 감지합니다.
             </p>
 
@@ -41,7 +41,7 @@
 
                 <div class="camera-header">
 
-                    <h2>
+                    <h2 data-i18n="liveCctv">
                         실시간 CCTV
                     </h2>
 
@@ -52,7 +52,7 @@
                     <!-- 관리자에게만 표시 (기본 숨김 - 깜빡임 방지) -->
                     <button id="cameraManageBtn" class="camera-manage-btn" type="button" hidden>
                         <i class="fa-solid fa-gear"></i>
-                        카메라 관리
+                        <span data-i18n="cameraManageBtn">카메라 관리</span>
                     </button>
 
                 </div>
@@ -75,7 +75,7 @@
                     <img id="cameraVideo" class="camera-video" alt="실시간 CCTV">
 
                     <!-- 카메라가 하나도 없을 때 -->
-                    <div id="cameraEmpty" class="camera-empty" hidden>
+                    <div id="cameraEmpty" class="camera-empty" hidden data-i18n="cameraEmptyMessage">
                         등록된 카메라가 없습니다.
                     </div>
 
@@ -99,21 +99,21 @@
 
         <div class="camera-modal-box">
 
-            <h2>카메라 관리</h2>
+            <h2 data-i18n="cameraManageTitle">카메라 관리</h2>
 
             <ul id="cameraManageList" class="camera-manage-list"></ul>
 
             <form id="cameraAddForm" class="camera-add-form">
 
-                <input type="text" id="cameraAddInput" placeholder="새 카메라 이름 (예: CAM 03)" required>
+                <input type="text" id="cameraAddInput" placeholder="새 카메라 이름 (예: CAM 03)" data-i18n-placeholder="cameraAddPlaceholder" required>
 
-                <button type="submit" class="camera-add-btn">추가</button>
+                <button type="submit" class="camera-add-btn" data-i18n="addBtn">추가</button>
 
             </form>
 
             <p id="cameraManageMessage" class="camera-manage-message"></p>
 
-            <button type="button" id="cameraModalCloseBtn" class="camera-modal-close-btn">닫기</button>
+            <button type="button" id="cameraModalCloseBtn" class="camera-modal-close-btn" data-i18n="closeBtn">닫기</button>
 
         </div>
 

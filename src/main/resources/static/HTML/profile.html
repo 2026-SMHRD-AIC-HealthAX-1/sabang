@@ -37,21 +37,21 @@
                 <div>
                     <p class="profile-eyebrow">MY ACCOUNT</p>
 
-                    <h1>개인정보 설정</h1>
+                    <h1 data-i18n="profileTitle">개인정보 설정</h1>
 
-                    <p>
+                    <p data-i18n="profileDescription">
                         회원 정보와 구독결제 정보를 한곳에서 확인하세요.
                     </p>
                 </div>
 
                 <a class="profile-back" href="dashboard.html">
-                    대시보드로 돌아가기
+                    <span data-i18n="backToDashboard">대시보드로 돌아가기</span>
                     <span aria-hidden="true">↗</span>
                 </a>
             </div>
 
             <!-- 데모 안내 -->
-            <p class="profile-notice">
+            <p class="profile-notice" data-i18n="profileNotice">
                 화면 데모 · 회원 정보는 이 브라우저에 저장됩니다.
                 구독결제 영역은 예시 데이터입니다.
             </p>
@@ -78,16 +78,16 @@
                 </div>
 
                 <div class="profile-identity">
-                    <h2 id="profileDisplayName">
+                    <h2 id="profileDisplayName" data-i18n="noAccountName">
                         가입 정보 없음
                     </h2>
 
-                    <p id="profileDisplayEmail">
+                    <p id="profileDisplayEmail" data-i18n="noAccountEmail">
                         회원가입 후 같은 이메일로 로그인해 주세요.
                     </p>
                 </div>
 
-                <span class="profile-team">
+                <span class="profile-team" data-i18n="exampleDept1">
                     약품관리팀
                 </span>
             </section>
@@ -109,9 +109,9 @@
                         </span>
 
                         <div>
-                            <h2 id="personalTitle">회원 정보</h2>
+                            <h2 id="personalTitle" data-i18n="personalInfoTitle">회원 정보</h2>
 
-                            <p>
+                            <p data-i18n="personalInfoDescription">
                                 회원가입할 때 입력한 정보입니다.
                             </p>
                         </div>
@@ -123,19 +123,19 @@
                         class="profile-empty"
                         hidden
                     >
-                        <strong>
+                        <strong data-i18n="noSignupInfoTitle">
                             표시할 가입 정보가 없습니다.
                         </strong>
 
-                        <p>
+                        <p data-i18n="noSignupInfoDescription">
                             기존 회원가입 화면은 정보를 저장하지 않았습니다.
                             새 회원가입 화면에서 등록한 뒤 같은 이메일로
                             로그인하면 여기에 표시됩니다.
                         </p>
 
                         <div class="profile-empty-links">
-                            <a href="signup.html">회원가입</a>
-                            <a href="login.html">로그인</a>
+                            <a href="signup.html" data-i18n="signupLinkText">회원가입</a>
+                            <a href="login.html" data-i18n="loginLinkText">로그인</a>
                         </div>
                     </div>
 
@@ -145,7 +145,7 @@
                         <!-- 가입 정보를 불러오면 JS에서 활성화 -->
                         <fieldset id="profileFields" disabled>
 
-                            <label for="profileName">이름</label>
+                            <label for="profileName" data-i18n="colName">이름</label>
 
                             <input
                                 id="profileName"
@@ -156,7 +156,7 @@
                                 required
                             >
 
-                            <label for="profileEmail">이메일</label>
+                            <label for="profileEmail" data-i18n="colEmail">이메일</label>
 
                             <input
                                 id="profileEmail"
@@ -165,39 +165,40 @@
                                 aria-describedby="emailHelp"
                             >
 
-                            <p class="field-help" id="emailHelp">
+                            <p class="field-help" id="emailHelp" data-i18n="emailHelpText">
                                 회원가입에 사용한 이메일입니다.
                             </p>
 
                             <div class="profile-meta">
                                 <div>
-                                    <span>가입일</span>
+                                    <span data-i18n="joinedDateLabel">가입일</span>
                                     <strong id="profileJoined">—</strong>
                                 </div>
 
                                 <div>
-                                    <span>약관 및 개인정보 동의</span>
+                                    <span data-i18n="termsAgreedLabel">약관 및 개인정보 동의</span>
                                     <strong id="profileAgreed">—</strong>
                                 </div>
                             </div>
 
                             <div class="profile-password">
-                                <span>비밀번호</span>
+                                <span data-i18n="passwordLabel">비밀번호</span>
 
-                                <p>
+                                <p data-i18n="passwordNotStoredNote">
                                     비밀번호는 이 화면에 표시하거나
                                     브라우저에 저장하지 않습니다.
                                 </p>
                             </div>
 
                             <div class="profile-form-footer">
-                                <p>
+                                <p data-i18n="editNameNote">
                                     이름을 수정한 후 저장해 주세요.
                                 </p>
 
                                 <button
                                     type="submit"
                                     class="profile-save"
+                                    data-i18n="saveChangesBtn"
                                 >
                                     변경사항 저장
                                 </button>
@@ -218,14 +219,15 @@
                     <!-- 회원탈퇴 -->
                     <div class="danger-zone">
                         <div>
-                            <h3>회원탈퇴</h3>
-                            <p>탈퇴하면 계정과 구독·권한 정보가 모두 삭제되며 되돌릴 수 없습니다.</p>
+                            <h3 data-i18n="withdrawTitle">회원탈퇴</h3>
+                            <p data-i18n="withdrawDescription">탈퇴하면 계정과 구독·권한 정보가 모두 삭제되며 되돌릴 수 없습니다.</p>
                         </div>
 
                         <button
                             type="button"
                             id="withdrawBtn"
                             class="withdraw-btn"
+                            data-i18n="withdrawTitle"
                         >
                             회원탈퇴
                         </button>
@@ -248,43 +250,43 @@
                         </span>
 
                         <div>
-                            <h2 id="billingTitle">구독결제 정보</h2>
+                            <h2 id="billingTitle" data-i18n="billingTitle">구독결제 정보</h2>
 
-                            <p>
+                            <p data-i18n="billingDescription">
                                 서비스 이용과 결제 정보를 확인합니다.
                             </p>
                         </div>
 
-                        <span id="billingSampleLabel" class="sample-label">예시</span>
+                        <span id="billingSampleLabel" class="sample-label" data-i18n="sampleLabel">예시</span>
                     </div>
 
                     <!-- 구독 요금 -->
                     <div class="subscription-plan">
                         <div>
                             <span>Fram Vision</span>
-                            <h3>월간 구독</h3>
+                            <h3 data-i18n="monthlySubscription">월간 구독</h3>
                         </div>
 
                         <div class="subscription-price">
                             99,000
-                            <small>원 / 월</small>
+                            <small data-i18n="perMonth">원 / 월</small>
                         </div>
                     </div>
 
                     <!-- 결제 상세 -->
                     <dl class="billing-details">
                         <div>
-                            <dt>구독 상태</dt>
+                            <dt data-i18n="billingStatusLabel">구독 상태</dt>
 
                             <dd id="billingStatus">
-                                <span class="billing-demo">
+                                <span class="billing-demo" data-i18n="billingSampleValue">
                                     예시 · 실제 구독 조회 전
                                 </span>
                             </dd>
                         </div>
 
                         <div>
-                            <dt>최근 결제일</dt>
+                            <dt data-i18n="billingLastPaymentLabel">최근 결제일</dt>
 
                             <dd id="billingLastPayment">
                                 <time datetime="2026-09-01">
@@ -294,7 +296,7 @@
                         </div>
 
                         <div>
-                            <dt>다음 결제 예정일</dt>
+                            <dt data-i18n="billingNextPaymentLabel">다음 결제 예정일</dt>
 
                             <dd id="billingNextPayment">
                                 <time datetime="2026-10-01">
@@ -304,12 +306,12 @@
                         </div>
 
                         <div>
-                            <dt>결제 금액</dt>
+                            <dt data-i18n="billingAmountLabel">결제 금액</dt>
                             <dd id="billingAmount">99,000원</dd>
                         </div>
 
                         <div>
-                            <dt>결제수단</dt>
+                            <dt data-i18n="billingMethodLabel">결제수단</dt>
                             <dd id="billingMethod">신용카드</dd>
                         </div>
                     </dl>
@@ -320,7 +322,7 @@
                             aria-hidden="true"
                         ></i>
 
-                        <p>
+                        <p data-i18n="billingNoteText">
                             기존 구독 화면의 예시 정보입니다.
                             실제 결제 내역이나 자동결제 상태를
                             나타내지 않습니다.
