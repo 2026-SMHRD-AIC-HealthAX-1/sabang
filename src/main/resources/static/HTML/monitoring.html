@@ -3,134 +3,127 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<title>실시간 모니터링</title>
+    <title>실시간 모니터링</title>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="../CSS/style.css">
 
-<link rel="stylesheet" href="../CSS/anomaly.css">
+    <link rel="stylesheet" href="../CSS/anomaly.css">
 </head>
 
 
 <body data-page="monitoring">
 
-<div id="header"></div>
+    <div id="header"></div>
 
-<div class="layout">
+    <div class="layout">
 
-<div id="sidebar"></div>
+        <div id="sidebar"></div>
 
-<main class="main">
+        <main class="main">
 
-<div class="page-header">
+            <!-- <div class="page-header">
 
-<h1>📹 실시간 모니터링</h1>
+            <h1>📹 실시간 모니터링</h1>
 
-<p>
-AI 객체탐지를 이용하여 고위험 의약품의 이동을 실시간으로 감지합니다.
-</p>
+            <p>
+                AI 객체탐지를 이용하여 고위험 의약품의 이동을 실시간으로 감지합니다.
+            </p>
 
-</div>
-
-
-<section class="card camera-card">
-
-<div class="camera-header">
-
-<h2>
-실시간 CCTV
-</h2>
-
-<div class="live">
-LIVE
-</div>
-
-<!-- 관리자에게만 표시 (기본 숨김 - 깜빡임 방지) -->
-<button id="cameraManageBtn" class="camera-manage-btn" type="button" hidden>
-    <i class="fa-solid fa-gear"></i>
-    카메라 관리
-</button>
-
-</div>
+            </div> -->
 
 
-<div class="camera">
-<!-- 실시간 시간 -->
-<div id="cameraTime"
-class="camera-time">
-</div>
+            <section class="card camera-card">
 
-<!-- 현재 카메라 번호 -->
-    <div id="cameraName"
-         class="camera-name">
-    </div>
+                <div class="camera-header">
 
-<!-- 왼쪽 버튼 -->
-    <button class="camera-btn camera-prev" id="cameraPrevBtn">
-        <i class="fa-solid fa-chevron-left"></i>
-    </button>
+                    <h2>
+                        실시간 CCTV
+                    </h2>
 
-<!-- 실시간 카메라 영상 -->
-<img
-	id="cameraVideo"
-    class="camera-video"
-    alt="실시간 CCTV"
->
+                    <div class="live">
+                        LIVE
+                    </div>
 
-<!-- 카메라가 하나도 없을 때 -->
-<div id="cameraEmpty" class="camera-empty" hidden>
-    등록된 카메라가 없습니다.
-</div>
+                    <!-- 관리자에게만 표시 (기본 숨김 - 깜빡임 방지) -->
+                    <button id="cameraManageBtn" class="camera-manage-btn" type="button" hidden>
+                        <i class="fa-solid fa-gear"></i>
+                        카메라 관리
+                    </button>
 
-<!-- 오른쪽 버튼 -->
-	<button class="camera-btn camera-next" id="cameraNextBtn">
-        <i class="fa-solid fa-chevron-right"></i>
-    </button>
+                </div>
 
-</div>
 
-</section>
+                <div class="camera">
 
-</main>
+                    <!-- 실시간 시간 -->
+                    <div id="cameraTime" class="camera-time"></div>
 
-</div>
+                    <!-- 현재 카메라 번호 -->
+                    <div id="cameraName" class="camera-name"></div>
 
-<!-- 카메라 관리 패널 (관리자 전용) -->
-<div id="cameraManageModal" class="camera-modal" hidden>
+                    <!-- 왼쪽 버튼 -->
+                    <button class="camera-btn camera-prev" id="cameraPrevBtn">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
 
-    <div class="camera-modal-backdrop" id="cameraModalBackdrop"></div>
+                    <!-- 실시간 카메라 영상 -->
+                    <img id="cameraVideo" class="camera-video" alt="실시간 CCTV">
 
-    <div class="camera-modal-box">
+                    <!-- 카메라가 하나도 없을 때 -->
+                    <div id="cameraEmpty" class="camera-empty" hidden>
+                        등록된 카메라가 없습니다.
+                    </div>
 
-        <h2>카메라 관리</h2>
+                    <!-- 오른쪽 버튼 -->
+                    <button class="camera-btn camera-next" id="cameraNextBtn">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
 
-        <ul id="cameraManageList" class="camera-manage-list"></ul>
+                </div>
 
-        <form id="cameraAddForm" class="camera-add-form">
+            </section>
 
-            <input type="text" id="cameraAddInput" placeholder="새 카메라 이름 (예: CAM 03)" required>
-
-            <button type="submit" class="camera-add-btn">추가</button>
-
-        </form>
-
-        <p id="cameraManageMessage" class="camera-manage-message"></p>
-
-        <button type="button" id="cameraModalCloseBtn" class="camera-modal-close-btn">닫기</button>
+        </main>
 
     </div>
 
-</div>
+    <!-- 카메라 관리 패널 (관리자 전용) -->
+    <div id="cameraManageModal" class="camera-modal" hidden>
 
-<script src="../js/common.js"></script>
+        <div class="camera-modal-backdrop" id="cameraModalBackdrop"></div>
 
-<script src="../js/anomaly-store.js"></script>
-<script src="../js/anomaly-ui.js"></script>
-<script src="../js/monitoring.js"></script>
+        <div class="camera-modal-box">
+
+            <h2>카메라 관리</h2>
+
+            <ul id="cameraManageList" class="camera-manage-list"></ul>
+
+            <form id="cameraAddForm" class="camera-add-form">
+
+                <input type="text" id="cameraAddInput" placeholder="새 카메라 이름 (예: CAM 03)" required>
+
+                <button type="submit" class="camera-add-btn">추가</button>
+
+            </form>
+
+            <p id="cameraManageMessage" class="camera-manage-message"></p>
+
+            <button type="button" id="cameraModalCloseBtn" class="camera-modal-close-btn">닫기</button>
+
+        </div>
+
+    </div>
+
+    <script src="../js/common.js"></script>
+
+    <script src="../js/anomaly-store.js"></script>
+    <script src="../js/anomaly-ui.js"></script>
+    <script src="../js/monitoring.js"></script>
 
 </body>
 

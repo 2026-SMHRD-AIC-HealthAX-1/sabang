@@ -3,76 +3,76 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<title>이상 알림</title>
+    <title>이상 알림</title>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="../CSS/style.css">
 
-<link rel="stylesheet" href="../CSS/anomaly.css">
-<script src="../js/admin-guard.js"></script>
+    <link rel="stylesheet" href="../CSS/anomaly.css">
+    <script src="../js/admin-guard.js"></script>
 </head>
 
 
 <body data-page="alerts">
 
-<div id="header"></div>
+    <div id="header"></div>
 
-<div class="layout">
+    <div class="layout">
 
-<div id="sidebar"></div>
-
-
-<main class="main">
-
-<div class="page-header">
-
-<h1>🔔 이상 알림</h1>
-
-<p>
-AI가 감지한 재고 이상 및 전표 불일치 내역입니다.
-</p>
-
-</div>
+        <div id="sidebar"></div>
 
 
-<div class="alert-grid">
+        <main class="main">
 
-<section class="card alert-card anomaly-history" aria-labelledby="mismatch-alert-title">
-<div class="card-title alert-card-title">
-<span id="mismatch-alert-title"><i class="fa-solid fa-file-circle-exclamation"></i> 전표·세그먼트 불일치</span>
-<small id="anomaly-count">누적 0건</small>
-</div>
-<p class="alert-card-description">전표의 요청 수량과 세그먼트 인식 수량이 다른 내역입니다.</p>
-<div class="alert-table-wrap">
-<table><thead><tr><th>시간</th><th>의약품</th><th>불일치 내용</th><th>처리상태</th></tr></thead><tbody id="anomaly-rows"></tbody></table>
-</div>
-</section>
+            <!-- <div class="page-header">
 
-<section class="card alert-card inventory-history" aria-labelledby="inventory-alert-title">
-<div class="card-title alert-card-title">
-<span id="inventory-alert-title"><i class="fa-solid fa-box-open"></i> 카메라 재고 부족</span>
-<small id="inventory-alert-count">누적 0건</small>
-</div>
-<p class="alert-card-description">카메라에서 확인된 재고가 설정된 최소 수량 이하인 내역입니다.</p>
-<div class="alert-table-wrap">
-<table><thead><tr><th>시간</th><th>의약품</th><th>재고 현황</th><th>처리상태</th></tr></thead><tbody id="inventory-alert-rows"></tbody></table>
-</div>
-</section>
+                <h1>🔔 이상 알림</h1>
 
-</div>
+                <p>
+                    AI가 감지한 재고 이상 및 전표 불일치 내역입니다.
+                </p>
 
-</main>
+            </div> -->
 
-</div>
 
-<script src="../js/common.js"></script>
+            <div class="alert-grid">
 
-<script src="../js/anomaly-store.js"></script>
-<script src="../js/anomaly-ui.js"></script>
+                <section class="card alert-card anomaly-history" aria-labelledby="mismatch-alert-title">
+                    <div class="card-title alert-card-title">
+                        <span id="mismatch-alert-title"><i class="fa-solid fa-file-circle-exclamation"></i> 전표·세그먼트 불일치</span>
+                        <small id="anomaly-count">누적 0건</small>
+                    </div>
+                    <p class="alert-card-description">전표의 요청 수량과 세그먼트 인식 수량이 다른 내역입니다.</p>
+                    <div class="alert-table-wrap">
+                        <table><thead><tr><th>시간</th><th>의약품</th><th>불일치 내용</th><th>처리상태</th></tr></thead><tbody id="anomaly-rows"></tbody></table>
+                    </div>
+                </section>
+
+                <section class="card alert-card inventory-history" aria-labelledby="inventory-alert-title">
+                    <div class="card-title alert-card-title">
+                        <span id="inventory-alert-title"><i class="fa-solid fa-box-open"></i> 카메라 재고 부족</span>
+                        <small id="inventory-alert-count">누적 0건</small>
+                    </div>
+                    <p class="alert-card-description">카메라에서 확인된 재고가 설정된 최소 수량 이하인 내역입니다.</p>
+                    <div class="alert-table-wrap">
+                        <table><thead><tr><th>시간</th><th>의약품</th><th>재고 현황</th><th>처리상태</th></tr></thead><tbody id="inventory-alert-rows"></tbody></table>
+                    </div>
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="../js/common.js"></script>
+
+    <script src="../js/anomaly-store.js"></script>
+    <script src="../js/anomaly-ui.js"></script>
 </body>
 
 </html>
