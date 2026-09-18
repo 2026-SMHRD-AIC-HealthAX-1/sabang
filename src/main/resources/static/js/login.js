@@ -30,6 +30,28 @@ document
                 return;
             }
 
+            sessionStorage.setItem("framVision.isAdmin", String(!!data.isAdmin));
+
+            // 관리자면 구독결제 정보를 미리 받아서 캐시해둔다.
+            // (페이지 이동하면 로그인 화면의 JS는 사라지므로 이동 전에 끝내야 함)
+            if (data.isAdmin) {
+
+                try {
+
+                    const billingResponse = await fetch("/api/subscription/me");
+
+                    if (billingResponse.ok) {
+                        sessionStorage.setItem(
+                            "framVision.billingCache",
+                            JSON.stringify(await billingResponse.json())
+                        );
+                    }
+
+                } catch (error) {
+                    // 미리 받아두기에 실패해도 로그인 자체는 계속 진행
+                }
+            }
+
             window.location.href = data.hasAccess ? "dashboard.html" : "index.html";
 
         } catch (error) {

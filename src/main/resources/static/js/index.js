@@ -29,6 +29,7 @@ async function applyAuthState() {
             await fetch("/api/auth/logout", { method: "POST" });
 
             sessionStorage.removeItem("framVision.isAdmin");
+            sessionStorage.removeItem("framVision.billingCache");
 
             window.location.href = "index.html";
         });
