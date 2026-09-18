@@ -49,20 +49,47 @@ AI 객체탐지를 이용하여 고위험 의약품의 이동을 실시간으로
 LIVE
 </div>
 
+<!-- 관리자에게만 표시 (기본 숨김 - 깜빡임 방지) -->
+<button id="cameraManageBtn" class="camera-manage-btn" type="button" hidden>
+    <i class="fa-solid fa-gear"></i>
+    카메라 관리
+</button>
+
 </div>
 
 
 <div class="camera">
-
+<!-- 실시간 시간 -->
 <div id="cameraTime"
 class="camera-time">
 </div>
 
+<!-- 현재 카메라 번호 -->
+    <div id="cameraName"
+         class="camera-name">
+    </div>
+
+<!-- 왼쪽 버튼 -->
+    <button class="camera-btn camera-prev" id="cameraPrevBtn">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+<!-- 실시간 카메라 영상 -->
 <img
-    src="http://localhost:8000/video"
+	id="cameraVideo"
     class="camera-video"
     alt="실시간 CCTV"
 >
+
+<!-- 카메라가 하나도 없을 때 -->
+<div id="cameraEmpty" class="camera-empty" hidden>
+    등록된 카메라가 없습니다.
+</div>
+
+<!-- 오른쪽 버튼 -->
+	<button class="camera-btn camera-next" id="cameraNextBtn">
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
 
 </div>
 
@@ -72,10 +99,39 @@ class="camera-time">
 
 </div>
 
+<!-- 카메라 관리 패널 (관리자 전용) -->
+<div id="cameraManageModal" class="camera-modal" hidden>
+
+    <div class="camera-modal-backdrop" id="cameraModalBackdrop"></div>
+
+    <div class="camera-modal-box">
+
+        <h2>카메라 관리</h2>
+
+        <ul id="cameraManageList" class="camera-manage-list"></ul>
+
+        <form id="cameraAddForm" class="camera-add-form">
+
+            <input type="text" id="cameraAddInput" placeholder="새 카메라 이름 (예: CAM 03)" required>
+
+            <button type="submit" class="camera-add-btn">추가</button>
+
+        </form>
+
+        <p id="cameraManageMessage" class="camera-manage-message"></p>
+
+        <button type="button" id="cameraModalCloseBtn" class="camera-modal-close-btn">닫기</button>
+
+    </div>
+
+</div>
+
 <script src="../js/common.js"></script>
 
 <script src="../js/anomaly-store.js"></script>
 <script src="../js/anomaly-ui.js"></script>
+<script src="../js/monitoring.js"></script>
+
 </body>
 
 </html>

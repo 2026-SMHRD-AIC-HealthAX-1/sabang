@@ -376,7 +376,113 @@
             </div>
 
 
+            <!-- ==================================================
+                 구역(Zone) 설정
+            ================================================== -->
+
+            <section class="card zone-card" aria-labelledby="zone-title">
+
+                <h2 class="card-title" id="zone-title">
+                    <i class="fa-solid fa-vector-square" aria-hidden="true"></i>
+                    구역(Zone) 설정
+                </h2>
+
+                <div class="zone-body">
+
+                    <!-- 왼쪽: 카메라 화면 + 구역 오버레이 -->
+                    <div class="zone-camera-area">
+
+                        <div class="zone-camera-toolbar">
+
+                            <button type="button" id="zoneCameraPrevBtn" class="zone-camera-switch-btn">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+
+                            <span id="zoneCameraName" class="zone-camera-name">카메라 없음</span>
+
+                            <button type="button" id="zoneCameraNextBtn" class="zone-camera-switch-btn">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+
+                        </div>
+
+                        <div id="zoneCameraContainer" class="zone-camera-container">
+
+                            <img id="zoneCameraVideo" class="zone-camera-video" alt="카메라 화면" hidden>
+
+                            <div id="zoneCameraEmpty" class="zone-camera-empty">
+                                먼저 실시간 모니터링에서 카메라를 등록해 주세요.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- 오른쪽: 의약품(구역) 목록 관리 -->
+                    <div class="zone-list-area">
+
+                        <ul id="zoneList" class="zone-list"></ul>
+
+                        <button type="button" id="zoneAddBtn" class="zone-add-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            약품추가
+                        </button>
+
+                        <button type="button" id="zoneSaveBtn" class="zone-save-btn">
+                            저장
+                        </button>
+
+                        <p id="zoneMessage" class="zone-message"></p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
         </main>
+
+
+        <!-- 약품 추가/수정 모달 -->
+        <div id="medicineFormModal" class="zone-modal" hidden>
+
+            <div class="zone-modal-backdrop" id="medicineModalBackdrop"></div>
+
+            <div class="zone-modal-box">
+
+                <h2 id="medicineModalTitle">약품 추가</h2>
+
+                <form id="medicineForm">
+
+                    <label for="medicineNameInput">의약품명</label>
+                    <input type="text" id="medicineNameInput" required>
+
+                    <label for="medicineHighRiskInput">고위험군 여부</label>
+                    <select id="medicineHighRiskInput">
+                        <option value="N">일반</option>
+                        <option value="Y">고위험</option>
+                    </select>
+
+                    <label for="medicineManufacturerInput">제조사</label>
+                    <input type="text" id="medicineManufacturerInput" required>
+
+                    <label for="medicineRegisterDateInput">등록일자</label>
+                    <input type="date" id="medicineRegisterDateInput" required>
+
+                    <div class="zone-modal-actions">
+                        <button type="button" id="medicineModalCancelBtn" class="zone-modal-cancel-btn">취소</button>
+                        <button type="submit" class="zone-modal-submit-btn">저장</button>
+                    </div>
+
+                    <p id="medicineFormMessage" class="zone-modal-message"></p>
+
+                </form>
+
+            </div>
+
+        </div>
 
 
     </div>
@@ -389,6 +495,9 @@
 
 
     <script src="../js/users.js"></script>
+
+    <script src="../js/zone-store.js"></script>
+    <script src="../js/zone-ui.js"></script>
 
 
 </body>
