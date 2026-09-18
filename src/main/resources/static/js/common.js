@@ -621,7 +621,7 @@ const translations = {
             "처리상태",
 
         inventoryAlertTitle:
-            "카메라 재고 부족",
+            "의약품 재고 부족",
 
         inventoryAlertDescription:
             "카메라에서 확인된 재고가 설정된 최소 수량 이하인 내역입니다.",
