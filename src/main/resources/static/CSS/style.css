@@ -542,6 +542,13 @@ td {
     display: none;
 }
 
+.table-loading-row {
+    padding: 40px 13px;
+    text-align: center;
+    color: #92a4b9;
+    font-size: calc(13px * var(--font-scale, 1));
+}
+
 .empty i {
     font-size: 45px;
     margin-bottom: 15px;
@@ -685,7 +692,8 @@ body.dark-mode td {
 body.dark-mode .info-card p,
 body.dark-mode .activity-text small,
 body.dark-mode .activity-time,
-body.dark-mode .empty {
+body.dark-mode .empty,
+body.dark-mode .table-loading-row {
     color: #8fa0bd;
 }
 

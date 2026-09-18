@@ -215,27 +215,6 @@
     margin-bottom: 23px;
 }
 
-.profile-meta {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    padding: 20px 0;
-    border-top: 1px solid #edf1f5;
-    border-bottom: 1px solid #edf1f5;
-}
-
-.profile-meta span {
-    display: block;
-    font-size: calc(11px * var(--font-scale, 1));
-    color: #60758e;
-    margin-bottom: 8px;
-}
-
-.profile-meta strong {
-    font-size: calc(13px * var(--font-scale, 1));
-    font-weight: 500;
-}
-
 .profile-password {
     padding: 21px 0;
 }
@@ -396,34 +375,8 @@ fieldset:disabled .profile-save {
 }
 
 /* =========================
-   가입 정보 없음 / 오류 안내
+   오류 안내
 ========================= */
-
-.profile-empty {
-    margin: 22px 24px 0;
-    border: 1px dashed #cbd9eb;
-    padding: 17px;
-    border-radius: 8px;
-}
-
-.profile-empty strong {
-    font-size: calc(13px * var(--font-scale, 1));
-}
-
-.profile-empty p {
-    font-size: calc(12px * var(--font-scale, 1));
-    color: #60758e;
-    line-height: 1.8;
-    margin: 9px 0;
-}
-
-.profile-empty-links {
-    display: flex;
-    gap: 15px;
-    color: #1474ed;
-    font-size: calc(12px * var(--font-scale, 1));
-    font-weight: bold;
-}
 
 .account-error {
     color: #a33b34;
@@ -459,7 +412,6 @@ body.dark-mode .billing-note {
 
 body.dark-mode .profile-heading p,
 body.dark-mode .profile-card p,
-body.dark-mode .profile-meta span,
 body.dark-mode .billing-details dt,
 body.dark-mode .profile-identity p {
     color: #aabbd0;

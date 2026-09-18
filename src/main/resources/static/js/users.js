@@ -47,7 +47,7 @@ function renderGrantedTable() {
             <td>
                 사용중
                 <button type="button" class="revoke-btn" data-staff-id="${user.memberId}">
-                    권한 회수
+                    ${t("revokeBtn")}
                 </button>
             </td>
         </tr>
@@ -66,7 +66,7 @@ function renderGrantedTable() {
 
 async function revokeAccess(staffId) {
 
-    const confirmed = confirm("이 사용자의 대시보드 접근 권한을 회수하시겠습니까?");
+    const confirmed = confirm(t("revokeConfirmMessage"));
 
     if (!confirmed) {
         return;
@@ -77,7 +77,7 @@ async function revokeAccess(staffId) {
         const response = await fetch(`/api/staff/${staffId}`, { method: "DELETE" });
 
         if (!response.ok) {
-            alert("권한 회수에 실패했습니다.");
+            alert(t("revokeFailMessage"));
             return;
         }
 
@@ -85,7 +85,7 @@ async function revokeAccess(staffId) {
 
     } catch (error) {
 
-        alert("권한 회수에 실패했습니다. 다시 시도해 주세요.");
+        alert(t("revokeFailMessage"));
     }
 }
 

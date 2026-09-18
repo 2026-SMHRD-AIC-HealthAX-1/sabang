@@ -109,4 +109,15 @@ public class MemberService {
 
         memberRepository.save(member);
     }
+
+    // 개인정보 설정: 이름 변경
+    public Member updateName(String memberId, String name) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다."));
+
+        member.setMemberName(name);
+
+        return memberRepository.save(member);
+    }
 }

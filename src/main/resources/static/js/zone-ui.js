@@ -24,6 +24,7 @@ function clamp(value, min, max) {
 const zoneCameraName = document.getElementById("zoneCameraName");
 const zoneCameraVideo = document.getElementById("zoneCameraVideo");
 const zoneCameraEmpty = document.getElementById("zoneCameraEmpty");
+const zoneCameraLoading = document.getElementById("zoneCameraLoading");
 const zoneCameraContainer = document.getElementById("zoneCameraContainer");
 const zoneList = document.getElementById("zoneList");
 const zoneMessage = document.getElementById("zoneMessage");
@@ -118,8 +119,11 @@ function renderCameraView() {
 
     zoneCameraContainer.querySelectorAll(".zone-box").forEach(box => box.remove());
 
+    zoneCameraLoading.hidden = true;
+    zoneCameraName.hidden = false;
+
     if (!camera) {
-        zoneCameraName.textContent = "카메라 없음";
+        zoneCameraName.textContent = t("noCameraLabel");
         zoneCameraVideo.hidden = true;
         zoneCameraEmpty.hidden = false;
         return;

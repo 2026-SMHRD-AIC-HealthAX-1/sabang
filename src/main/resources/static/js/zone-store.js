@@ -122,6 +122,9 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     medicineName: zone.medicineName,
+                    highRiskYn: zone.highRiskYn,
+                    manufacturer: zone.manufacturer,
+                    registerDate: zone.registerDate,
                     cameraId: zone.cameraId,
                     regionX: zone.regionX,
                     regionY: zone.regionY,

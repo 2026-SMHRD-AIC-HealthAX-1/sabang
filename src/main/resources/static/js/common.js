@@ -656,6 +656,9 @@ const translations = {
         filterQty:
             "수량",
 
+        loadingLabel:
+            "불러오는 중...",
+
         usersPageTitle:
             "사용자 관리",
 
@@ -689,12 +692,6 @@ const translations = {
         statusActive:
             "사용중",
 
-        exampleUserName:
-            "이현우",
-
-        exampleDept2:
-            "약제팀",
-
         roleUser:
             "사용자",
 
@@ -715,6 +712,15 @@ const translations = {
 
         searchNotFoundMessage:
             "회원가입된 사용자를 찾을 수 없습니다.",
+
+        revokeBtn:
+            "권한 회수",
+
+        revokeConfirmMessage:
+            "이 사용자의 대시보드 접근 권한을 회수하시겠습니까?",
+
+        revokeFailMessage:
+            "권한 회수에 실패했습니다. 다시 시도해 주세요.",
 
         zoneConfigTitle:
             "구역(Zone) 설정",
@@ -788,26 +794,8 @@ const translations = {
         personalInfoDescription:
             "회원가입할 때 입력한 정보입니다.",
 
-        noSignupInfoTitle:
-            "표시할 가입 정보가 없습니다.",
-
-        noSignupInfoDescription:
-            "기존 회원가입 화면은 정보를 저장하지 않았습니다. 새 회원가입 화면에서 등록한 뒤 같은 이메일로 로그인하면 여기에 표시됩니다.",
-
-        signupLinkText:
-            "회원가입",
-
-        loginLinkText:
-            "로그인",
-
         emailHelpText:
             "회원가입에 사용한 이메일입니다.",
-
-        joinedDateLabel:
-            "가입일",
-
-        termsAgreedLabel:
-            "약관 및 개인정보 동의",
 
         passwordLabel:
             "비밀번호",
@@ -1093,6 +1081,9 @@ const translations = {
         filterQty:
             "Quantity",
 
+        loadingLabel:
+            "Loading...",
+
         usersPageTitle:
             "User Management",
 
@@ -1126,12 +1117,6 @@ const translations = {
         statusActive:
             "Active",
 
-        exampleUserName:
-            "Lee Hyunwoo",
-
-        exampleDept2:
-            "Pharmacy Team",
-
         roleUser:
             "User",
 
@@ -1152,6 +1137,15 @@ const translations = {
 
         searchNotFoundMessage:
             "No registered user found.",
+
+        revokeBtn:
+            "Revoke Access",
+
+        revokeConfirmMessage:
+            "Revoke this user's dashboard access?",
+
+        revokeFailMessage:
+            "Failed to revoke access. Please try again.",
 
         zoneConfigTitle:
             "Zone Configuration",
@@ -1225,26 +1219,8 @@ const translations = {
         personalInfoDescription:
             "Information entered when you signed up.",
 
-        noSignupInfoTitle:
-            "No signup info to display.",
-
-        noSignupInfoDescription:
-            "The previous signup screen didn't save information. Register on the new signup screen and log in with the same email to see it here.",
-
-        signupLinkText:
-            "Sign Up",
-
-        loginLinkText:
-            "Log In",
-
         emailHelpText:
             "The email you used to sign up.",
-
-        joinedDateLabel:
-            "Joined Date",
-
-        termsAgreedLabel:
-            "Terms & Privacy Agreement",
 
         passwordLabel:
             "Password",

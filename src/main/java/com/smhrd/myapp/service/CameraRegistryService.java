@@ -7,6 +7,8 @@ import com.smhrd.myapp.repository.MedicineRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 // CameraService(파이썬 FastAPI 프로세스 실행)와는 별개로,
 // CAMERA 테이블 CRUD(등록된 카메라 목록 관리)만 담당
@@ -31,8 +33,10 @@ public class CameraRegistryService {
         return cameraRepository.findByAdmin_MemberId(adminId);
     }
 
-    // 카메라 등록: STREAM_URL은 CAMERA_ID - 1을 파이썬 카메라 인덱스로 사용해서 자동 생성
-    // (지금은 노트북 한계로 카메라가 2대뿐이지만, 카메라가 늘어나면 이 규칙 그대로 이어짐)
+    // 카메라 등록: STREAM_URL의 파이썬 카메라 인덱스는 "이 관리자가 쓰고 있는 인덱스 중
+    // 비어있는 가장 작은 번호"로 매긴다 (관리자별로 0부터 시작, 삭제로 생긴 빈 자리도 재사용).
+    // CAMERA_ID(PK)는 이 인덱스와 무관하게 시스템 전체에서 계속 유일한 값을 씀.
+    // (지금은 노트북 한계로 카메라가 2대뿐이라 인덱스 2 이상은 화면이 안 나옴)
     public Camera add(String adminId, String cameraName) {
 
         Member admin = memberService.findById(adminId);
@@ -42,15 +46,40 @@ public class CameraRegistryService {
         }
 
         long nextId = cameraRepository.findMaxId() + 1;
+        int streamIndex = nextAvailableStreamIndex(adminId);
 
         Camera camera = new Camera();
         camera.setCameraId(nextId);
         camera.setAdmin(admin);
         camera.setCameraName(cameraName);
         camera.setConnectionStatus("0");
-        camera.setStreamUrl("http://localhost:8000/video/" + (nextId - 1));
+        camera.setStreamUrl("http://localhost:8000/video/" + streamIndex);
 
         return cameraRepository.save(camera);
+    }
+
+    // 이 관리자의 카메라들이 쓰고 있는 인덱스를 모아서, 비어있는 가장 작은 0 이상 정수를 찾는다
+    private int nextAvailableStreamIndex(String adminId) {
+
+        Set<Integer> used = cameraRepository.findByAdmin_MemberId(adminId).stream()
+                .map(Camera::getStreamUrl)
+                .filter(url -> url != null && url.contains("/"))
+                .map(url -> {
+                    try {
+                        return Integer.parseInt(url.substring(url.lastIndexOf('/') + 1));
+                    } catch (NumberFormatException e) {
+                        return -1;
+                    }
+                })
+                .collect(Collectors.toSet());
+
+        int index = 0;
+
+        while (used.contains(index)) {
+            index++;
+        }
+
+        return index;
     }
 
     public void delete(String adminId, Long cameraId) {
