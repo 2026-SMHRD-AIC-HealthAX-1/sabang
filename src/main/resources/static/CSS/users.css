@@ -30,7 +30,7 @@
         .users-content .card-title {
             margin: 0;
 
-            font-size: 18px;
+            font-size: calc(18px * var(--font-scale, 1));
         }
 
 
@@ -61,7 +61,7 @@
 
             text-align: left;
 
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale, 1));
 
             border-bottom: 1px solid #edf1f5;
         }
@@ -94,7 +94,7 @@
 
             color: #c73743;
 
-            font-size: 12px;
+            font-size: calc(12px * var(--font-scale, 1));
 
             font-weight: bold;
 
@@ -124,7 +124,7 @@
 
             color: #6b819d;
 
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale, 1));
             line-height: 1.7;
         }
 
@@ -156,7 +156,7 @@
 
             border-radius: 8px;
 
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale, 1));
 
             outline: none;
 
@@ -184,7 +184,7 @@
 
             color: white;
 
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale, 1));
 
             font-weight: 600;
 
@@ -254,7 +254,7 @@
 
             color: #1474ed;
 
-            font-size: 20px;
+            font-size: calc(20px * var(--font-scale, 1));
         }
 
 
@@ -273,7 +273,7 @@
 
             color: #162c52;
 
-            font-size: 17px;
+            font-size: calc(17px * var(--font-scale, 1));
 
             font-weight: 700;
         }
@@ -282,7 +282,7 @@
         .result-email {
             color: #6b819d;
 
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale, 1));
 
             overflow-wrap: anywhere;
         }
@@ -306,7 +306,7 @@
 
             color: white;
 
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale, 1));
 
             font-weight: 700;
 
@@ -337,7 +337,7 @@
 
             color: #d94b4b;
 
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale, 1));
 
             text-align: center;
         }
@@ -471,7 +471,7 @@
 }
 
 .zone-camera-name {
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     font-weight: bold;
     color: #33465e;
 }
@@ -483,7 +483,7 @@
     border-radius: 6px;
     background: white;
     color: #33465e;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     cursor: pointer;
 }
 
@@ -520,7 +520,7 @@
     padding: 0 20px;
     text-align: center;
     color: #92a4b9;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 .zone-camera-empty[hidden] {
@@ -543,7 +543,7 @@
     padding: 2px 8px;
     border-radius: 4px;
     color: white;
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale, 1));
     font-weight: bold;
     white-space: nowrap;
 }
@@ -581,7 +581,7 @@
     padding: 20px;
     text-align: center;
     color: #92a4b9;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 .zone-list-item {
@@ -607,7 +607,7 @@
     border: 1px solid #d7e1ef;
     border-radius: 6px;
     padding: 0 8px;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 .zone-camera-select {
@@ -616,7 +616,7 @@
     border: 1px solid #d7e1ef;
     border-radius: 6px;
     padding: 0 6px;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     max-width: 92px;
 }
 
@@ -628,7 +628,7 @@
     border-radius: 6px;
     background: white;
     color: #c73743;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     font-weight: bold;
     cursor: pointer;
 }
@@ -644,7 +644,7 @@
     border-radius: 8px;
     background: #edf5ff;
     color: #1474ed;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     font-weight: bold;
     cursor: pointer;
     margin-bottom: 8px;
@@ -660,7 +660,7 @@
     border-radius: 8px;
     background: #1474ed;
     color: white;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     font-weight: bold;
     cursor: pointer;
 }
@@ -672,7 +672,7 @@
 .zone-message {
     min-height: 18px;
     margin: 10px 0 0;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     color: #16a34a;
     text-align: center;
 }
@@ -724,13 +724,13 @@
 
 .zone-modal-box h2 {
     margin: 0 0 16px;
-    font-size: 18px;
+    font-size: calc(18px * var(--font-scale, 1));
 }
 
 .zone-modal-box label {
     display: block;
     margin: 12px 0 6px;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     font-weight: 600;
     color: #33465e;
 }
@@ -742,7 +742,7 @@
     border: 1px solid #d7e1ef;
     border-radius: 7px;
     padding: 0 12px;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 .zone-modal-actions {
@@ -758,7 +758,7 @@
     border-radius: 7px;
     background: white;
     color: #33465e;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     font-weight: 600;
     cursor: pointer;
 }
@@ -770,7 +770,7 @@
     border-radius: 7px;
     background: #1474ed;
     color: white;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     font-weight: bold;
     cursor: pointer;
 }
@@ -778,7 +778,7 @@
 .zone-modal-message {
     min-height: 16px;
     margin: 10px 0 0;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     color: #e44248;
     text-align: center;
 }
@@ -791,7 +791,7 @@
     border-radius: 6px;
     background: white;
     color: #33465e;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     font-weight: bold;
     cursor: pointer;
 }
@@ -803,9 +803,65 @@
 .zone-name-label {
     flex: 1;
     min-width: 0;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     color: #243b5a;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+
+/* ================= 구역(Zone) 설정 - 다크 모드 ================= */
+
+body.dark-mode .zone-camera-name {
+    color: #e2e8f0;
+}
+
+body.dark-mode .zone-camera-switch-btn,
+body.dark-mode .zone-camera-select,
+body.dark-mode .zone-name-input,
+body.dark-mode .zone-edit-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+
+body.dark-mode .zone-list-item {
+    border-color: #334155;
+}
+
+body.dark-mode .zone-name-label {
+    color: #e2e8f0;
+}
+
+body.dark-mode .zone-list-empty {
+    color: #94a3b8;
+}
+
+body.dark-mode .zone-add-btn {
+    background: #1e293b;
+    border-color: #3a7bd5;
+    color: #7fb2f6;
+}
+
+body.dark-mode .zone-modal-box {
+    background: #1e293b;
+    color: #e2e8f0;
+}
+
+body.dark-mode .zone-modal-box label {
+    color: #cbd5e1;
+}
+
+body.dark-mode .zone-modal-box input,
+body.dark-mode .zone-modal-box select {
+    background: #273449;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+
+body.dark-mode .zone-modal-cancel-btn {
+    background: #273449;
+    border-color: #334155;
+    color: #e2e8f0;
 }

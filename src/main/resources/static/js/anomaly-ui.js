@@ -41,7 +41,7 @@
             body.replaceChildren();
             document.getElementById('anomaly-count').textContent = `누적 ${rows.length}건`;
             if (!rows.length) {
-                const cell = el('td', '감지된 수량 불일치가 없습니다.');
+                const cell = el('td', t('noMismatchMessage'));
                 cell.colSpan = 4;
                 cell.className = 'alert-empty';
                 const tr = el('tr'); tr.append(cell); body.append(tr);
@@ -69,7 +69,7 @@
         inventoryBody.replaceChildren();
         document.getElementById('inventory-alert-count').textContent = `누적 ${rows.length}건`;
         if (!rows.length) {
-            const cell = el('td', '감지된 재고 부족 알림이 없습니다.');
+            const cell = el('td', t('noInventoryAlertMessage'));
             cell.colSpan = 4;
             cell.className = 'alert-empty';
             const tr = el('tr'); tr.append(cell); inventoryBody.append(tr);

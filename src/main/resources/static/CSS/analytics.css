@@ -21,7 +21,7 @@
 }
 
 .filter-label {
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     font-weight: bold;
     color: #647b99;
     margin-right: 4px;
@@ -31,7 +31,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     font-weight: 600;
     color: #33465e;
     cursor: pointer;
@@ -58,7 +58,7 @@
 #analyticsTable {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 #analyticsTable th,

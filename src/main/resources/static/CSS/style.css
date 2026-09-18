@@ -59,7 +59,7 @@ a {
 }
 
 .logo-text h2 {
-    font-size: 21px;
+    font-size: 21px; /* 로고 영역은 글자크기 설정과 무관하게 고정 */
     color: #10274e;
 }
 
@@ -68,14 +68,14 @@ a {
 }
 
 .logo-text p {
-    font-size: 11px;
+    font-size: 11px; /* 로고 영역은 글자크기 설정과 무관하게 고정 */
     color: #8396ae;
     margin-top: 2px;
 }
 
 .header-title {
     padding-left: 28px;
-    font-size: 22px;
+    font-size: 22px; /* 글자크기 설정과 무관하게 헤더 타이틀은 고정 */
     font-weight: bold;
 }
 
@@ -215,7 +215,7 @@ a {
     padding: 30px;
     text-align: center;
     color: #9fb7d3;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 /* ================= MAIN ================= */
@@ -235,13 +235,13 @@ a {
 }
 
 .page-header h1 {
-    font-size: 23px;
+    font-size: calc(23px * var(--font-scale, 1));
     margin-bottom: 7px;
 }
 
 .page-header p {
     color: #6b819d;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 /* ================= CARDS ================= */
@@ -254,7 +254,7 @@ a {
 
 .card-title {
     padding: 17px 20px;
-    font-size: 18px;
+    font-size: calc(18px * var(--font-scale, 1));
     font-weight: bold;
     border-bottom: 1px solid #edf1f5;
 }
@@ -284,7 +284,7 @@ a {
 }
 
 .camera-header h2 {
-    font-size: 20px;
+    font-size: calc(20px * var(--font-scale, 1));
 }
 
 .live {
@@ -422,7 +422,7 @@ a {
 }
 
 .activity-time {
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     color: #587292;
 }
 
@@ -458,7 +458,7 @@ a {
 .activity-text strong {
     display: block;
     margin-bottom: 5px;
-    font-size: 14px;
+    font-size: calc(14px * var(--font-scale, 1));
 }
 
 .activity-text small {
@@ -468,7 +468,7 @@ a {
 .badge {
     padding: 7px;
     border-radius: 7px;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale, 1));
     text-align: center;
 }
 
@@ -495,11 +495,11 @@ a {
 
 .info-card p {
     color: #7387a1;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 .number {
-    font-size: 32px;
+    font-size: calc(32px * var(--font-scale, 1));
     font-weight: bold;
     margin-top: 12px;
 }
@@ -519,14 +519,14 @@ table {
 th {
     background: #f3f6fa;
     padding: 13px;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 td {
     padding: 13px;
     text-align: center;
     border-bottom: 1px solid #edf1f5;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
 }
 
 .empty {
@@ -560,7 +560,7 @@ td {
 .form-row label {
     display: block;
     margin-bottom: 7px;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale, 1));
     font-weight: bold;
 }
 
@@ -603,4 +603,104 @@ button:hover {
     .header-title {
         display: none;
     }
+}
+
+
+/* =================================================
+   다크모드 / 글자크기 (설정 페이지 연동)
+
+   공통 뼈대(헤더/사이드바/카드)부터 우선 적용.
+   페이지별 세부 컴포넌트는 각 CSS 파일에서 점진적으로 보완.
+================================================= */
+
+body.dark-mode {
+    background: #0f1622;
+    color: #dbe4f3;
+}
+
+body.dark-mode .header {
+    background: #141d2e;
+    border-bottom-color: #232f45;
+}
+
+body.dark-mode .header-title {
+    color: #dbe4f3;
+}
+
+body.dark-mode .logo-area {
+    border-right-color: #232f45;
+}
+
+body.dark-mode .logo-text h2 {
+    color: #e7eefb;
+}
+
+body.dark-mode .logo-text p {
+    color: #7f92b3;
+}
+
+body.dark-mode .header-right {
+    color: #b7c4dc;
+}
+
+body.dark-mode .header-logout-btn {
+    background: #141d2e;
+    border-color: #232f45;
+    color: #b7c4dc;
+}
+
+body.dark-mode .card {
+    background: #141d2e;
+    border-color: #232f45;
+    color: #dbe4f3;
+}
+
+body.dark-mode .card-title {
+    border-bottom-color: #232f45;
+}
+
+body.dark-mode .page-header {
+    background: #141d2e;
+    border-color: #232f45;
+}
+
+body.dark-mode .page-header p {
+    color: #8fa0bd;
+}
+
+/* 카드 안쪽 텍스트/표는 각자 밝은 배경을 전제로 한 고정 색이 많아서
+   .card에 color를 줘도 상속이 안 됨 - 공통으로 자주 쓰는 것들 위주로 보정 */
+
+body.dark-mode th {
+    background: #1b2537;
+    color: #dbe4f3;
+    border-bottom-color: #2a3752;
+}
+
+body.dark-mode td {
+    color: #c4d0e6;
+    border-bottom-color: #232f45;
+}
+
+body.dark-mode .info-card p,
+body.dark-mode .activity-text small,
+body.dark-mode .activity-time,
+body.dark-mode .empty {
+    color: #8fa0bd;
+}
+
+body.dark-mode .setting-info p,
+body.dark-mode .filter-label {
+    color: #8fa0bd;
+}
+
+
+/* 글자 크기: 헤더/사이드바/본문 영역을 함께 확대·축소한다 */
+
+body.font-small {
+    --font-scale: 0.85;
+}
+
+body.font-large {
+    --font-scale: 1.25;
 }

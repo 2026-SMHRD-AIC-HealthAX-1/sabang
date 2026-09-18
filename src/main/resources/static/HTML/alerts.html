@@ -30,9 +30,9 @@
 
             <!-- <div class="page-header">
 
-                <h1>🔔 이상 알림</h1>
+                <h1 data-i18n="alertsTitle">🔔 이상 알림</h1>
 
-                <p>
+                <p data-i18n="alertsDescription">
                     AI가 감지한 재고 이상 및 전표 불일치 내역입니다.
                 </p>
 
@@ -43,23 +43,23 @@
 
                 <section class="card alert-card anomaly-history" aria-labelledby="mismatch-alert-title">
                     <div class="card-title alert-card-title">
-                        <span id="mismatch-alert-title"><i class="fa-solid fa-file-circle-exclamation"></i> 전표·세그먼트 불일치</span>
+                        <span id="mismatch-alert-title"><i class="fa-solid fa-file-circle-exclamation"></i> <span data-i18n="mismatchAlertTitle">전표·세그먼트 불일치</span></span>
                         <small id="anomaly-count">누적 0건</small>
                     </div>
-                    <p class="alert-card-description">전표의 요청 수량과 세그먼트 인식 수량이 다른 내역입니다.</p>
+                    <p class="alert-card-description" data-i18n="mismatchAlertDescription">전표의 요청 수량과 세그먼트 인식 수량이 다른 내역입니다.</p>
                     <div class="alert-table-wrap">
-                        <table><thead><tr><th>시간</th><th>의약품</th><th>불일치 내용</th><th>처리상태</th></tr></thead><tbody id="anomaly-rows"></tbody></table>
+                        <table><thead><tr><th data-i18n="colTime">시간</th><th data-i18n="colMedicine">의약품</th><th data-i18n="colMismatchDetail">불일치 내용</th><th data-i18n="colProcessStatus">처리상태</th></tr></thead><tbody id="anomaly-rows"></tbody></table>
                     </div>
                 </section>
 
                 <section class="card alert-card inventory-history" aria-labelledby="inventory-alert-title">
                     <div class="card-title alert-card-title">
-                        <span id="inventory-alert-title"><i class="fa-solid fa-box-open"></i> 카메라 재고 부족</span>
+                        <span id="inventory-alert-title"><i class="fa-solid fa-box-open"></i> <span data-i18n="inventoryAlertTitle">카메라 재고 부족</span></span>
                         <small id="inventory-alert-count">누적 0건</small>
                     </div>
-                    <p class="alert-card-description">카메라에서 확인된 재고가 설정된 최소 수량 이하인 내역입니다.</p>
+                    <p class="alert-card-description" data-i18n="inventoryAlertDescription">카메라에서 확인된 재고가 설정된 최소 수량 이하인 내역입니다.</p>
                     <div class="alert-table-wrap">
-                        <table><thead><tr><th>시간</th><th>의약품</th><th>재고 현황</th><th>처리상태</th></tr></thead><tbody id="inventory-alert-rows"></tbody></table>
+                        <table><thead><tr><th data-i18n="colTime">시간</th><th data-i18n="colMedicine">의약품</th><th data-i18n="colInventoryStatus">재고 현황</th><th data-i18n="colProcessStatus">처리상태</th></tr></thead><tbody id="inventory-alert-rows"></tbody></table>
                     </div>
                 </section>
 

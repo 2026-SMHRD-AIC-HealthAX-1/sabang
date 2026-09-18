@@ -45,11 +45,11 @@
             <!-- 페이지 제목 -->
             <!-- <div class="page-header">
 
-                <h1>
+                <h1 data-i18n="usersPageTitle">
                     👤 사용자 관리
                 </h1>
 
-                <p>
+                <p data-i18n="usersPageDescription">
                     약품관리 시스템을 사용하는 담당자를 관리합니다.
                 </p>
 
@@ -85,7 +85,7 @@
                             aria-hidden="true"
                         ></i>
 
-                        사용자 목록
+                        <span data-i18n="userListTitle">사용자 목록</span>
 
                     </h2>
 
@@ -101,27 +101,27 @@
 
                                 <tr>
 
-                                    <th scope="col">
+                                    <th scope="col" data-i18n="colUserId">
                                         사용자 ID
                                     </th>
 
-                                    <th scope="col">
+                                    <th scope="col" data-i18n="colName">
                                         이름
                                     </th>
 
-                                    <th scope="col">
+                                    <th scope="col" data-i18n="colEmail">
                                         이메일
                                     </th>
 
-                                    <th scope="col">
+                                    <th scope="col" data-i18n="colDepartment">
                                         소속
                                     </th>
 
-                                    <th scope="col">
+                                    <th scope="col" data-i18n="colRole">
                                         권한
                                     </th>
 
-                                    <th scope="col">
+                                    <th scope="col" data-i18n="colStatus">
                                         상태
                                     </th>
 
@@ -142,7 +142,7 @@
                                         admin01
                                     </td>
 
-                                    <td>
+                                    <td data-i18n="staffKimJieun">
                                         김지은
                                     </td>
 
@@ -150,15 +150,15 @@
                                         jieun@hospital.com
                                     </td>
 
-                                    <td>
+                                    <td data-i18n="exampleDept1">
                                         약품관리팀
                                     </td>
 
-                                    <td>
+                                    <td data-i18n="roleAdmin">
                                         관리자
                                     </td>
 
-                                    <td>
+                                    <td data-i18n="statusActive">
                                         사용중
                                     </td>
 
@@ -174,7 +174,7 @@
                                         user01
                                     </td>
 
-                                    <td>
+                                    <td data-i18n="exampleUserName">
                                         이현우
                                     </td>
 
@@ -182,15 +182,15 @@
                                         hyunwoo@hospital.com
                                     </td>
 
-                                    <td>
+                                    <td data-i18n="exampleDept2">
                                         약제팀
                                     </td>
 
-                                    <td>
+                                    <td data-i18n="roleUser">
                                         사용자
                                     </td>
 
-                                    <td>
+                                    <td data-i18n="statusActive">
                                         사용중
                                     </td>
 
@@ -231,7 +231,7 @@
                             aria-hidden="true"
                         ></i>
 
-                        사용자 추가
+                        <span data-i18n="userAddTitle">사용자 추가</span>
 
                     </h2>
 
@@ -240,7 +240,7 @@
                     <div class="user-add-body">
 
 
-                        <p class="user-add-description">
+                        <p class="user-add-description" data-i18n="userAddDescription">
 
                             시스템에 회원가입한 사용자의 아이디를 검색한 뒤
                             사용자 목록에 추가할 수 있습니다.
@@ -258,6 +258,7 @@
                                 type="text"
                                 id="userSearchInput"
                                 placeholder="사용자 아이디를 입력하세요"
+                                data-i18n-placeholder="searchIdPlaceholder"
                                 autocomplete="off"
                             >
 
@@ -272,7 +273,7 @@
                                     class="fa-solid fa-magnifying-glass"
                                 ></i>
 
-                                검색
+                                <span data-i18n="searchBtn">검색</span>
 
                             </button>
 
@@ -344,7 +345,7 @@
                                     class="fa-solid fa-user-plus"
                                 ></i>
 
-                                사용자 목록에 추가
+                                <span data-i18n="addToListBtn">사용자 목록에 추가</span>
 
                             </button>
 
@@ -360,6 +361,7 @@
                         <div
                             class="search-message"
                             id="searchMessage"
+                            data-i18n="searchNotFoundMessage"
                         >
 
                             회원가입된 사용자를 찾을 수 없습니다.
@@ -384,7 +386,7 @@
 
                 <h2 class="card-title" id="zone-title">
                     <i class="fa-solid fa-vector-square" aria-hidden="true"></i>
-                    구역(Zone) 설정
+                    <span data-i18n="zoneConfigTitle">구역(Zone) 설정</span>
                 </h2>
 
                 <div class="zone-body">
@@ -398,7 +400,7 @@
                                 <i class="fa-solid fa-chevron-left"></i>
                             </button>
 
-                            <span id="zoneCameraName" class="zone-camera-name">카메라 없음</span>
+                            <span id="zoneCameraName" class="zone-camera-name" data-i18n="noCameraLabel">카메라 없음</span>
 
                             <button type="button" id="zoneCameraNextBtn" class="zone-camera-switch-btn">
                                 <i class="fa-solid fa-chevron-right"></i>
@@ -410,7 +412,7 @@
 
                             <img id="zoneCameraVideo" class="zone-camera-video" alt="카메라 화면" hidden>
 
-                            <div id="zoneCameraEmpty" class="zone-camera-empty">
+                            <div id="zoneCameraEmpty" class="zone-camera-empty" data-i18n="noCameraRegisteredMessage">
                                 먼저 실시간 모니터링에서 카메라를 등록해 주세요.
                             </div>
 
@@ -426,10 +428,10 @@
 
                         <button type="button" id="zoneAddBtn" class="zone-add-btn">
                             <i class="fa-solid fa-plus"></i>
-                            약품추가
+                            <span data-i18n="addMedicineBtn">약품추가</span>
                         </button>
 
-                        <button type="button" id="zoneSaveBtn" class="zone-save-btn">
+                        <button type="button" id="zoneSaveBtn" class="zone-save-btn" data-i18n="saveBtn">
                             저장
                         </button>
 
@@ -452,28 +454,28 @@
 
             <div class="zone-modal-box">
 
-                <h2 id="medicineModalTitle">약품 추가</h2>
+                <h2 id="medicineModalTitle" data-i18n="addMedicineModalTitle">약품 추가</h2>
 
                 <form id="medicineForm">
 
-                    <label for="medicineNameInput">의약품명</label>
+                    <label for="medicineNameInput" data-i18n="colMedicineName">의약품명</label>
                     <input type="text" id="medicineNameInput" required>
 
-                    <label for="medicineHighRiskInput">고위험군 여부</label>
+                    <label for="medicineHighRiskInput" data-i18n="highRiskLabel">고위험군 여부</label>
                     <select id="medicineHighRiskInput">
-                        <option value="N">일반</option>
-                        <option value="Y">고위험</option>
+                        <option value="N" data-i18n="riskNormal">일반</option>
+                        <option value="Y" data-i18n="riskHigh">고위험</option>
                     </select>
 
-                    <label for="medicineManufacturerInput">제조사</label>
+                    <label for="medicineManufacturerInput" data-i18n="manufacturerLabel">제조사</label>
                     <input type="text" id="medicineManufacturerInput" required>
 
-                    <label for="medicineRegisterDateInput">등록일자</label>
+                    <label for="medicineRegisterDateInput" data-i18n="registerDateLabel">등록일자</label>
                     <input type="date" id="medicineRegisterDateInput" required>
 
                     <div class="zone-modal-actions">
-                        <button type="button" id="medicineModalCancelBtn" class="zone-modal-cancel-btn">취소</button>
-                        <button type="submit" class="zone-modal-submit-btn">저장</button>
+                        <button type="button" id="medicineModalCancelBtn" class="zone-modal-cancel-btn" data-i18n="cancelBtn">취소</button>
+                        <button type="submit" class="zone-modal-submit-btn" data-i18n="saveBtn">저장</button>
                     </div>
 
                     <p id="medicineFormMessage" class="zone-modal-message"></p>

@@ -1,18 +1,18 @@
 ﻿/* Dashboard-specific content styles. Shared layout sizing comes from style.css. */
 .dashboard-title{background:#fff;border:1px solid #e4eaf2;border-radius:10px;padding:20px;margin-bottom:14px}
-.dashboard-title h1{font-size:23px;margin-bottom:7px}
-.dashboard-title p{font-size:13px;color:#6b819d}
+.dashboard-title h1{font-size:calc(23px * var(--font-scale, 1));margin-bottom:7px}
+.dashboard-title p{font-size:calc(13px * var(--font-scale, 1));color:#6b819d}
 .dashboard-content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:19px;align-items:stretch}
 .ocr-card,.dashboard-placeholder{min-width:0;min-height:625px;background:#fff;border:1px solid #e0e8f2;border-radius:13px;overflow:hidden}
 .ocr-header{padding:28px 25px 25px;border-bottom:1px solid #edf1f5}
-.ocr-header h2{font-size:25px;line-height:1.4;margin-bottom:10px}
+.ocr-header h2{font-size:calc(25px * var(--font-scale, 1));line-height:1.4;margin-bottom:10px}
 .ocr-header h2 i{color:#1474ed;margin-right:12px;font-size:24px}
-.ocr-header p{font-size:16px;line-height:1.5;color:#71849e;overflow-wrap:anywhere}
+.ocr-header p{font-size:calc(16px * var(--font-scale, 1));line-height:1.5;color:#71849e;overflow-wrap:anywhere}
 .ocr-table{width:100%;border-collapse:collapse;table-layout:fixed}
 .ocr-table .quantity-column{width:125px}
-.ocr-table th{background:#f4f7fb;color:#536b89;font-size:16px;padding:21px 25px;line-height:1.2}
+.ocr-table th{background:#f4f7fb;color:#536b89;font-size:calc(16px * var(--font-scale, 1));padding:21px 25px;line-height:1.2}
 .ocr-table th:first-child{text-align:left}
-.ocr-table td{padding:25px;font-size:17px;line-height:1.2;text-align:center;border-bottom:1px solid #edf1f5}
+.ocr-table td{padding:25px;font-size:calc(17px * var(--font-scale, 1));line-height:1.2;text-align:center;border-bottom:1px solid #edf1f5}
 .ocr-table tbody tr:last-child td{border-bottom:0}
 @media(max-width:1400px){
     .ocr-header h2{font-size:22px}
@@ -30,3 +30,13 @@
     .ocr-table .quantity-column{width:70px}
     .ocr-table th,.ocr-table td{padding:20px 12px;font-size:14px}
 }
+
+/* 다크모드: 이 카드들은 공통 .card 클래스를 안 쓰고 자체 흰 배경을 갖고 있어서 따로 처리 */
+body.dark-mode .dashboard-title{background:#141d2e;border-color:#232f45;color:#dbe4f3}
+body.dark-mode .dashboard-title p{color:#8fa0bd}
+body.dark-mode .ocr-card,
+body.dark-mode .dashboard-placeholder{background:#141d2e;border-color:#232f45;color:#dbe4f3}
+body.dark-mode .ocr-header{border-bottom-color:#232f45}
+body.dark-mode .ocr-header p{color:#8fa0bd}
+body.dark-mode .ocr-table th{background:#1b2537;color:#dbe4f3}
+body.dark-mode .ocr-table td{color:#c4d0e6;border-bottom-color:#232f45}
