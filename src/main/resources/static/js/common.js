@@ -58,8 +58,8 @@ const menus = [
 
     {
         id: "users",
-        ko: "사용자 관리",
-        en: "User Management",
+        ko: "관리자페이지",
+        en: "Admin Page",
         icon: "fa-user",
         url: "users.html"
     },

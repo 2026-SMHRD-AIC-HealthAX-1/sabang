@@ -18,6 +18,17 @@ a {
 /* ================= HEADER ================= */
 
 .header {
+    /*
+        position: sticky로 두면 이 구조에서 원인 불명으로 스크롤 시
+        같이 밀려 올라가버려서(재현 확인함) fixed로 대신 고정한다.
+        fixed는 문서 흐름에서 빠지기 때문에 .layout에 margin-top으로
+        헤더 높이만큼 공간을 띄워줘야 한다.
+    */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
     height: 70px;
     background: white;
     display: flex;
@@ -139,6 +150,7 @@ a {
 .layout {
     display: flex;
     min-height: calc(100vh - 70px);
+    margin-top: 70px; /* 헤더가 fixed로 빠져서 그만큼 띄워줌 */
 }
 
 /* ================= SIDEBAR ================= */
@@ -154,6 +166,10 @@ a {
 }
 
 .sidebar {
+    position: sticky;
+    top: 70px;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
     width: 185px;
     flex-shrink: 0;
     background: linear-gradient(180deg, #102b50, #193a61);
