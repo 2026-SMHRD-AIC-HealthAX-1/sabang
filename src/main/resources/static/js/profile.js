@@ -100,6 +100,13 @@
 
                 render(result);
 
+                // 헤더의 이름도 바로 바꾼다
+                sessionStorage.setItem("framVision.memberName", result.memberName);
+
+                if (typeof setHeaderUserName === "function") {
+                    setHeaderUserName(result.memberName);
+                }
+
                 byId("profileMessage").textContent =
                     "변경사항이 저장되었습니다.";
             } catch (error) {

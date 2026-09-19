@@ -29,19 +29,40 @@ public class AnalyticsController {
         this.hospitalStaffService = hospitalStaffService;
     }
 
+    // 관리자는 본인 병원, 직원은 자신이 속한 관리자의 병원 데이터만 볼 수 있다.
+    private String resolveOwnerAdminId(HttpSession session) {
+
+        String memberId = (String) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        if (subscriptionService.isActiveAdmin(memberId)) {
+            return memberId;
+        }
+
+        if (hospitalStaffService.hasAccess(memberId)) {
+            return hospitalStaffService.findAdminIdOf(memberId);
+        }
+
+        return null;
+    }
+
     // 병동/의약품/시간대별 집계는 프론트에서 계산하므로 원본 출고 기록을 그대로 반환
     @GetMapping("/outbound-log")
     public ResponseEntity<?> outboundLog(HttpSession session) {
 
-        String memberId = (String) session.getAttribute("memberId");
+        String ownerAdminId = resolveOwnerAdminId(session);
 
-        boolean hasAccess = memberId != null
-                && (subscriptionService.isActiveAdmin(memberId) || hospitalStaffService.hasAccess(memberId));
-
-        if (!hasAccess) {
+        if (ownerAdminId == null) {
             return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
         }
 
-        return ResponseEntity.ok(analyticsService.getOutboundLog());
+        // 이상 알림 정보는 관리자만 볼 수 있으므로, 직원(관리자가 권한을 준 사용자)에게는 abnormal 값을 빼고 준다
+        String memberId = (String) session.getAttribute("memberId");
+        boolean isAdmin = subscriptionService.isActiveAdmin(memberId);
+
+        return ResponseEntity.ok(analyticsService.getOutboundLog(ownerAdminId, isAdmin));
     }
 }

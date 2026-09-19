@@ -108,6 +108,13 @@ a {
 .notification {
     position: relative;
     font-size: 20px;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.notification[hidden] {
+    display: none;
 }
 
 .header-logout-btn {
@@ -136,13 +143,19 @@ a {
     top: -9px;
     background: #ef3d43;
     color: white;
-    width: 19px;
+    min-width: 19px;
     height: 19px;
-    border-radius: 50%;
+    padding: 0 4px;
+    box-sizing: border-box;
+    border-radius: 10px;
     font-size: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.notification-count[hidden] {
+    display: none;
 }
 
 /* ================= LAYOUT ================= */

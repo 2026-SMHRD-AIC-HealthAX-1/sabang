@@ -411,6 +411,10 @@
                     <label for="medicineRegisterDateInput" data-i18n="registerDateLabel">등록일자</label>
                     <input type="date" id="medicineRegisterDateInput" required>
 
+                    <label for="medicineMinQtyInput" data-i18n="minQtyLabel">최소 수량</label>
+                    <input type="number" id="medicineMinQtyInput" min="0" step="1" inputmode="numeric">
+                    <p class="zone-modal-hint" data-i18n="minQtyHint">재고가 이 수량 이하로 떨어지면 알림이 갑니다. 비워두면 이 약품은 재고 부족 알림이 생성되지 않습니다.</p>
+
                     <div class="zone-modal-actions">
                         <button type="button" id="medicineModalCancelBtn" class="zone-modal-cancel-btn" data-i18n="cancelBtn">취소</button>
                         <button type="submit" class="zone-modal-submit-btn" data-i18n="saveBtn">저장</button>

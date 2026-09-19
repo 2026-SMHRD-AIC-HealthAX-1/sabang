@@ -12,7 +12,8 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
     @Query("SELECT COALESCE(MAX(m.medicineId), 0) FROM Medicine m")
     Long findMaxId();
 
-    List<Medicine> findByCamera_Admin_MemberId(String adminId);
+    // 관리자(=병원)가 등록한 의약품 전체 (카메라가 없는 의약품 포함)
+    List<Medicine> findByAdmin_MemberId(String adminId);
 
     long countByCamera_CameraId(Long cameraId);
 }

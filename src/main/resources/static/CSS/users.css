@@ -745,6 +745,14 @@
     font-size: calc(13px * var(--font-scale, 1));
 }
 
+/* 입력칸 아래 보조 설명 (예: 최소 수량 안내) */
+.zone-modal-hint {
+    margin: 6px 0 0;
+    font-size: calc(12px * var(--font-scale, 1));
+    line-height: 1.5;
+    color: #71849e;
+}
+
 .zone-modal-actions {
     display: flex;
     gap: 10px;
@@ -858,6 +866,10 @@ body.dark-mode .zone-modal-box select {
     background: #273449;
     border-color: #334155;
     color: #e2e8f0;
+}
+
+body.dark-mode .zone-modal-hint {
+    color: #8fa0bd;
 }
 
 body.dark-mode .zone-modal-cancel-btn {

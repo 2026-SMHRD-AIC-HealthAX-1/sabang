@@ -1,5 +1,7 @@
 package com.smhrd.myapp.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,29 +11,29 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 // 이 클래스가 DB 테이블과 연결되는 JPA Entity라는 뜻
+// 전표 헤더 (전표번호, 병동, 요청자, 일자). 약품 줄(No.1, 2, 3...)은 SlipItem이 담당
 @Entity
 // Oracle DB의 SLIP 테이블과 연결
 @Table(name = "SLIP")
 public class Slip {
 
-    // 기본키(PK) 지정 - 전표번호
-    // IDENTITY 자동증가는 캠퍼스 오라클 DB 버전에서 지원 안 될 수 있어 제외 (필요 시 회의 후 재도입)
+    // 기본키(PK) 지정 - 전표번호 (예: ORD-20250910-002)
     @Id
-    @Column(name = "SLIP_ID")
-    private Long slipId;
+    @Column(name = "SLIP_ID", length = 100)
+    private String slipId;
 
     // 외래키(FK) - 병동번호, WARD 테이블 참조 (NOT NULL)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "WARD_ID", nullable = false)
     private Ward ward;
 
-    // 수량 (NOT NULL) - 요청 수량
-    @Column(name = "REQUEST_QTY", nullable = false)
-    private Long requestQty;
-
     // 요청 담당자 이름 (NOT NULL, 최대 50자)
     @Column(name = "REQUESTER_NAME", length = 50, nullable = false)
     private String requesterName;
+
+    // 전표 일자 (NULL 허용)
+    @Column(name = "SLIP_DATE")
+    private LocalDate slipDate;
 
     // 기본 생성자 (JPA는 파라미터 없는 생성자가 필수예요)
     public Slip() {
@@ -39,11 +41,11 @@ public class Slip {
 
     // Getter / Setter
 
-    public Long getSlipId() {
+    public String getSlipId() {
         return slipId;
     }
 
-    public void setSlipId(Long slipId) {
+    public void setSlipId(String slipId) {
         this.slipId = slipId;
     }
 
@@ -55,19 +57,19 @@ public class Slip {
         this.ward = ward;
     }
 
-    public Long getRequestQty() {
-        return requestQty;
-    }
-
-    public void setRequestQty(Long requestQty) {
-        this.requestQty = requestQty;
-    }
-
     public String getRequesterName() {
         return requesterName;
     }
 
     public void setRequesterName(String requesterName) {
         this.requesterName = requesterName;
+    }
+
+    public LocalDate getSlipDate() {
+        return slipDate;
+    }
+
+    public void setSlipDate(LocalDate slipDate) {
+        this.slipDate = slipDate;
     }
 }

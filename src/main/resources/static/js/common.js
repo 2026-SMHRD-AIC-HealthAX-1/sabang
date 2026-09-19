@@ -97,12 +97,6 @@ const headerTitle =
         : "병동 고위험군 의약품 관리 시스템";
 
 
-const teamName =
-    language === "en"
-        ? "Medication Team"
-        : "약품관리팀";
-
-
 document.getElementById("header").innerHTML = `
 
 <header class="header">
@@ -144,15 +138,20 @@ document.getElementById("header").innerHTML = `
         <div id="currentTime"></div>
 
 
-        <div class="notification">
+        <a id="notificationBell"
+           class="notification"
+           href="alerts.html"
+           aria-label="${language === "en" ? "Anomaly alerts" : "이상 알림"}"
+           title="${language === "en" ? "Anomaly alerts" : "이상 알림"}"
+           ${sessionStorage.getItem("framVision.isAdmin") === "true" ? "" : "hidden"}>
 
             <i class="fa-regular fa-bell"></i>
 
-            <div class="notification-count">
-                3
+            <div id="notificationCount" class="notification-count" hidden>
+                0
             </div>
 
-        </div>
+        </a>
 
 
         <a class="user profile-link" href="${profilePageUrl}" aria-label="개인정보 설정" title="개인정보 설정">
@@ -163,7 +162,7 @@ document.getElementById("header").innerHTML = `
 
             </div>
 
-            ${teamName}
+            <span id="headerUserName"></span>
 
         </a>
 
@@ -183,6 +182,67 @@ document.getElementById("header").innerHTML = `
 
 /*
 ===========================================
+    헤더 사용자 이름: "가입할 때 쓴 이름 + 님" (영어는 이름만)
+
+    이름은 로그인할 때 세션 저장소에 넣어 두고 바로 그린다.
+    (새 탭처럼 저장된 값이 없으면 아래 관리자 확인 때 서버에서 받아서 채운다)
+===========================================
+*/
+
+const memberNameCacheKey = "framVision.memberName";
+
+function setHeaderUserName(name) {
+
+    const target = document.getElementById("headerUserName");
+
+    if (!target) {
+        return;
+    }
+
+    target.textContent = name ? (language === "en" ? name : `${name}님`) : "";
+}
+
+setHeaderUserName(sessionStorage.getItem(memberNameCacheKey));
+
+
+/*
+===========================================
+    이상 알림 종 (관리자 전용)
+
+    빨간 숫자 = 관리자가 아직 처리(확인)하지 않은 이상 알림 수 (서버 DB의 ALERT 기준).
+    종을 누르면 이상 알림 페이지로 이동한다.
+
+    관리자 확인이 끝나면 아래에서 한 번 조회하고,
+    이상 알림 페이지에서 "확인 처리"를 하면 anomaly-ui.js가 이 함수를 다시 불러 숫자를 갱신한다.
+===========================================
+*/
+
+async function updateNotificationCount() {
+
+    const badge = document.getElementById("notificationCount");
+
+    try {
+
+        const response = await fetch("/api/alerts/pending-count");
+
+        if (!response.ok) {
+            badge.hidden = true;
+            return;
+        }
+
+        const { count } = await response.json();
+
+        badge.textContent = count > 99 ? "99+" : String(count);
+        badge.hidden = count === 0;
+
+    } catch (error) {
+        badge.hidden = true;
+    }
+}
+
+
+/*
+===========================================
     로그아웃
 ===========================================
 */
@@ -193,6 +253,7 @@ document.getElementById("headerLogoutBtn").addEventListener("click", async funct
 
     sessionStorage.removeItem("framVision.isAdmin");
     sessionStorage.removeItem("framVision.billingCache");
+    sessionStorage.removeItem(memberNameCacheKey);
 
     window.location.href = "index.html";
 });
@@ -321,6 +382,16 @@ function updateSidebarLanguage(lang) {
         }
 
         sessionStorage.setItem(isAdminCacheKey, String(!!me.isAdmin));
+
+        sessionStorage.setItem(memberNameCacheKey, me.memberName);
+        setHeaderUserName(me.memberName);
+
+        // 이상 알림 종은 관리자에게만 보이고, 미처리 알림 수를 불러온다
+        document.getElementById("notificationBell").hidden = !me.isAdmin;
+
+        if (me.isAdmin) {
+            updateNotificationCount();
+        }
 
         // 캐시로 미리 그린 상태와 실제 값이 다를 때만(드묾) 반영
         if (!!me.isAdmin !== cachedIsAdmin) {
@@ -636,7 +707,25 @@ const translations = {
             "입·출고 및 이상 감지 데이터를 분석합니다.",
 
         filterSelectLabel:
-            "항목 선택 (여러 개 선택 가능)",
+            "분류 기준 (여러 개 선택 가능)",
+
+        filterMeasureLabel:
+            "집계 값",
+
+        measureQtyLabel:
+            "수량 합계",
+
+        measureCountLabel:
+            "건수",
+
+        measureAbnormalLabel:
+            "이상 알림 건수",
+
+        filterCount:
+            "출고 건수",
+
+        filterAbnormal:
+            "이상 알림",
 
         filterWard:
             "병동",
@@ -755,6 +844,15 @@ const translations = {
         registerDateLabel:
             "등록일자",
 
+        minQtyLabel:
+            "최소 수량 (재고 부족 알림 기준)",
+
+        minQtyHint:
+            "재고가 이 수량 이하로 떨어지면 알림이 갑니다. 비워두면 이 약품은 재고 부족 알림이 생성되지 않습니다.",
+
+        minQtyInvalid:
+            "최소 수량은 0 이상의 정수로 입력해 주세요.",
+
         cancelBtn:
             "취소",
 
@@ -763,6 +861,21 @@ const translations = {
 
         noInventoryAlertMessage:
             "감지된 재고 부족 알림이 없습니다.",
+
+        processSelected:
+            "선택 항목 처리",
+
+        countUnit:
+            "건",
+
+        selectAllLabel:
+            "전체 선택",
+
+        confirmBatchProcess:
+            "{n}건을 확인 처리할까요?",
+
+        batchProcessFailed:
+            "일괄 처리에 실패했습니다. 다시 시도해 주세요.",
 
         selectAtLeastOneMessage:
             "표시할 항목을 하나 이상 선택하세요.",
@@ -1061,7 +1174,25 @@ const translations = {
             "Analyze inbound/outbound and anomaly detection data.",
 
         filterSelectLabel:
-            "Select Fields (multiple allowed)",
+            "Group by (multiple allowed)",
+
+        filterMeasureLabel:
+            "Measure",
+
+        measureQtyLabel:
+            "Total quantity",
+
+        measureCountLabel:
+            "Count",
+
+        measureAbnormalLabel:
+            "Anomaly count",
+
+        filterCount:
+            "Outbound count",
+
+        filterAbnormal:
+            "Anomalies",
 
         filterWard:
             "Ward",
@@ -1180,6 +1311,15 @@ const translations = {
         registerDateLabel:
             "Registered Date",
 
+        minQtyLabel:
+            "Minimum Quantity (low-stock alert threshold)",
+
+        minQtyHint:
+            "An alert is raised when stock drops to this quantity or below. If left empty, no low-stock alert is created for this medicine.",
+
+        minQtyInvalid:
+            "Enter the minimum quantity as an integer of 0 or more.",
+
         cancelBtn:
             "Cancel",
 
@@ -1188,6 +1328,21 @@ const translations = {
 
         noInventoryAlertMessage:
             "No low inventory alerts detected.",
+
+        processSelected:
+            "Process selected",
+
+        countUnit:
+            "",
+
+        selectAllLabel:
+            "Select all",
+
+        confirmBatchProcess:
+            "Mark {n} alert(s) as processed?",
+
+        batchProcessFailed:
+            "Failed to process the selected alerts. Please try again.",
 
         selectAtLeastOneMessage:
             "Please select at least one field to display.",

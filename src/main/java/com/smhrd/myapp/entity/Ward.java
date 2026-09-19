@@ -12,10 +12,10 @@ public class Ward {
 	
 	 // 병동번호
     // WARD 테이블의 기본키(PK)
-    // DB : WARD_ID NUMBER(10) PRIMARY KEY
+    // DB : WARD_ID VARCHAR2(100) PRIMARY KEY (예: '7병동')
     @Id
-    @Column(name = "WARD_ID")
-    private Long wardId;
+    @Column(name = "WARD_ID", length = 100)
+    private String wardId;
 
 
     // 병동명
@@ -33,12 +33,12 @@ public class Ward {
     // Getter / Setter
     
     // 병동번호 가져오기
-    public Long getWardId() {
+    public String getWardId() {
         return wardId;
     }
 
     // 병동번호 저장/변경
-    public void setWardId(Long wardId) {
+    public void setWardId(String wardId) {
         this.wardId = wardId;
     }
 

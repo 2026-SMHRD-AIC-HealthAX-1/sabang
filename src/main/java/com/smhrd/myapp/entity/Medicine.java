@@ -49,6 +49,13 @@ public class Medicine {
     private LocalDate registerDate;
 
 
+    // 의약품을 등록한 관리자(=병원) - 병원 구분은 카메라를 거치지 않고 이 값으로 한다
+    // DB : ADMIN_ID VARCHAR2(200) NOT NULL, MEMBER 참조
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ADMIN_ID", nullable = false)
+    private Member admin;
+
+
     // 구역(Zone) 지정 - 어느 카메라 화면에 이 의약품 구역이 있는지 (NULL 허용)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CAMERA_ID")
@@ -66,6 +73,12 @@ public class Medicine {
 
     @Column(name = "REGION_HEIGHT")
     private Double regionHeight;
+
+    // 재고 부족 알림 기준 최소 수량 - 관리자가 약품 추가/수정 화면에서 입력 (NULL 허용)
+    // 값이 없으면 이 의약품은 재고 부족 알림을 만들지 않는다
+    // DB : MIN_QTY NUMBER(10)
+    @Column(name = "MIN_QTY")
+    private Long minQty;
 
 
     // Getter / Setter
@@ -110,6 +123,14 @@ public class Medicine {
         this.registerDate = registerDate;
     }
 
+    public Member getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Member admin) {
+        this.admin = admin;
+    }
+
     public Camera getCamera() {
         return camera;
     }
@@ -148,6 +169,14 @@ public class Medicine {
 
     public void setRegionHeight(Double regionHeight) {
         this.regionHeight = regionHeight;
+    }
+
+    public Long getMinQty() {
+        return minQty;
+    }
+
+    public void setMinQty(Long minQty) {
+        this.minQty = minQty;
     }
 
 }

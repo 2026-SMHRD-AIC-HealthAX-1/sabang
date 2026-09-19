@@ -73,7 +73,8 @@ public class MedicineZoneController {
                     : null;
 
             Medicine saved = medicineZoneService.create(
-                    adminId, medicineName, highRiskYn, manufacturer, registerDate, cameraId
+                    adminId, medicineName, highRiskYn, manufacturer, registerDate, cameraId,
+                    parseMinQty(body.get("minQty"))
             );
 
             return ResponseEntity.ok(toMap(saved));
@@ -110,7 +111,9 @@ public class MedicineZoneController {
                     body.get("regionX") != null ? Double.valueOf(String.valueOf(body.get("regionX"))) : null,
                     body.get("regionY") != null ? Double.valueOf(String.valueOf(body.get("regionY"))) : null,
                     body.get("regionWidth") != null ? Double.valueOf(String.valueOf(body.get("regionWidth"))) : null,
-                    body.get("regionHeight") != null ? Double.valueOf(String.valueOf(body.get("regionHeight"))) : null
+                    body.get("regionHeight") != null ? Double.valueOf(String.valueOf(body.get("regionHeight"))) : null,
+                    body.containsKey("minQty"),
+                    parseMinQty(body.get("minQty"))
             );
 
             return ResponseEntity.ok(toMap(updated));
@@ -142,6 +145,29 @@ public class MedicineZoneController {
         }
     }
 
+    // 최소 수량: 비어 있으면(null/빈 문자열) NULL, 값이 있으면 0 이상의 정수만 허용
+    private Long parseMinQty(Object value) {
+
+        if (value == null || String.valueOf(value).isBlank()) {
+            return null;
+        }
+
+        try {
+
+            long minQty = Long.parseLong(String.valueOf(value).trim());
+
+            if (minQty < 0) {
+                throw new IllegalStateException("최소 수량은 0 이상의 정수로 입력해 주세요.");
+            }
+
+            return minQty;
+
+        } catch (NumberFormatException e) {
+
+            throw new IllegalStateException("최소 수량은 0 이상의 정수로 입력해 주세요.");
+        }
+    }
+
     private Map<String, Object> toMap(Medicine medicine) {
 
         Map<String, Object> map = new java.util.HashMap<>();
@@ -156,6 +182,7 @@ public class MedicineZoneController {
         map.put("regionY", medicine.getRegionY());
         map.put("regionWidth", medicine.getRegionWidth());
         map.put("regionHeight", medicine.getRegionHeight());
+        map.put("minQty", medicine.getMinQty());
 
         return map;
     }
