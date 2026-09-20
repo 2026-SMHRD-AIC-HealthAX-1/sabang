@@ -31,6 +31,7 @@ document
             }
 
             sessionStorage.setItem("framVision.isAdmin", String(!!data.isAdmin));
+            sessionStorage.setItem("framVision.memberName", data.memberName);
 
             // 관리자면 구독결제 정보를 미리 받아서 캐시해둔다.
             // (페이지 이동하면 로그인 화면의 JS는 사라지므로 이동 전에 끝내야 함)

@@ -47,19 +47,25 @@
                         <small id="anomaly-count">누적 0건</small>
                     </div>
                     <p class="alert-card-description" data-i18n="mismatchAlertDescription">전표의 요청 수량과 세그먼트 인식 수량이 다른 내역입니다.</p>
+                    <div class="alert-bulk-bar">
+                        <button type="button" id="anomaly-bulk-btn" class="bulk-process-btn" disabled></button>
+                    </div>
                     <div class="alert-table-wrap">
-                        <table><thead><tr><th data-i18n="colTime">시간</th><th data-i18n="colMedicine">의약품</th><th data-i18n="colMismatchDetail">불일치 내용</th><th data-i18n="colProcessStatus">처리상태</th></tr></thead><tbody id="anomaly-rows"></tbody></table>
+                        <table><thead><tr><th class="check-col"><input type="checkbox" id="anomaly-select-all"></th><th data-i18n="colTime">시간</th><th data-i18n="colMedicine">의약품</th><th data-i18n="colMismatchDetail">불일치 내용</th><th data-i18n="colProcessStatus">처리상태</th></tr></thead><tbody id="anomaly-rows"></tbody></table>
                     </div>
                 </section>
 
                 <section class="card alert-card inventory-history" aria-labelledby="inventory-alert-title">
                     <div class="card-title alert-card-title">
-                        <span id="inventory-alert-title"><i class="fa-solid fa-box-open"></i> <span data-i18n="inventoryAlertTitle">카메라 재고 부족</span></span>
+                        <span id="inventory-alert-title"><i class="fa-solid fa-box-open"></i> <span data-i18n="inventoryAlertTitle">의약품 재고 부족</span></span>
                         <small id="inventory-alert-count">누적 0건</small>
                     </div>
                     <p class="alert-card-description" data-i18n="inventoryAlertDescription">카메라에서 확인된 재고가 설정된 최소 수량 이하인 내역입니다.</p>
+                    <div class="alert-bulk-bar">
+                        <button type="button" id="inventory-bulk-btn" class="bulk-process-btn" disabled></button>
+                    </div>
                     <div class="alert-table-wrap">
-                        <table><thead><tr><th data-i18n="colTime">시간</th><th data-i18n="colMedicine">의약품</th><th data-i18n="colInventoryStatus">재고 현황</th><th data-i18n="colProcessStatus">처리상태</th></tr></thead><tbody id="inventory-alert-rows"></tbody></table>
+                        <table><thead><tr><th class="check-col"><input type="checkbox" id="inventory-select-all"></th><th data-i18n="colTime">시간</th><th data-i18n="colMedicine">의약품</th><th data-i18n="colInventoryStatus">재고 현황</th><th data-i18n="colProcessStatus">처리상태</th></tr></thead><tbody id="inventory-alert-rows"></tbody></table>
                     </div>
                 </section>
 
@@ -71,7 +77,6 @@
 
     <script src="../js/common.js"></script>
 
-    <script src="../js/anomaly-store.js"></script>
     <script src="../js/anomaly-ui.js"></script>
 </body>
 

@@ -24,6 +24,7 @@ function clamp(value, min, max) {
 const zoneCameraName = document.getElementById("zoneCameraName");
 const zoneCameraVideo = document.getElementById("zoneCameraVideo");
 const zoneCameraEmpty = document.getElementById("zoneCameraEmpty");
+const zoneCameraLoading = document.getElementById("zoneCameraLoading");
 const zoneCameraContainer = document.getElementById("zoneCameraContainer");
 const zoneList = document.getElementById("zoneList");
 const zoneMessage = document.getElementById("zoneMessage");
@@ -37,6 +38,7 @@ const medicineNameInput = document.getElementById("medicineNameInput");
 const medicineHighRiskInput = document.getElementById("medicineHighRiskInput");
 const medicineManufacturerInput = document.getElementById("medicineManufacturerInput");
 const medicineRegisterDateInput = document.getElementById("medicineRegisterDateInput");
+const medicineMinQtyInput = document.getElementById("medicineMinQtyInput");
 const medicineFormMessage = document.getElementById("medicineFormMessage");
 
 // null이면 추가 모드, 값이 있으면 그 medicineId를 수정하는 중
@@ -47,7 +49,8 @@ let editingMedicineId = null;
     약품 추가/수정 모달
 
     추가는 누르는 즉시 서버에 생성되고,
-    수정은 "저장" 버튼을 눌러야 서버에 반영된다(다른 값들과 동일한 방식).
+    수정도 추가와 같이 창의 "저장"을 누르면 그 약품만 바로 서버에 반영된다.
+    (구역 위치/카메라 변경은 오른쪽 아래 "저장" 버튼으로 따로 저장)
 ===========================================
 */
 
@@ -56,12 +59,13 @@ function openMedicineModal(zone) {
     editingMedicineId = zone ? zone.medicineId : null;
 
     medicineModalTitle.textContent = zone ? "약품 수정" : "약품 추가";
-    medicineFormMessage.textContent = zone ? "" : "저장하면 바로 등록됩니다.";
+    medicineFormMessage.textContent = "";
 
     medicineNameInput.value = zone ? zone.medicineName : "";
     medicineHighRiskInput.value = zone ? zone.highRiskYn : "N";
     medicineManufacturerInput.value = zone ? zone.manufacturer : "";
     medicineRegisterDateInput.value = zone ? zone.registerDate : new Date().toISOString().slice(0, 10);
+    medicineMinQtyInput.value = zone && zone.minQty !== null && zone.minQty !== undefined ? zone.minQty : "";
 
     medicineFormModal.hidden = false;
 }
@@ -81,11 +85,18 @@ medicineForm.addEventListener("submit", async function(event) {
         medicineName: medicineNameInput.value.trim(),
         highRiskYn: medicineHighRiskInput.value,
         manufacturer: medicineManufacturerInput.value.trim(),
-        registerDate: medicineRegisterDateInput.value
+        registerDate: medicineRegisterDateInput.value,
+        // 비워두면 null (재고 부족 알림 없음). 입력 필수 여부는 팀 결정 후 아래 검사에서 정한다.
+        minQty: medicineMinQtyInput.value.trim() === "" ? null : Number(medicineMinQtyInput.value)
     };
 
     if (!details.medicineName || !details.manufacturer || !details.registerDate) {
         medicineFormMessage.textContent = "모든 항목을 입력해 주세요.";
+        return;
+    }
+
+    if (details.minQty !== null && (!Number.isInteger(details.minQty) || details.minQty < 0)) {
+        medicineFormMessage.textContent = t("minQtyInvalid");
         return;
     }
 
@@ -94,7 +105,7 @@ medicineForm.addEventListener("submit", async function(event) {
         if (editingMedicineId === null) {
             await FramZones.addZone(details);
         } else {
-            FramZones.updateLocal(editingMedicineId, details);
+            await FramZones.updateZoneDetails(editingMedicineId, details);
         }
 
         closeMedicineModal();
@@ -118,8 +129,11 @@ function renderCameraView() {
 
     zoneCameraContainer.querySelectorAll(".zone-box").forEach(box => box.remove());
 
+    zoneCameraLoading.hidden = true;
+    zoneCameraName.hidden = false;
+
     if (!camera) {
-        zoneCameraName.textContent = "카메라 없음";
+        zoneCameraName.textContent = t("noCameraLabel");
         zoneCameraVideo.hidden = true;
         zoneCameraEmpty.hidden = false;
         return;

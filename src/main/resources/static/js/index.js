@@ -30,6 +30,7 @@ async function applyAuthState() {
 
             sessionStorage.removeItem("framVision.isAdmin");
             sessionStorage.removeItem("framVision.billingCache");
+            sessionStorage.removeItem("framVision.memberName");
 
             window.location.href = "index.html";
         });

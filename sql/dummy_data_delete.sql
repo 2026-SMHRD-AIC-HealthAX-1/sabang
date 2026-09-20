@@ -1,0 +1,12 @@
+-- [임시 더미 데이터 삭제] sql/dummy_data_insert.sql 로 넣은 데이터만 지운다.
+-- 'DUMMY-' 로 시작하는 행만 대상이라 실제 데이터(WARD 7병동, MEDICINE 1·2번 등)는 건드리지 않는다.
+-- 외래키 순서 때문에 자식 테이블부터 지운다.
+
+DELETE FROM ALERT      WHERE ALERT_ID BETWEEN 900001 AND 900999;   -- 더미 알림 (sql/dummy_alert_insert.sql)
+DELETE FROM ALERT      WHERE OUTBOUND_ID IN (SELECT OUTBOUND_ID FROM OUTBOUND WHERE SLIP_ID LIKE 'DUMMY-%');
+DELETE FROM OUTBOUND   WHERE SLIP_ID LIKE 'DUMMY-%';
+DELETE FROM SLIP_ITEM  WHERE SLIP_ID LIKE 'DUMMY-%';
+DELETE FROM SLIP       WHERE SLIP_ID LIKE 'DUMMY-%';
+DELETE FROM WARD       WHERE WARD_ID LIKE 'DUMMY-%';
+
+COMMIT;

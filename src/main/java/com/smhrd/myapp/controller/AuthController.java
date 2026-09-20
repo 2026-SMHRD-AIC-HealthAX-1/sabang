@@ -95,6 +95,31 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("success", true));
     }
 
+    // 개인정보 설정: 이름 변경
+    @PutMapping("/me")
+    public ResponseEntity<?> updateMe(@RequestBody Map<String, String> body, HttpSession session) {
+
+        String memberId = (String) session.getAttribute(SESSION_MEMBER_ID);
+
+        if (memberId == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
+        }
+
+        String name = body.get("memberName") == null ? "" : body.get("memberName").trim();
+
+        if (name.isEmpty() || name.length() > 50) {
+            return ResponseEntity.badRequest().body(Map.of("message", "이름을 1~50자로 입력해 주세요."));
+        }
+
+        Member updated = memberService.updateName(memberId, name);
+
+        return ResponseEntity.ok(Map.of(
+                "memberId", updated.getMemberId(),
+                "memberName", updated.getMemberName(),
+                "email", updated.getEmail()
+        ));
+    }
+
     // 회원탈퇴: 구독/권한 관련 데이터를 먼저 정리한 뒤 회원 삭제 (FK 제약 위반 방지)
     @DeleteMapping("/me")
     public ResponseEntity<?> withdraw(HttpSession session) {

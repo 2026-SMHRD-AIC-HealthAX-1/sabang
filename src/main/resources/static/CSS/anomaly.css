@@ -14,12 +14,21 @@
 .alert-card-title small { flex-shrink: 0; color: #71849e; font-size: calc(12px * var(--font-scale, 1)); font-weight: normal; }
 .alert-card-description { min-height: 58px; padding: 14px 20px; border-bottom: 1px solid #edf1f5; color: #71849e; font-size: calc(13px * var(--font-scale, 1)); line-height: 1.5; }
 .alert-table-wrap { overflow-x: auto; }
-.alert-card table { min-width: 560px; }
-.alert-card td:nth-child(3) { text-align: left; line-height: 1.5; }
+.alert-card table { min-width: 620px; }
+.alert-card td:nth-child(4) { text-align: left; line-height: 1.5; }
 .alert-empty { height: 240px; color: #92a4b9; }
 .inventory-history .card-title i { color: #f09a18; }
 .dark-mode .anomaly-banner { background: #42262d; color: #ffd6d9; border-color: #ad5a65; }
 .dark-mode .anomaly-copy small { color: #e7bbc0; }
+/* 일괄 처리: 체크박스 열 + "선택 항목 처리 (N건)" 버튼 */
+.alert-bulk-bar { display: flex; justify-content: flex-end; padding: 10px 20px; border-bottom: 1px solid #edf1f5; }
+.bulk-process-btn { border: 1px solid #b72f3b; border-radius: 7px; background: #b72f3b; color: white; padding: 8px 14px; cursor: pointer; font: inherit; font-size: calc(13px * var(--font-scale, 1)); font-weight: 600; }
+.bulk-process-btn:disabled { background: #f3f6fa; border-color: #dbe3ee; color: #a3b2c6; cursor: not-allowed; }
+.alert-card .check-col { width: 44px; text-align: center; }
+.alert-card .check-col input { width: 16px; height: 16px; accent-color: #b72f3b; cursor: pointer; }
+.alert-card .check-col input:disabled { cursor: not-allowed; }
+.dark-mode .alert-bulk-bar { border-bottom-color: #232f45; }
+.dark-mode .bulk-process-btn:disabled { background: #1b2537; border-color: #2a3752; color: #5f7190; }
 @media (max-width: 1100px) { .alert-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .anomaly-banner { flex-wrap: wrap; padding: 16px; gap: 12px; } .anomaly-copy { flex-basis: 100%; } }
 .camera {position: relative; overflow: hidden; width: 100%; height: 750px;}

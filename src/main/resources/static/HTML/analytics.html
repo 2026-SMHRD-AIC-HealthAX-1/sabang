@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" href="../CSS/analytics.css">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 </head>
 
@@ -78,9 +78,27 @@
                         <span data-i18n="filterMonth">월별</span>
                     </label>
 
+                </div>
+
+                <div class="filter-group">
+
+                    <span class="filter-label" data-i18n="filterMeasureLabel">집계 값</span>
+
+                    <!-- 집계 값은 하나만 고른다 (수량 합계 / 출고 건수 / 이상 알림 건수) -->
                     <label class="filter-check">
-                        <input type="checkbox" id="qtyMeasureCheck" checked>
+                        <input type="radio" name="measure" value="qty" checked>
                         <span data-i18n="filterQty">수량</span>
+                    </label>
+
+                    <label class="filter-check">
+                        <input type="radio" name="measure" value="count">
+                        <span data-i18n="filterCount">출고 건수</span>
+                    </label>
+
+                    <!-- 이상 알림은 관리자에게만 보인다 (analytics.js 가 관리자 확인 후 표시) -->
+                    <label class="filter-check" hidden>
+                        <input type="radio" name="measure" value="abnormal">
+                        <span data-i18n="filterAbnormal">이상 알림</span>
                     </label>
 
                 </div>
@@ -88,14 +106,18 @@
             </div>
 
 
-            <section class="card table-card">
+            <section class="card table-card chart-card">
 
                 <div id="analyticsEmpty" class="empty" hidden>
                     <i class="fa-solid fa-chart-column"></i>
                     <span id="analyticsEmptyText">표시할 출고 데이터가 없습니다.</span>
                 </div>
 
-                <canvas id="analyticsChart" height="110"></canvas>
+                <div id="analyticsChartScroll" class="chart-scroll">
+                    <div id="analyticsChartBox" class="chart-box">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
 
             </section>
 

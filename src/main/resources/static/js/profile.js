@@ -2,9 +2,12 @@
 ===========================================
     개인정보 설정 화면
 
-    1. 현재 회원 정보 표시
-    2. 가입 정보가 없으면 안내 표시
-    3. 이름 변경 및 저장
+    1. 현재 회원 정보 표시 (/api/auth/me)
+    2. 이름 변경 및 저장 (PUT /api/auth/me)
+
+    이 페이지는 common.js가 먼저 로그인 여부를 확인해서
+    로그인 안 됐으면 index.html로 돌려보내므로,
+    여기 도달했다면 계정 정보는 항상 존재한다고 본다.
 ===========================================
 */
 
@@ -23,42 +26,19 @@
     */
 
     function render(account) {
-        // 가입 정보가 있으면 안내를 숨기고 입력 활성화
-        byId("profileEmpty").hidden = !!account;
-        byId("profileFields").disabled = !account;
-
-        if (!account) {
-            return;
-        }
-
-        // 입력창에 회원 정보 표시
-        byId("profileName").value = account.name;
+        byId("profileName").value = account.memberName;
         byId("profileEmail").value = account.email;
 
         // 상단 프로필 요약 표시
         byId("profileDisplayName").textContent =
-            account.name;
+            account.memberName;
 
         byId("profileDisplayEmail").textContent =
             account.email;
 
         // 프로필 원 안에 이름의 첫 글자 표시
         byId("profileAvatar").textContent =
-            account.name.slice(0, 1);
-
-        // 가입일 표시
-        const joined = new Date(account.joinedAt);
-
-        if (Number.isNaN(joined.getTime())) {
-            byId("profileJoined").textContent = "—";
-        } else {
-            byId("profileJoined").textContent =
-                joined.toLocaleDateString("ko-KR");
-        }
-
-        // 약관 동의 상태 표시
-        byId("profileAgreed").textContent =
-            account.agreed ? "동의 완료" : "미확인";
+            account.memberName.slice(0, 1);
     }
 
     /*
@@ -67,19 +47,29 @@
     ===========================================
     */
 
-    try {
-        const account = FramAccount.current();
+    async function load() {
 
-        render(account);
-    } catch {
-        render(null);
+        try {
 
-        byId("accountError").hidden = false;
+            const response = await fetch("/api/auth/me");
 
-        byId("accountError").textContent =
-            "회원 정보를 읽지 못했습니다. "
-            + "브라우저의 사이트 저장소 설정을 확인해 주세요.";
+            if (!response.ok) {
+                throw new Error("회원 정보를 불러오지 못했습니다.");
+            }
+
+            const account = await response.json();
+
+            render(account);
+
+        } catch {
+            byId("accountError").hidden = false;
+
+            byId("accountError").textContent =
+                "회원 정보를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.";
+        }
     }
+
+    load();
 
     /*
     ===========================================
@@ -89,22 +79,36 @@
 
     byId("profileForm").addEventListener(
         "submit",
-        function (event) {
+        async function (event) {
             // 저장 버튼을 눌러도 페이지가 새로고침되지 않도록 처리
             event.preventDefault();
 
             try {
                 const newName = byId("profileName").value;
 
-                // account-store.js의 이름 수정 기능 실행
-                const updatedAccount =
-                    FramAccount.updateName(newName);
+                const response = await fetch("/api/auth/me", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ memberName: newName })
+                });
 
-                // 수정한 정보를 화면에도 반영
-                render(updatedAccount);
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || "저장하지 못했습니다. 다시 시도해 주세요.");
+                }
+
+                render(result);
+
+                // 헤더의 이름도 바로 바꾼다
+                sessionStorage.setItem("framVision.memberName", result.memberName);
+
+                if (typeof setHeaderUserName === "function") {
+                    setHeaderUserName(result.memberName);
+                }
 
                 byId("profileMessage").textContent =
-                    "변경사항을 이 브라우저에 저장했습니다.";
+                    "변경사항이 저장되었습니다.";
             } catch (error) {
                 byId("profileMessage").textContent =
                     error.message

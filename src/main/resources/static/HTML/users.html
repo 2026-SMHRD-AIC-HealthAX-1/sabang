@@ -132,71 +132,9 @@
 
 
                             <tbody id="userTableBody">
-
-
-                                <!-- 예시 사용자 1 -->
-
                                 <tr>
-
-                                    <td>
-                                        admin01
-                                    </td>
-
-                                    <td data-i18n="staffKimJieun">
-                                        김지은
-                                    </td>
-
-                                    <td>
-                                        jieun@hospital.com
-                                    </td>
-
-                                    <td data-i18n="exampleDept1">
-                                        약품관리팀
-                                    </td>
-
-                                    <td data-i18n="roleAdmin">
-                                        관리자
-                                    </td>
-
-                                    <td data-i18n="statusActive">
-                                        사용중
-                                    </td>
-
+                                    <td class="table-loading-row" colspan="6" data-i18n="loadingLabel">불러오는 중...</td>
                                 </tr>
-
-
-
-                                <!-- 예시 사용자 2 -->
-
-                                <tr>
-
-                                    <td>
-                                        user01
-                                    </td>
-
-                                    <td data-i18n="exampleUserName">
-                                        이현우
-                                    </td>
-
-                                    <td>
-                                        hyunwoo@hospital.com
-                                    </td>
-
-                                    <td data-i18n="exampleDept2">
-                                        약제팀
-                                    </td>
-
-                                    <td data-i18n="roleUser">
-                                        사용자
-                                    </td>
-
-                                    <td data-i18n="statusActive">
-                                        사용중
-                                    </td>
-
-                                </tr>
-
-
                             </tbody>
 
 
@@ -400,7 +338,7 @@
                                 <i class="fa-solid fa-chevron-left"></i>
                             </button>
 
-                            <span id="zoneCameraName" class="zone-camera-name" data-i18n="noCameraLabel">카메라 없음</span>
+                            <span id="zoneCameraName" class="zone-camera-name" data-i18n="noCameraLabel" hidden></span>
 
                             <button type="button" id="zoneCameraNextBtn" class="zone-camera-switch-btn">
                                 <i class="fa-solid fa-chevron-right"></i>
@@ -410,11 +348,11 @@
 
                         <div id="zoneCameraContainer" class="zone-camera-container">
 
+                            <div id="zoneCameraLoading" class="zone-camera-empty" data-i18n="loadingLabel">불러오는 중...</div>
+
                             <img id="zoneCameraVideo" class="zone-camera-video" alt="카메라 화면" hidden>
 
-                            <div id="zoneCameraEmpty" class="zone-camera-empty" data-i18n="noCameraRegisteredMessage">
-                                먼저 실시간 모니터링에서 카메라를 등록해 주세요.
-                            </div>
+                            <div id="zoneCameraEmpty" class="zone-camera-empty" data-i18n="noCameraRegisteredMessage" hidden></div>
 
                         </div>
 
@@ -472,6 +410,10 @@
 
                     <label for="medicineRegisterDateInput" data-i18n="registerDateLabel">등록일자</label>
                     <input type="date" id="medicineRegisterDateInput" required>
+
+                    <label for="medicineMinQtyInput" data-i18n="minQtyLabel">최소 수량</label>
+                    <input type="number" id="medicineMinQtyInput" min="0" step="1" inputmode="numeric">
+                    <p class="zone-modal-hint" data-i18n="minQtyHint">재고가 이 수량 이하로 떨어지면 알림이 갑니다. 비워두면 이 약품은 재고 부족 알림이 생성되지 않습니다.</p>
 
                     <div class="zone-modal-actions">
                         <button type="button" id="medicineModalCancelBtn" class="zone-modal-cancel-btn" data-i18n="cancelBtn">취소</button>

@@ -117,33 +117,10 @@
                         </div>
                     </div>
 
-                    <!-- 가입 정보가 없을 때 표시 -->
-                    <div
-                        id="profileEmpty"
-                        class="profile-empty"
-                        hidden
-                    >
-                        <strong data-i18n="noSignupInfoTitle">
-                            표시할 가입 정보가 없습니다.
-                        </strong>
-
-                        <p data-i18n="noSignupInfoDescription">
-                            기존 회원가입 화면은 정보를 저장하지 않았습니다.
-                            새 회원가입 화면에서 등록한 뒤 같은 이메일로
-                            로그인하면 여기에 표시됩니다.
-                        </p>
-
-                        <div class="profile-empty-links">
-                            <a href="signup.html" data-i18n="signupLinkText">회원가입</a>
-                            <a href="login.html" data-i18n="loginLinkText">로그인</a>
-                        </div>
-                    </div>
-
                     <!-- 개인정보 수정 폼 -->
                     <form id="profileForm">
 
-                        <!-- 가입 정보를 불러오면 JS에서 활성화 -->
-                        <fieldset id="profileFields" disabled>
+                        <fieldset id="profileFields">
 
                             <label for="profileName" data-i18n="colName">이름</label>
 
@@ -168,18 +145,6 @@
                             <p class="field-help" id="emailHelp" data-i18n="emailHelpText">
                                 회원가입에 사용한 이메일입니다.
                             </p>
-
-                            <div class="profile-meta">
-                                <div>
-                                    <span data-i18n="joinedDateLabel">가입일</span>
-                                    <strong id="profileJoined">—</strong>
-                                </div>
-
-                                <div>
-                                    <span data-i18n="termsAgreedLabel">약관 및 개인정보 동의</span>
-                                    <strong id="profileAgreed">—</strong>
-                                </div>
-                            </div>
 
                             <div class="profile-password">
                                 <span data-i18n="passwordLabel">비밀번호</span>
@@ -336,7 +301,6 @@
 
     <!-- 순서를 유지해 주세요 -->
     <script src="../js/common.js"></script>
-    <script src="../js/account-store.js"></script>
     <script src="../js/profile.js"></script>
     <script src="../js/billing.js"></script>
     <script src="../js/withdraw.js"></script>

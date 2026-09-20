@@ -2,6 +2,7 @@ package com.smhrd.myapp.service;
 
 import com.smhrd.myapp.entity.Camera;
 import com.smhrd.myapp.entity.Medicine;
+import com.smhrd.myapp.entity.Member;
 import com.smhrd.myapp.repository.CameraRepository;
 import com.smhrd.myapp.repository.MedicineRepository;
 import org.springframework.stereotype.Service;
@@ -16,14 +17,20 @@ public class MedicineZoneService {
 
     private final MedicineRepository medicineRepository;
     private final CameraRepository cameraRepository;
+    private final MemberService memberService;
 
-    public MedicineZoneService(MedicineRepository medicineRepository, CameraRepository cameraRepository) {
+    public MedicineZoneService(
+            MedicineRepository medicineRepository,
+            CameraRepository cameraRepository,
+            MemberService memberService
+    ) {
         this.medicineRepository = medicineRepository;
         this.cameraRepository = cameraRepository;
+        this.memberService = memberService;
     }
 
     public List<Medicine> listByAdmin(String adminId) {
-        return medicineRepository.findByCamera_Admin_MemberId(adminId);
+        return medicineRepository.findByAdmin_MemberId(adminId);
     }
 
     private Camera requireOwnedCamera(String adminId, Long cameraId) {
@@ -41,8 +48,7 @@ public class MedicineZoneService {
 
         Medicine medicine = medicineRepository.findById(medicineId).orElse(null);
 
-        if (medicine == null || medicine.getCamera() == null
-                || !medicine.getCamera().getAdmin().getMemberId().equals(adminId)) {
+        if (medicine == null || !medicine.getAdmin().getMemberId().equals(adminId)) {
             throw new IllegalStateException("존재하지 않거나 권한이 없는 구역입니다.");
         }
 
@@ -58,19 +64,28 @@ public class MedicineZoneService {
             String highRiskYn,
             String manufacturer,
             LocalDate registerDate,
-            Long cameraId
+            Long cameraId,
+            Long minQty
     ) {
 
         Camera camera = requireOwnedCamera(adminId, cameraId);
 
+        Member admin = memberService.findById(adminId);
+
+        if (admin == null) {
+            throw new IllegalStateException("존재하지 않는 회원입니다.");
+        }
+
         Medicine medicine = new Medicine();
         medicine.setMedicineId(medicineRepository.findMaxId() + 1);
+        medicine.setAdmin(admin);
         medicine.setMedicineName(medicineName);
         medicine.setHighRiskYn(highRiskYn != null && !highRiskYn.isBlank() ? highRiskYn : "N");
         // Oracle은 VARCHAR2에 빈 문자열("")을 넣으면 NULL로 취급해서 NOT NULL 제약에 걸림
         medicine.setManufacturer(manufacturer != null && !manufacturer.isBlank() ? manufacturer : "미상");
         medicine.setRegisterDate(registerDate != null ? registerDate : LocalDate.now());
         medicine.setCamera(camera);
+        medicine.setMinQty(minQty);
         medicine.setRegionX(35.0);
         medicine.setRegionY(35.0);
         medicine.setRegionWidth(20.0);
@@ -80,6 +95,7 @@ public class MedicineZoneService {
     }
 
     // 전달된 값만 반영 (일부 필드만 와도 됨) - 저장 버튼에서 일괄 호출
+    // 최소 수량은 "비우기(NULL)"도 값이라서, 요청에 minQty 항목이 있었는지(minQtyGiven)를 따로 받는다.
     public Medicine update(
             String adminId,
             Long medicineId,
@@ -91,7 +107,9 @@ public class MedicineZoneService {
             Double regionX,
             Double regionY,
             Double regionWidth,
-            Double regionHeight
+            Double regionHeight,
+            boolean minQtyGiven,
+            Long minQty
     ) {
 
         Medicine medicine = requireOwnedMedicine(adminId, medicineId);
@@ -130,6 +148,10 @@ public class MedicineZoneService {
 
         if (regionHeight != null) {
             medicine.setRegionHeight(regionHeight);
+        }
+
+        if (minQtyGiven) {
+            medicine.setMinQty(minQty);
         }
 
         return medicineRepository.save(medicine);

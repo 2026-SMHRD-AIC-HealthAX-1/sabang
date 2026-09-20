@@ -1,7 +1,9 @@
+/* ================= 필터 ================= */
+
 .analytics-filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 14px;
     margin-bottom: 18px;
 }
 
@@ -9,11 +11,11 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 14px;
+    gap: 10px;
     background: white;
     border: 1px solid #e5ebf2;
     border-radius: 10px;
-    padding: 14px 16px;
+    padding: 12px 16px;
 }
 
 .filter-group[hidden] {
@@ -24,46 +26,87 @@
     font-size: calc(12px * var(--font-scale, 1));
     font-weight: bold;
     color: #647b99;
-    margin-right: 4px;
+    margin-right: 6px;
 }
 
+/* 체크박스를 칩(알약) 모양으로 - 체크되면 파란색으로 강조 */
 .filter-check {
     display: flex;
     align-items: center;
     gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid #dbe3ee;
+    border-radius: 999px;
     font-size: calc(13px * var(--font-scale, 1));
     font-weight: 600;
-    color: #33465e;
+    color: #536b88;
     cursor: pointer;
     user-select: none;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.filter-check[hidden] {
+    display: none;
+}
+
+.filter-check:hover {
+    border-color: #1474ed;
+}
+
+.filter-check:has(input:checked) {
+    background: #e8f1fe;
+    border-color: #1474ed;
+    color: #1474ed;
 }
 
 .filter-check input {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
     accent-color: #1474ed;
     cursor: pointer;
 }
 
-#analyticsChart {
+/* ================= 차트 ================= */
+
+.chart-card {
+    min-height: 0;
     padding: 20px;
 }
+
+/* 막대가 많아지면 가로 스크롤 (analytics.js가 chart-box의 min-width를 조절) */
+.chart-scroll {
+    overflow-x: auto;
+}
+
+.chart-scroll[hidden] {
+    display: none;
+}
+
+.chart-box {
+    position: relative;
+    height: 380px;
+}
+
+/* ================= 표 ================= */
 
 .analytics-table-card {
     margin-top: 18px;
     padding: 20px;
+    min-height: 0;
     overflow-x: auto;
 }
 
+/* 열이 화면 전체로 늘어나서 값끼리 멀어지지 않도록 내용 폭에 맞춘다 */
 #analyticsTable {
-    width: 100%;
+    width: auto;
+    min-width: min(100%, 480px);
     border-collapse: collapse;
     font-size: calc(13px * var(--font-scale, 1));
 }
 
 #analyticsTable th,
 #analyticsTable td {
-    padding: 10px 12px;
+    padding: 10px 28px 10px 14px;
     text-align: left;
     border-bottom: 1px solid #edf1f5;
     white-space: nowrap;
@@ -77,4 +120,53 @@
 
 #analyticsTable td {
     color: #243b5a;
+}
+
+/* 숫자 열은 오른쪽 정렬 + 자릿수를 맞춰서 비교하기 쉽게 */
+#analyticsTable th.num,
+#analyticsTable td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    padding-right: 14px;
+}
+
+#analyticsTable td.num {
+    font-weight: 700;
+}
+
+#analyticsTable tbody tr:hover td {
+    background: #f3f7fd;
+}
+
+/* ================= 다크 모드 ================= */
+
+body.dark-mode .filter-group {
+    background: #141d2e;
+    border-color: #232f45;
+}
+
+body.dark-mode .filter-check {
+    border-color: #2a3752;
+    color: #b7c4dc;
+}
+
+body.dark-mode .filter-check:has(input:checked) {
+    background: #16305a;
+    border-color: #3b8bf5;
+    color: #8ab8ff;
+}
+
+body.dark-mode #analyticsTable th {
+    background: #1b2537;
+    color: #dbe4f3;
+    border-bottom-color: #2a3752;
+}
+
+body.dark-mode #analyticsTable td {
+    color: #c4d0e6;
+    border-bottom-color: #232f45;
+}
+
+body.dark-mode #analyticsTable tbody tr:hover td {
+    background: #1b2537;
 }

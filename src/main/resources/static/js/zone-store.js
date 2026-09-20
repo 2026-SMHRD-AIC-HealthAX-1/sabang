@@ -74,7 +74,7 @@
         notify();
     }
 
-    // details: { medicineName, highRiskYn, manufacturer, registerDate }
+    // details: { medicineName, highRiskYn, manufacturer, registerDate, minQty }
     async function addZone(details) {
 
         if (currentCameraId === null) {
@@ -97,6 +97,26 @@
         notify();
 
         return data;
+    }
+
+    // 수정 창에서 바꾼 항목(details)만 그 약품에 바로 저장한다.
+    // 구역 위치/카메라는 건드리지 않으므로 드래그로 옮긴 값은 계속 "저장" 버튼으로 저장한다.
+    async function updateZoneDetails(medicineId, details) {
+
+        const response = await fetch(`/api/medicine-zones/${medicineId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(details)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "저장에 실패했습니다.");
+        }
+
+        // 위치(regionX 등)는 아직 저장 전 값이 메모리에 있을 수 있어서 수정한 항목만 반영
+        updateLocal(medicineId, details);
     }
 
     async function removeZone(medicineId) {
@@ -122,6 +142,10 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     medicineName: zone.medicineName,
+                    highRiskYn: zone.highRiskYn,
+                    manufacturer: zone.manufacturer,
+                    registerDate: zone.registerDate,
+                    minQty: zone.minQty ?? null,
                     cameraId: zone.cameraId,
                     regionX: zone.regionX,
                     regionY: zone.regionY,
@@ -145,6 +169,7 @@
         getZonesForCurrentCamera,
         updateLocal,
         addZone,
+        updateZoneDetails,
         removeZone,
         saveAll,
         subscribe(fn) {
