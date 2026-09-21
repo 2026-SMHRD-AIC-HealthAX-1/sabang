@@ -1,6 +1,7 @@
 package com.smhrd.myapp.controller;
 
 import com.smhrd.myapp.entity.Medicine;
+
 import com.smhrd.myapp.service.MedicineZoneService;
 import com.smhrd.myapp.service.SubscriptionService;
 import jakarta.servlet.http.HttpSession;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 
 // users.html 하단 구역(Zone) 설정 화면용 - 관리자 전용 (페이지 자체가 admin-guard로 막혀있음)
 @RestController
@@ -25,6 +27,11 @@ public class MedicineZoneController {
         this.subscriptionService = subscriptionService;
     }
 
+    
+    
+
+    
+    
     private String requireAdmin(HttpSession session) {
 
         String memberId = (String) session.getAttribute("memberId");
@@ -36,6 +43,18 @@ public class MedicineZoneController {
         return memberId;
     }
 
+    @GetMapping("/camera/{cameraId}")
+    public ResponseEntity<?> listByCamera(@PathVariable Long cameraId) {
+
+        List<Map<String, Object>> result = medicineZoneService.listByCamera(cameraId)
+                .stream()
+                .map(this::toMap)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
+    
+    
     @GetMapping
     public ResponseEntity<?> list(HttpSession session) {
 

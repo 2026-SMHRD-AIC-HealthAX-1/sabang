@@ -16,6 +16,9 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
     List<Medicine> findByAdmin_MemberId(String adminId);
 
     long countByCamera_CameraId(Long cameraId);
+    
+    // 특정 카메라에 연결된 의약품/구역 조회
+    List<Medicine> findByCamera_CameraId(Long cameraId);
 
     // 회원탈퇴(관리자) 시 정리용: 이 관리자가 등록한 의약품 전체 삭제
     void deleteByAdmin_MemberId(String adminId);

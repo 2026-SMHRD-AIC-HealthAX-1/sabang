@@ -32,6 +32,12 @@ public class MedicineZoneService {
     public List<Medicine> listByAdmin(String adminId) {
         return medicineRepository.findByAdmin_MemberId(adminId);
     }
+    
+    // 특정 카메라에 연결된 의약품/구역 조회
+    public List<Medicine> listByCamera(Long cameraId) {
+        return medicineRepository.findByCamera_CameraId(cameraId);
+    }
+    
 
     private Camera requireOwnedCamera(String adminId, Long cameraId) {
 
