@@ -1,13 +1,21 @@
 package com.smhrd.myapp.controller;
 
+import com.smhrd.myapp.entity.HospitalStaff;
 import com.smhrd.myapp.entity.Member;
+import com.smhrd.myapp.repository.AlertRepository;
+import com.smhrd.myapp.repository.CameraRepository;
+import com.smhrd.myapp.repository.MedicineRepository;
+import com.smhrd.myapp.repository.OutboundRepository;
+import com.smhrd.myapp.repository.SlipItemRepository;
 import com.smhrd.myapp.service.HospitalStaffService;
 import com.smhrd.myapp.service.MemberService;
 import com.smhrd.myapp.service.SubscriptionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,15 +27,30 @@ public class AuthController {
     private final MemberService memberService;
     private final SubscriptionService subscriptionService;
     private final HospitalStaffService hospitalStaffService;
+    private final AlertRepository alertRepository;
+    private final OutboundRepository outboundRepository;
+    private final SlipItemRepository slipItemRepository;
+    private final MedicineRepository medicineRepository;
+    private final CameraRepository cameraRepository;
 
     public AuthController(
             MemberService memberService,
             SubscriptionService subscriptionService,
-            HospitalStaffService hospitalStaffService
+            HospitalStaffService hospitalStaffService,
+            AlertRepository alertRepository,
+            OutboundRepository outboundRepository,
+            SlipItemRepository slipItemRepository,
+            MedicineRepository medicineRepository,
+            CameraRepository cameraRepository
     ) {
         this.memberService = memberService;
         this.subscriptionService = subscriptionService;
         this.hospitalStaffService = hospitalStaffService;
+        this.alertRepository = alertRepository;
+        this.outboundRepository = outboundRepository;
+        this.slipItemRepository = slipItemRepository;
+        this.medicineRepository = medicineRepository;
+        this.cameraRepository = cameraRepository;
     }
 
     // 관리자(유효 구독 보유) 또는 권한을 부여받은 직원이면 대시보드 접근 가능
@@ -120,14 +143,41 @@ public class AuthController {
         ));
     }
 
-    // 회원탈퇴: 구독/권한 관련 데이터를 먼저 정리한 뒤 회원 삭제 (FK 제약 위반 방지)
+    // 회원탈퇴: 관리자(유효 구독 보유)면 하위 직원 계정과 이 병원의 카메라/의약품/알림/출고 기록까지
+    // 전부 정리한 뒤 삭제한다. 일반 직원은 본인이 부여받은/부여한 권한과 구독만 정리하고 삭제한다.
+    // 자식 데이터를 FK 순서(알림 -> 출고 -> 전표품목 -> 의약품 -> 카메라)대로 먼저 지워야
+    // MEMBER 삭제 시 제약 위반이 나지 않는다.
     @DeleteMapping("/me")
+    @Transactional
     public ResponseEntity<?> withdraw(HttpSession session) {
 
         String memberId = (String) session.getAttribute(SESSION_MEMBER_ID);
 
         if (memberId == null) {
             return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
+        }
+
+        boolean isAdmin = subscriptionService.isActiveAdmin(memberId);
+
+        if (isAdmin) {
+
+            List<HospitalStaff> staffRecords = hospitalStaffService.listStaffOf(memberId);
+
+            for (HospitalStaff record : staffRecords) {
+
+                String staffId = record.getStaff().getMemberId();
+
+                subscriptionService.deleteAllByAdmin(staffId);
+                hospitalStaffService.deleteAllGrantedBy(staffId);
+                hospitalStaffService.deleteAllAccessOf(staffId);
+                memberService.delete(staffId);
+            }
+
+            alertRepository.deleteByMedicine_Admin_MemberId(memberId);
+            outboundRepository.deleteByMedicine_Admin_MemberId(memberId);
+            slipItemRepository.deleteByMedicine_Admin_MemberId(memberId);
+            medicineRepository.deleteByAdmin_MemberId(memberId);
+            cameraRepository.deleteByAdmin_MemberId(memberId);
         }
 
         subscriptionService.deleteAllByAdmin(memberId);
@@ -137,7 +187,7 @@ public class AuthController {
 
         session.invalidate();
 
-        return ResponseEntity.ok(Map.of("success", true));
+        return ResponseEntity.ok(Map.of("success", true, "cascaded", isAdmin));
     }
 
     // 현재 로그인 상태 확인

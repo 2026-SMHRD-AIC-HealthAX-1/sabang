@@ -9,9 +9,14 @@
 
 document.getElementById("withdrawBtn").addEventListener("click", async function() {
 
-    const confirmed = confirm(
-        "정말 탈퇴하시겠습니까?\n계정과 구독·권한 정보가 모두 삭제되며 되돌릴 수 없습니다."
-    );
+    // common.js가 로그인/새로고침 시 캐시해 둔 관리자 여부 (framVision.isAdmin)
+    const isAdmin = sessionStorage.getItem("framVision.isAdmin") === "true";
+
+    const confirmMessage = isAdmin
+        ? "관리자 계정입니다.\n탈퇴 시 하위 직원 계정과 등록된 카메라·의약품·알림 등 관련 데이터가 모두 함께 삭제되며 되돌릴 수 없습니다.\n정말 탈퇴하시겠습니까?"
+        : "정말 탈퇴하시겠습니까?\n계정과 구독·권한 정보가 모두 삭제되며 되돌릴 수 없습니다.";
+
+    const confirmed = confirm(confirmMessage);
 
     if (!confirmed) {
         return;

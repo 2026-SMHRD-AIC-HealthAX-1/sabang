@@ -9,4 +9,7 @@ public interface OutboundRepository extends JpaRepository<Outbound, Long> {
 
     // 출고한 의약품을 등록한 관리자(=병원) 기준으로 조회
     List<Outbound> findByMedicine_Admin_MemberId(String adminId);
+
+    // 회원탈퇴(관리자) 시 정리용: 이 관리자의 의약품에 대한 출고 기록 전체 삭제
+    void deleteByMedicine_Admin_MemberId(String adminId);
 }
