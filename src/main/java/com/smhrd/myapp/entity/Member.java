@@ -23,26 +23,26 @@ public class Member {
 
 
     // 비밀번호
-    // DB : PASSWORD VARCHAR2(100) NOT NULL
-    @Column(name = "PASSWORD", nullable = false, length = 100)
+    // DB : PASSWORD VARCHAR2(100), NULL 허용 (가입 시 앱에서 항상 채워서 저장함)
+    @Column(name = "PASSWORD", length = 100)
     private String password;
 
 
     // 이메일
-    // DB : EMAIL VARCHAR2(100) NOT NULL
-    @Column(name = "EMAIL", nullable = false, length = 100)
+    // DB : EMAIL VARCHAR2(100), NULL 허용 (가입 시 앱에서 항상 채워서 저장함)
+    @Column(name = "EMAIL", length = 100)
     private String email;
 
 
     // 전화번호
-    // DB : PHONE VARCHAR2(20) NOT NULL
-    @Column(name = "PHONE", nullable = false, length = 20)
+    // DB : PHONE VARCHAR2(20), NULL 허용 (가입 시 앱에서 항상 채워서 저장함)
+    @Column(name = "PHONE", length = 20)
     private String phone;
 
 
     // 이름
-    // DB : MEMBER_NAME VARCHAR2(50) NOT NULL
-    @Column(name = "MEMBER_NAME", nullable = false, length = 50)
+    // DB : MEMBER_NAME VARCHAR2(50), NULL 허용 (가입 시 앱에서 항상 채워서 저장함)
+    @Column(name = "MEMBER_NAME", length = 50)
     private String memberName;
 
 
