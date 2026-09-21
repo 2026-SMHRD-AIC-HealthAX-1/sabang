@@ -5,9 +5,12 @@ import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,7 +21,10 @@ public class Medicine {
 	// 의약품 ID
     // MEDICINE 테이블의 기본키(PK)
     // DB : MEDICINE_ID NUMBER(10) PRIMARY KEY
+    // findMaxId()+1로 직접 계산하던 방식은 동시 요청 시 PK 충돌 위험이 있어 SEQUENCE로 교체함
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "medicine_seq")
+    @SequenceGenerator(name = "medicine_seq", sequenceName = "MEDICINE_SEQ", allocationSize = 1)
     @Column(name = "MEDICINE_ID")
     private Long medicineId;
 

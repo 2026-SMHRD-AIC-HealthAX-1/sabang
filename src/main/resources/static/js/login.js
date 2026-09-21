@@ -42,10 +42,22 @@ document
                     const billingResponse = await fetch("/api/subscription/me");
 
                     if (billingResponse.ok) {
-                        sessionStorage.setItem(
-                            "framVision.billingCache",
-                            JSON.stringify(await billingResponse.json())
-                        );
+
+                        const billing = await billingResponse.json();
+
+                        sessionStorage.setItem("framVision.billingCache", JSON.stringify(billing));
+
+                        // 구독 만료가 일주일(7일) 이내로 남았으면 로그인 시 미리 알려준다
+                        if (billing.nextPaymentDate) {
+
+                            const daysLeft = Math.ceil(
+                                (new Date(billing.nextPaymentDate) - new Date()) / (1000 * 60 * 60 * 24)
+                            );
+
+                            if (daysLeft >= 0 && daysLeft <= 7) {
+                                alert(`구독 만료가 ${daysLeft}일 남았습니다. 만료 전에 연장해 주세요.`);
+                            }
+                        }
                     }
 
                 } catch (error) {
@@ -53,7 +65,8 @@ document
                 }
             }
 
-            window.location.href = data.hasAccess ? "dashboard.html" : "index.html";
+            // 대시보드 접근 권한이 없으면(구독 만료 등) 이용안내 화면으로 보낸다 (거기서 결제/탈퇴 가능)
+            window.location.href = data.hasAccess ? "dashboard.html" : "guide.html";
 
         } catch (error) {
 

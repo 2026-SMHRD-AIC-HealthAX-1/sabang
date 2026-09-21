@@ -45,6 +45,7 @@ public class CameraRegistryController {
 
     // 카메라는 관리자 본인 소유 기준으로 등록되므로, 직원은 자신이 속한 관리자의 카메라를 봐야 한다.
     // HospitalStaff에 자신을 등록한 관리자ID가 없으면(=admin 본인이면) 그대로 자신의 ID를 사용.
+    // 소속 관리자의 구독이 만료되면 직원도 조회할 수 없다 (resolveActiveOwnerAdminId 참고).
     private String resolveOwnerAdminId(HttpSession session) {
 
         String memberId = (String) session.getAttribute("memberId");
@@ -53,15 +54,7 @@ public class CameraRegistryController {
             return null;
         }
 
-        if (subscriptionService.isActiveAdmin(memberId)) {
-            return memberId;
-        }
-
-        if (hospitalStaffService.hasAccess(memberId)) {
-            return hospitalStaffService.findAdminIdOf(memberId);
-        }
-
-        return null;
+        return hospitalStaffService.resolveActiveOwnerAdminId(memberId);
     }
 
     @GetMapping

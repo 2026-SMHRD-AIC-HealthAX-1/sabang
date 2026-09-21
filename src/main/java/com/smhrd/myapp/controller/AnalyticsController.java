@@ -30,6 +30,7 @@ public class AnalyticsController {
     }
 
     // 관리자는 본인 병원, 직원은 자신이 속한 관리자의 병원 데이터만 볼 수 있다.
+    // 소속 관리자의 구독이 만료되면 직원도 조회할 수 없다 (resolveActiveOwnerAdminId 참고).
     private String resolveOwnerAdminId(HttpSession session) {
 
         String memberId = (String) session.getAttribute("memberId");
@@ -38,15 +39,7 @@ public class AnalyticsController {
             return null;
         }
 
-        if (subscriptionService.isActiveAdmin(memberId)) {
-            return memberId;
-        }
-
-        if (hospitalStaffService.hasAccess(memberId)) {
-            return hospitalStaffService.findAdminIdOf(memberId);
-        }
-
-        return null;
+        return hospitalStaffService.resolveActiveOwnerAdminId(memberId);
     }
 
     // 병동/의약품/시간대별 집계는 프론트에서 계산하므로 원본 출고 기록을 그대로 반환

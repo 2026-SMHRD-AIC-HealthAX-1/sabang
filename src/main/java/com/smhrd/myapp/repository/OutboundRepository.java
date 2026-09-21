@@ -15,4 +15,7 @@ public interface OutboundRepository extends JpaRepository<Outbound, Long> {
 
     // 병동 삭제 전 확인용: 이 병동을 참조하는 출고 기록이 있는지
     long countByWard_WardSeqId(Long wardSeqId);
+
+    // 의약품 삭제 전 확인용: 이 의약품에 대한 출고 기록이 있는지
+    long countByMedicine_MedicineId(Long medicineId);
 }

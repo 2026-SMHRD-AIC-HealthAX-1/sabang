@@ -3,9 +3,12 @@ package com.smhrd.myapp.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 // 이 클래스가 DB 테이블과 연결되는 JPA Entity라는 뜻
@@ -15,8 +18,11 @@ import jakarta.persistence.Table;
 public class Camera {
 
     // 기본키(PK) 지정 - 카메라ID
-    // IDENTITY 자동증가는 캠퍼스 오라클 DB 버전에서 지원 안 될 수 있어 제외 (필요 시 회의 후 재도입)
+    // IDENTITY 자동증가는 캠퍼스 오라클 DB 버전에서 지원 안 될 수 있어 제외, 대신 SEQUENCE 사용
+    // (findMaxId()+1로 직접 계산하던 방식은 동시 요청 시 PK 충돌 위험이 있어 SEQUENCE로 교체함)
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "camera_seq")
+    @SequenceGenerator(name = "camera_seq", sequenceName = "CAMERA_SEQ", allocationSize = 1)
     @Column(name = "CAMERA_ID")
     private Long cameraId;
 

@@ -377,7 +377,8 @@ function updateSidebarLanguage(lang) {
 
         if (!me.hasAccess) {
             sessionStorage.removeItem(isAdminCacheKey);
-            window.location.replace("index.html");
+            // 구독 만료 등으로 대시보드 접근이 막힌 경우 안내 화면으로 보낸다
+            window.location.replace("guide.html");
             return;
         }
 
@@ -937,9 +938,6 @@ const translations = {
         backToDashboard:
             "대시보드로 돌아가기",
 
-        profileNotice:
-            "화면 데모 · 회원 정보는 이 브라우저에 저장됩니다. 구독결제 영역은 예시 데이터입니다.",
-
         noAccountName:
             "가입 정보 없음",
 
@@ -987,6 +985,18 @@ const translations = {
 
         perMonth:
             "원 / 월",
+
+        renewSubscriptionBtn:
+            "구독 연장하기",
+
+        paymentModalTitle:
+            "구독 결제",
+
+        paymentModalDesc:
+            "실제 결제는 진행되지 않는 데모 화면입니다.",
+
+        paymentPeriodLabel:
+            "구독 기간",
 
         billingStatusLabel:
             "구독 상태",
@@ -1449,9 +1459,6 @@ const translations = {
         backToDashboard:
             "Back to Dashboard",
 
-        profileNotice:
-            "Screen demo · Account info is stored in this browser. The billing section is sample data.",
-
         noAccountName:
             "No Account Info",
 
@@ -1499,6 +1506,18 @@ const translations = {
 
         perMonth:
             "/ month",
+
+        renewSubscriptionBtn:
+            "Renew Subscription",
+
+        paymentModalTitle:
+            "Subscription Payment",
+
+        paymentModalDesc:
+            "This is a demo screen - no real payment is processed.",
+
+        paymentPeriodLabel:
+            "Subscription Period",
 
         billingStatusLabel:
             "Subscription Status",

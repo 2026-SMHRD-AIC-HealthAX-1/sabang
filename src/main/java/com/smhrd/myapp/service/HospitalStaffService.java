@@ -13,15 +13,42 @@ public class HospitalStaffService {
 
     private final HospitalStaffRepository hospitalStaffRepository;
     private final MemberService memberService;
+    private final SubscriptionService subscriptionService;
 
-    public HospitalStaffService(HospitalStaffRepository hospitalStaffRepository, MemberService memberService) {
+    public HospitalStaffService(
+            HospitalStaffRepository hospitalStaffRepository,
+            MemberService memberService,
+            SubscriptionService subscriptionService
+    ) {
         this.hospitalStaffRepository = hospitalStaffRepository;
         this.memberService = memberService;
+        this.subscriptionService = subscriptionService;
     }
 
-    // 관리자에게 대시보드 접근 권한을 부여받은 직원인지 확인
+    // 관리자에게 대시보드 접근 권한을 부여받은 직원인지 확인 (소속 관계 자체만 봄, 구독 유효성은 안 봄)
     public boolean hasAccess(String memberId) {
         return hospitalStaffRepository.countByStaff_MemberId(memberId) > 0;
+    }
+
+    // 대시보드 접근 가능한 관리자ID 해석 (컨트롤러 3곳에서 공통으로 쓰던 로직을 여기로 모음):
+    // 본인이 유효 구독 관리자면 본인 ID, 직원이면 소속 관리자가 "지금도" 유효 구독 중일 때만 그 관리자 ID.
+    // 소속 관리자의 구독이 만료되면 직원도 접근 불가(null) - hasAccess()만으로는 구독 만료를 못 잡아서 따로 뺐다.
+    public String resolveActiveOwnerAdminId(String memberId) {
+
+        if (subscriptionService.isActiveAdmin(memberId)) {
+            return memberId;
+        }
+
+        if (hasAccess(memberId)) {
+
+            String ownerAdminId = findAdminIdOf(memberId);
+
+            if (ownerAdminId != null && subscriptionService.isActiveAdmin(ownerAdminId)) {
+                return ownerAdminId;
+            }
+        }
+
+        return null;
     }
 
     public boolean isGrantedBy(String adminId, String staffId) {
@@ -29,6 +56,9 @@ public class HospitalStaffService {
     }
 
     // 관리자가 하위 사용자에게 대시보드 접근 권한 부여
+    // 한 사용자가 동시에 두 병원 소속이 되면 findAdminIdOf()가 첫 번째 소속만 반환해서
+    // 카메라/통계 등 병원 소유 자원 조회가 조용히 엉뚱한(혹은 아예 접근 불가한) 결과를 내게 된다.
+    // 그래서 이미 다른 병원 직원이거나, 본인이 관리자(구독 중)인 사용자는 직원으로 추가할 수 없게 막는다.
     public void grantAccess(String adminId, String staffId) {
 
         if (adminId.equals(staffId)) {
@@ -39,6 +69,14 @@ public class HospitalStaffService {
             throw new IllegalStateException("이미 권한이 부여된 사용자입니다.");
         }
 
+        if (hasAccess(staffId)) {
+            throw new IllegalStateException("이미 다른 병원에 소속된 사용자입니다.");
+        }
+
+        if (subscriptionService.isActiveAdmin(staffId)) {
+            throw new IllegalStateException("이미 관리자(병원)로 가입된 사용자입니다.");
+        }
+
         Member admin = memberService.findById(adminId);
         Member staff = memberService.findById(staffId);
 
@@ -47,8 +85,6 @@ public class HospitalStaffService {
         }
 
         HospitalStaff record = new HospitalStaff();
-        // HISTORY_ID가 시퀀스/트리거로 자동 채워지지 않아 직접 계산해서 넣어줌
-        record.setHistoryId(hospitalStaffRepository.findMaxId() + 1);
         record.setAdmin(admin);
         record.setStaff(staff);
 
@@ -61,6 +97,7 @@ public class HospitalStaffService {
     }
 
     // 이 직원에게 권한을 부여한 관리자ID (카메라 등 관리자 소유 자원을 직원이 같이 볼 때 사용)
+    // grantAccess()에서 한 직원이 동시에 두 병원 소속이 되는 걸 막아뒀으므로 최대 1건만 존재한다
     public String findAdminIdOf(String staffId) {
 
         List<HospitalStaff> records = hospitalStaffRepository.findByStaff_MemberId(staffId);

@@ -98,6 +98,16 @@
             <p>소속 조직에서 시스템을 구독하고 사용자 권한을 관리하는 관리자에게 요청해 주세요.</p>
         </details>
     </section>
+
+    <!-- 로그인한 사용자에게만 보임 (index.js가 로그인 확인 후 hidden 해제) -->
+    <section id="withdrawSection" class="danger-guide" aria-labelledby="withdraw-title" hidden>
+        <div>
+            <p class="kicker">ACCOUNT</p>
+            <h2 id="withdraw-title">더 이상 서비스를 이용하지 않으신다면</h2>
+            <p>계정과 구독·권한 정보가 모두 삭제되며 되돌릴 수 없습니다. 관리자 계정이라면 하위 직원 계정과 등록된 카메라·의약품·알림 등 관련 데이터가 모두 함께 삭제됩니다.</p>
+        </div>
+        <button type="button" id="withdrawBtn" class="button danger">회원탈퇴</button>
+    </section>
 </main>
 
 <!-- 결제 팝업: 실제 결제는 하지 않는 데모 -->
@@ -138,5 +148,6 @@
 
 <script src="../js/index.js"></script>
 <script src="../js/payment.js"></script>
+<script src="../js/withdraw.js"></script>
 </body>
 </html>

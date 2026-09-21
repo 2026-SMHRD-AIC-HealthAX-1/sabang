@@ -50,12 +50,6 @@
                 </a>
             </div>
 
-            <!-- 데모 안내 -->
-            <p class="profile-notice" data-i18n="profileNotice">
-                화면 데모 · 회원 정보는 이 브라우저에 저장됩니다.
-                구독결제 영역은 예시 데이터입니다.
-            </p>
-
             <!-- 정보 조회 오류 안내 -->
             <div
                 id="accountError"
@@ -238,6 +232,10 @@
                         </div>
                     </div>
 
+                    <button type="button" id="openPaymentBtn" class="renew-subscription-btn" data-i18n="renewSubscriptionBtn">
+                        구독 연장하기
+                    </button>
+
                     <!-- 결제 상세 -->
                     <dl class="billing-details">
                         <div>
@@ -297,6 +295,40 @@
 
             </div>
         </main>
+    </div>
+
+    <!-- 구독 연장 결제 팝업: 실제 결제는 하지 않는 데모 (billingSection이 보일 때만 버튼이 있어 관리자만 연다) -->
+    <div id="paymentModal" class="payment-modal" hidden>
+        <div class="payment-modal-backdrop" id="paymentModalBackdrop"></div>
+        <div class="payment-modal-box" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+            <h2 id="paymentModalTitle" data-i18n="paymentModalTitle">구독 결제</h2>
+            <p class="payment-modal-desc" data-i18n="paymentModalDesc">실제 결제는 진행되지 않는 데모 화면입니다.</p>
+
+            <form id="paymentForm">
+                <label for="paymentMonths" data-i18n="paymentPeriodLabel">구독 기간</label>
+                <select id="paymentMonths" required>
+                    <option value="1">1개월 - 99,000원</option>
+                    <option value="3">3개월 - 270,000원</option>
+                    <option value="6">6개월 - 510,000원</option>
+                    <option value="12">1년 - 950,000원</option>
+                </select>
+
+                <label for="paymentMethod" data-i18n="billingMethodLabel">결제수단</label>
+                <select id="paymentMethod" required>
+                    <option value="credit_card">신용카드</option>
+                    <option value="bank_transfer">계좌이체</option>
+                    <option value="kakao_pay">카카오페이</option>
+                    <option value="virtual_account">무통장입금</option>
+                </select>
+
+                <div class="payment-modal-actions">
+                    <button type="button" id="closePaymentBtn" class="payment-modal-cancel-btn" data-i18n="cancelBtn">취소</button>
+                    <button type="submit" class="payment-modal-submit-btn" data-i18n="saveBtn">결제하기</button>
+                </div>
+
+                <p id="paymentMessage" class="payment-message"></p>
+            </form>
+        </div>
     </div>
 
     <!-- 순서를 유지해 주세요 -->

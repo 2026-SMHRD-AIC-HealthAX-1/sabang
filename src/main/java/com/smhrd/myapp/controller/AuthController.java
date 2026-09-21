@@ -61,9 +61,10 @@ public class AuthController {
         this.wardRepository = wardRepository;
     }
 
-    // 관리자(유효 구독 보유) 또는 권한을 부여받은 직원이면 대시보드 접근 가능
+    // 관리자(유효 구독 보유) 또는, 소속 관리자가 지금도 유효 구독 중인 직원이면 대시보드 접근 가능
+    // (관리자 구독이 만료되면 그 병원 직원들도 같이 접근이 막힌다)
     private boolean hasDashboardAccess(String memberId) {
-        return subscriptionService.isActiveAdmin(memberId) || hospitalStaffService.hasAccess(memberId);
+        return hospitalStaffService.resolveActiveOwnerAdminId(memberId) != null;
     }
 
     // 아이디/이메일/전화번호 중복 확인
@@ -151,8 +152,11 @@ public class AuthController {
         ));
     }
 
-    // 회원탈퇴: 관리자(유효 구독 보유)면 하위 직원 계정과 이 병원의 카메라/의약품/알림/출고/전표/병동
-    // 기록까지 전부 정리한 뒤 삭제한다. 일반 직원은 본인이 부여받은/부여한 권한과 구독만 정리하고 삭제한다.
+    // 회원탈퇴: 하위 직원 계정과 이 병원의 카메라/의약품/알림/출고/전표/병동 기록까지 전부 정리한 뒤 삭제한다.
+    // isActiveAdmin()(구독 만료 여부 확인)로 분기하지 않는다 - 구독이 만료된 뒤에도 카메라/의약품/병동은
+    // 그대로 남아있어서, 그걸 기준으로 정리 여부를 정하면 만료된 관리자가 탈퇴할 때 이 자원들이
+    // 안 지워진 채로 MEMBER만 지우려다 FK 제약 위반이 난다. 그래서 관리자였던 적이 있는지와 무관하게
+    // 매번 전부 시도한다 - 소유한 게 없으면 그냥 0건 삭제로 끝나서 일반 직원에게도 안전하다.
     // 자식 데이터를 FK 순서(알림 -> 출고 -> 전표품목 -> 전표 -> 의약품 -> 카메라 -> 병동)대로 먼저 지워야
     // MEMBER 삭제 시 제약 위반이 나지 않는다.
     @DeleteMapping("/me")
@@ -165,30 +169,25 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
         }
 
-        boolean isAdmin = subscriptionService.isActiveAdmin(memberId);
+        List<HospitalStaff> staffRecords = hospitalStaffService.listStaffOf(memberId);
 
-        if (isAdmin) {
+        for (HospitalStaff record : staffRecords) {
 
-            List<HospitalStaff> staffRecords = hospitalStaffService.listStaffOf(memberId);
+            String staffId = record.getStaff().getMemberId();
 
-            for (HospitalStaff record : staffRecords) {
-
-                String staffId = record.getStaff().getMemberId();
-
-                subscriptionService.deleteAllByAdmin(staffId);
-                hospitalStaffService.deleteAllGrantedBy(staffId);
-                hospitalStaffService.deleteAllAccessOf(staffId);
-                memberService.delete(staffId);
-            }
-
-            alertRepository.deleteByMedicine_Admin_MemberId(memberId);
-            outboundRepository.deleteByMedicine_Admin_MemberId(memberId);
-            slipItemRepository.deleteByMedicine_Admin_MemberId(memberId);
-            slipRepository.deleteByWard_Admin_MemberId(memberId);
-            medicineRepository.deleteByAdmin_MemberId(memberId);
-            cameraRepository.deleteByAdmin_MemberId(memberId);
-            wardRepository.deleteByAdmin_MemberId(memberId);
+            subscriptionService.deleteAllByAdmin(staffId);
+            hospitalStaffService.deleteAllGrantedBy(staffId);
+            hospitalStaffService.deleteAllAccessOf(staffId);
+            memberService.delete(staffId);
         }
+
+        alertRepository.deleteByMedicine_Admin_MemberId(memberId);
+        outboundRepository.deleteByMedicine_Admin_MemberId(memberId);
+        slipItemRepository.deleteByMedicine_Admin_MemberId(memberId);
+        slipRepository.deleteByWard_Admin_MemberId(memberId);
+        medicineRepository.deleteByAdmin_MemberId(memberId);
+        cameraRepository.deleteByAdmin_MemberId(memberId);
+        wardRepository.deleteByAdmin_MemberId(memberId);
 
         subscriptionService.deleteAllByAdmin(memberId);
         hospitalStaffService.deleteAllGrantedBy(memberId);
@@ -197,7 +196,7 @@ public class AuthController {
 
         session.invalidate();
 
-        return ResponseEntity.ok(Map.of("success", true, "cascaded", isAdmin));
+        return ResponseEntity.ok(Map.of("success", true));
     }
 
     // 현재 로그인 상태 확인

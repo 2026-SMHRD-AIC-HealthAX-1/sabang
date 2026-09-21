@@ -56,8 +56,14 @@ public class StaffController {
                 .map(record -> record.getStaff().getMemberId())
                 .collect(Collectors.toSet());
 
+        // 후보 목록에는 (a) 이미 이 관리자 소속인 사람(직원 목록 표시용) 또는
+        // (b) 아직 어디에도 소속 안 된 사람만 보여준다. 다른 병원 직원이거나 다른 관리자는 빼서
+        // 한 사람이 두 병원에 동시 소속되는 걸 애초에 검색 결과에서부터 막는다.
         List<Map<String, Object>> result = memberService.findAll().stream()
                 .filter(member -> !member.getMemberId().equals(adminId))
+                .filter(member -> grantedIds.contains(member.getMemberId())
+                        || (!hospitalStaffService.hasAccess(member.getMemberId())
+                            && !subscriptionService.isActiveAdmin(member.getMemberId())))
                 .map(member -> Map.<String, Object>of(
                         "memberId", member.getMemberId(),
                         "memberName", member.getMemberName(),

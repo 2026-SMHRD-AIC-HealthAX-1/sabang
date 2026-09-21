@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,12 +54,15 @@ public class SubscriptionService {
         this.memberService = memberService;
     }
 
-    // 결제완료(PAYMENT_STATUS='완료') 구독 이력이 있으면 관리자로 인정
+    // 결제완료(PAYMENT_STATUS='paid')이면서 아직 만료(END_DATE)되지 않은 구독이 있으면 관리자로 인정
     public boolean isActiveAdmin(String memberId) {
-        return subscriptionRepository.countByAdmin_MemberIdAndPaymentStatus(memberId, PAID) > 0;
+        return subscriptionRepository.countByAdmin_MemberIdAndPaymentStatusAndEndDateGreaterThanEqual(
+                memberId, PAID, LocalDate.now()) > 0;
     }
 
     // 결제(데모): 실제 결제 연동 없이 새 구독 레코드만 생성
+    // 아직 안 끝난 구독이 남아있으면(만료 전 미리 연장) 그 만료일부터 이어서 개월수를 더한다.
+    // 그냥 오늘부터 다시 계산하면 미리 연장한 만큼 손해라서 그렇다 - 이미 만료됐으면 오늘부터 시작.
     public Subscription pay(String memberId, int months, String paymentMethod) {
 
         String productName = PRODUCT_NAMES.get(months);
@@ -73,17 +77,24 @@ public class SubscriptionService {
             throw new IllegalStateException("존재하지 않는 회원입니다.");
         }
 
-        LocalDate startDate = LocalDate.now();
+        LocalDate today = LocalDate.now();
+
+        LocalDate currentPaidEndDate = subscriptionRepository.findByAdmin_MemberIdOrderByStartDateDescSubscriptionIdDesc(memberId).stream()
+                .filter(s -> PAID.equals(s.getPaymentStatus()))
+                .map(Subscription::getEndDate)
+                .filter(end -> end != null)
+                .max(Comparator.naturalOrder())
+                .orElse(today);
+
+        LocalDate extendFrom = currentPaidEndDate.isAfter(today) ? currentPaidEndDate : today;
 
         Subscription subscription = new Subscription();
-        // SUBSCRIPTION_ID가 시퀀스/트리거로 자동 채워지지 않아 직접 계산해서 넣어줌
-        subscription.setSubscriptionId(subscriptionRepository.findMaxId() + 1);
         subscription.setAdmin(admin);
         subscription.setProductName(productName);
         subscription.setPaymentMethod(paymentMethod);
         subscription.setPaymentStatus(PAID);
-        subscription.setStartDate(startDate);
-        subscription.setEndDate(startDate.plusMonths(months));
+        subscription.setStartDate(today);
+        subscription.setEndDate(extendFrom.plusMonths(months));
 
         return subscriptionRepository.save(subscription);
     }
@@ -91,7 +102,7 @@ public class SubscriptionService {
     // profile.html 구독결제 정보(관리자 전용)에 쓰이는 최신 구독 조회
     public Map<String, Object> getBillingInfo(String memberId) {
 
-        List<Subscription> subscriptions = subscriptionRepository.findByAdmin_MemberIdOrderByStartDateDesc(memberId);
+        List<Subscription> subscriptions = subscriptionRepository.findByAdmin_MemberIdOrderByStartDateDescSubscriptionIdDesc(memberId);
 
         if (subscriptions.isEmpty()) {
             return null;

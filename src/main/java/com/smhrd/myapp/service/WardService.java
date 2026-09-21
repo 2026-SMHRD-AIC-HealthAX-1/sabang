@@ -71,7 +71,6 @@ public class WardService {
         }
 
         Ward ward = new Ward();
-        ward.setWardSeqId(wardRepository.findMaxId() + 1);
         ward.setWardCode(code);
         ward.setWardName(name);
         ward.setLocation(loc.isEmpty() ? null : loc);

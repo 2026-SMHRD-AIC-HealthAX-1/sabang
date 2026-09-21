@@ -20,6 +20,12 @@
 
         const me = await response.json();
 
+        if (!me.hasAccess) {
+            // 구독 만료 등으로 대시보드 접근 자체가 막힌 경우 안내 화면으로 바로 보낸다
+            window.location.replace("guide.html");
+            return;
+        }
+
         if (!me.isAdmin) {
             window.location.replace("dashboard.html");
         }

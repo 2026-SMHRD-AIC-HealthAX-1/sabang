@@ -42,6 +42,15 @@
 .access-guide h2,.guide-faq h2{font-size:22px;margin:0 0 14px;letter-spacing:-.4px}
 .access-guide p:not(.kicker){font-size:13px;color:var(--muted);line-height:1.9;margin:0}
 .access-guide .button{flex-shrink:0;gap:4px;font-size:12px}
+.danger-guide{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-top:30px;padding:28px;border:1px solid #f3d3d5;border-radius:14px;background:#fdf3f3}
+.danger-guide .kicker{color:#c73743;font-size:12px;letter-spacing:1px;margin:0 0 4px}
+.danger-guide h2{font-size:20px;margin:0 0 10px;letter-spacing:-.4px}
+.danger-guide p:not(.kicker){font-size:13px;color:var(--muted);line-height:1.9;margin:0}
+.button.danger{flex-shrink:0;border-color:#e4a5a9;color:#c73743}
+.button.danger:hover{background:#c73743;border-color:#c73743;color:white}
+@media(max-width:700px){
+    .danger-guide{align-items:flex-start;flex-direction:column;padding:24px;gap:20px}
+}
 .guide-faq{margin-top:42px}
 .guide-faq details{padding:19px 22px;background:#fff;border:1px solid var(--line);border-radius:10px;margin-top:11px}
 .guide-faq summary{cursor:pointer;font-size:14px;font-weight:600;line-height:1.7}

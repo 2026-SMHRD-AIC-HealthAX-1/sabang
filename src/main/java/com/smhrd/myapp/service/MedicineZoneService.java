@@ -3,8 +3,11 @@ package com.smhrd.myapp.service;
 import com.smhrd.myapp.entity.Camera;
 import com.smhrd.myapp.entity.Medicine;
 import com.smhrd.myapp.entity.Member;
+import com.smhrd.myapp.repository.AlertRepository;
 import com.smhrd.myapp.repository.CameraRepository;
 import com.smhrd.myapp.repository.MedicineRepository;
+import com.smhrd.myapp.repository.OutboundRepository;
+import com.smhrd.myapp.repository.SlipItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,15 +21,24 @@ public class MedicineZoneService {
     private final MedicineRepository medicineRepository;
     private final CameraRepository cameraRepository;
     private final MemberService memberService;
+    private final AlertRepository alertRepository;
+    private final OutboundRepository outboundRepository;
+    private final SlipItemRepository slipItemRepository;
 
     public MedicineZoneService(
             MedicineRepository medicineRepository,
             CameraRepository cameraRepository,
-            MemberService memberService
+            MemberService memberService,
+            AlertRepository alertRepository,
+            OutboundRepository outboundRepository,
+            SlipItemRepository slipItemRepository
     ) {
         this.medicineRepository = medicineRepository;
         this.cameraRepository = cameraRepository;
         this.memberService = memberService;
+        this.alertRepository = alertRepository;
+        this.outboundRepository = outboundRepository;
+        this.slipItemRepository = slipItemRepository;
     }
 
     public List<Medicine> listByAdmin(String adminId) {
@@ -83,7 +95,6 @@ public class MedicineZoneService {
         }
 
         Medicine medicine = new Medicine();
-        medicine.setMedicineId(medicineRepository.findMaxId() + 1);
         medicine.setAdmin(admin);
         medicine.setMedicineName(medicineName);
         medicine.setHighRiskYn(highRiskYn != null && !highRiskYn.isBlank() ? highRiskYn : "N");
@@ -163,9 +174,17 @@ public class MedicineZoneService {
         return medicineRepository.save(medicine);
     }
 
+    // 알림/출고기록/전표품목이 이 의약품을 NOT NULL FK로 참조하고 있어서, 사용 이력이 있으면
+    // 삭제 전에 막아야 한다 (안 막으면 FK 제약 위반 예외가 그대로 터짐)
     public void delete(String adminId, Long medicineId) {
 
         Medicine medicine = requireOwnedMedicine(adminId, medicineId);
+
+        if (alertRepository.countByMedicine_MedicineId(medicineId) > 0
+                || outboundRepository.countByMedicine_MedicineId(medicineId) > 0
+                || slipItemRepository.countByMedicine_MedicineId(medicineId) > 0) {
+            throw new IllegalStateException("이 의약품은 사용 중(알림·출고·전표 기록)이라 삭제할 수 없습니다.");
+        }
 
         medicineRepository.delete(medicine);
     }

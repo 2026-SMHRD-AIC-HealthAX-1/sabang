@@ -3,9 +3,12 @@ package com.smhrd.myapp.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,9 +18,12 @@ public class Ward {
 
 	 // 병동 대체키(PK) - WARD_CODE(병동번호)가 병원마다 겹칠 수 있어서
 	 // 진짜 PK는 이 숫자 대체키를 쓰고, WARD_CODE는 (ADMIN_ID, WARD_CODE)로만 유일하면 된다.
-	 // IDENTITY 자동증가는 캠퍼스 오라클 DB 버전에서 지원 안 될 수 있어 제외 (findMaxId()+1로 직접 계산)
+	 // IDENTITY 자동증가는 캠퍼스 오라클 DB 버전에서 지원 안 될 수 있어 제외, 대신 SEQUENCE 사용
+	 // (findMaxId()+1로 직접 계산하던 방식은 동시 요청 시 PK 충돌 위험이 있어 SEQUENCE로 교체함)
     // DB : WARD_SEQ_ID NUMBER(10) PRIMARY KEY
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ward_seq")
+    @SequenceGenerator(name = "ward_seq", sequenceName = "WARD_SEQ", allocationSize = 1)
     @Column(name = "WARD_SEQ_ID")
     private Long wardSeqId;
 

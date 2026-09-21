@@ -9,6 +9,8 @@
 
 const loginBtn = document.getElementById("authLoginBtn");
 const signupBtn = document.getElementById("authSignupBtn");
+// guide.html에만 있는 섹션 (index.html에는 없어서 null일 수 있음)
+const withdrawSection = document.getElementById("withdrawSection");
 
 async function applyAuthState() {
 
@@ -18,6 +20,10 @@ async function applyAuthState() {
 
         if (!response.ok) {
             return;
+        }
+
+        if (withdrawSection) {
+            withdrawSection.hidden = false;
         }
 
         loginBtn.textContent = "로그아웃";

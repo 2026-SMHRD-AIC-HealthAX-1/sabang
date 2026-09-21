@@ -36,7 +36,9 @@ public class CameraRegistryService {
     // 카메라 등록: STREAM_URL의 파이썬 카메라 인덱스는 "이 관리자가 쓰고 있는 인덱스 중
     // 비어있는 가장 작은 번호"로 매긴다 (관리자별로 0부터 시작, 삭제로 생긴 빈 자리도 재사용).
     // CAMERA_ID(PK)는 이 인덱스와 무관하게 시스템 전체에서 계속 유일한 값을 씀.
-    // (지금은 노트북 한계로 카메라가 2대뿐이라 인덱스 2 이상은 화면이 안 나옴)
+    // 병원(관리자)마다 자기 서버 + 카메라 세트를 따로 운영하는 배포 구조라 대수 제한은 두지 않는다.
+    // (지금 캠퍼스 테스트 DB에서 여러 admin이 물리 웹캠 2대짜리 노트북 하나를 같이 쓰고 있는 건
+    // 테스트 환경 특성일 뿐, 실제 병원 배포에서는 병원마다 카메라 대수가 다를 수 있다)
     public Camera add(String adminId, String cameraName) {
 
         Member admin = memberService.findById(adminId);
@@ -45,11 +47,9 @@ public class CameraRegistryService {
             throw new IllegalStateException("존재하지 않는 회원입니다.");
         }
 
-        long nextId = cameraRepository.findMaxId() + 1;
         int streamIndex = nextAvailableStreamIndex(adminId);
 
         Camera camera = new Camera();
-        camera.setCameraId(nextId);
         camera.setAdmin(admin);
         camera.setCameraName(cameraName);
         camera.setConnectionStatus("0");

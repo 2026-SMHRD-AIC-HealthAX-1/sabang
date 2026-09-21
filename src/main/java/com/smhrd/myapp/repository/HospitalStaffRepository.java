@@ -2,7 +2,6 @@ package com.smhrd.myapp.repository;
 
 import com.smhrd.myapp.entity.HospitalStaff;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -16,10 +15,6 @@ public interface HospitalStaffRepository extends JpaRepository<HospitalStaff, Lo
     List<HospitalStaff> findByAdmin_MemberId(String adminId);
 
     List<HospitalStaff> findByStaff_MemberId(String staffId);
-
-    // HISTORY_ID가 시퀀스/트리거로 자동 채워지지 않아 저장 전 직접 계산해야 함
-    @Query("SELECT COALESCE(MAX(h.historyId), 0) FROM HospitalStaff h")
-    Long findMaxId();
 
     // 권한 회수
     void deleteByAdmin_MemberIdAndStaff_MemberId(String adminId, String staffId);

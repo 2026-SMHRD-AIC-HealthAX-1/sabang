@@ -2,15 +2,10 @@ package com.smhrd.myapp.repository;
 
 import com.smhrd.myapp.entity.Ward;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface WardRepository extends JpaRepository<Ward, Long> {
-
-    // WARD_SEQ_ID가 시퀀스/트리거로 자동 채워지지 않아 저장 전 직접 계산해야 함
-    @Query("SELECT COALESCE(MAX(w.wardSeqId), 0) FROM Ward w")
-    Long findMaxId();
 
     // 관리자(=병원)가 등록한 병동 전체
     List<Ward> findByAdmin_MemberId(String adminId);
