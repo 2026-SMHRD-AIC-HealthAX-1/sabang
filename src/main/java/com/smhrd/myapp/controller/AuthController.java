@@ -7,6 +7,8 @@ import com.smhrd.myapp.repository.CameraRepository;
 import com.smhrd.myapp.repository.MedicineRepository;
 import com.smhrd.myapp.repository.OutboundRepository;
 import com.smhrd.myapp.repository.SlipItemRepository;
+import com.smhrd.myapp.repository.SlipRepository;
+import com.smhrd.myapp.repository.WardRepository;
 import com.smhrd.myapp.service.HospitalStaffService;
 import com.smhrd.myapp.service.MemberService;
 import com.smhrd.myapp.service.SubscriptionService;
@@ -30,8 +32,10 @@ public class AuthController {
     private final AlertRepository alertRepository;
     private final OutboundRepository outboundRepository;
     private final SlipItemRepository slipItemRepository;
+    private final SlipRepository slipRepository;
     private final MedicineRepository medicineRepository;
     private final CameraRepository cameraRepository;
+    private final WardRepository wardRepository;
 
     public AuthController(
             MemberService memberService,
@@ -40,8 +44,10 @@ public class AuthController {
             AlertRepository alertRepository,
             OutboundRepository outboundRepository,
             SlipItemRepository slipItemRepository,
+            SlipRepository slipRepository,
             MedicineRepository medicineRepository,
-            CameraRepository cameraRepository
+            CameraRepository cameraRepository,
+            WardRepository wardRepository
     ) {
         this.memberService = memberService;
         this.subscriptionService = subscriptionService;
@@ -49,8 +55,10 @@ public class AuthController {
         this.alertRepository = alertRepository;
         this.outboundRepository = outboundRepository;
         this.slipItemRepository = slipItemRepository;
+        this.slipRepository = slipRepository;
         this.medicineRepository = medicineRepository;
         this.cameraRepository = cameraRepository;
+        this.wardRepository = wardRepository;
     }
 
     // 관리자(유효 구독 보유) 또는 권한을 부여받은 직원이면 대시보드 접근 가능
@@ -143,9 +151,9 @@ public class AuthController {
         ));
     }
 
-    // 회원탈퇴: 관리자(유효 구독 보유)면 하위 직원 계정과 이 병원의 카메라/의약품/알림/출고 기록까지
-    // 전부 정리한 뒤 삭제한다. 일반 직원은 본인이 부여받은/부여한 권한과 구독만 정리하고 삭제한다.
-    // 자식 데이터를 FK 순서(알림 -> 출고 -> 전표품목 -> 의약품 -> 카메라)대로 먼저 지워야
+    // 회원탈퇴: 관리자(유효 구독 보유)면 하위 직원 계정과 이 병원의 카메라/의약품/알림/출고/전표/병동
+    // 기록까지 전부 정리한 뒤 삭제한다. 일반 직원은 본인이 부여받은/부여한 권한과 구독만 정리하고 삭제한다.
+    // 자식 데이터를 FK 순서(알림 -> 출고 -> 전표품목 -> 전표 -> 의약품 -> 카메라 -> 병동)대로 먼저 지워야
     // MEMBER 삭제 시 제약 위반이 나지 않는다.
     @DeleteMapping("/me")
     @Transactional
@@ -176,8 +184,10 @@ public class AuthController {
             alertRepository.deleteByMedicine_Admin_MemberId(memberId);
             outboundRepository.deleteByMedicine_Admin_MemberId(memberId);
             slipItemRepository.deleteByMedicine_Admin_MemberId(memberId);
+            slipRepository.deleteByWard_Admin_MemberId(memberId);
             medicineRepository.deleteByAdmin_MemberId(memberId);
             cameraRepository.deleteByAdmin_MemberId(memberId);
+            wardRepository.deleteByAdmin_MemberId(memberId);
         }
 
         subscriptionService.deleteAllByAdmin(memberId);

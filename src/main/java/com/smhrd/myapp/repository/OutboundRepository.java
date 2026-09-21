@@ -12,4 +12,7 @@ public interface OutboundRepository extends JpaRepository<Outbound, Long> {
 
     // 회원탈퇴(관리자) 시 정리용: 이 관리자의 의약품에 대한 출고 기록 전체 삭제
     void deleteByMedicine_Admin_MemberId(String adminId);
+
+    // 병동 삭제 전 확인용: 이 병동을 참조하는 출고 기록이 있는지
+    long countByWard_WardSeqId(Long wardSeqId);
 }

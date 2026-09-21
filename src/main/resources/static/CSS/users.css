@@ -877,3 +877,197 @@ body.dark-mode .zone-modal-cancel-btn {
     border-color: #334155;
     color: #e2e8f0;
 }
+
+
+/* ==================================================
+   병동 관리
+================================================== */
+
+.ward-card {
+    margin-top: 22px;
+    padding: 20px;
+}
+
+.ward-table-wrapper {
+    width: 100%;
+    margin-top: 16px;
+    overflow-x: auto;
+}
+
+.ward-table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ward-table-wrapper th,
+.ward-table-wrapper td {
+    padding: 14px 12px;
+    white-space: nowrap;
+    text-align: left;
+    font-size: calc(14px * var(--font-scale, 1));
+    border-bottom: 1px solid #edf1f5;
+}
+
+.ward-table-wrapper th {
+    background: #f7f9fc;
+    color: #536b88;
+    font-weight: 600;
+}
+
+.ward-table-wrapper td {
+    color: #243b5a;
+}
+
+.ward-delete-btn,
+.ward-edit-btn,
+.ward-save-btn,
+.ward-cancel-btn {
+    padding: 5px 10px;
+    margin-right: 6px;
+    border-radius: 6px;
+    font-size: calc(12px * var(--font-scale, 1));
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.ward-delete-btn {
+    border: 1px solid #e4a5a9;
+    background: white;
+    color: #c73743;
+}
+
+.ward-delete-btn:hover {
+    background: #c73743;
+    color: white;
+}
+
+.ward-edit-btn,
+.ward-cancel-btn {
+    border: 1px solid #d7e1ef;
+    background: white;
+    color: #33465e;
+}
+
+.ward-edit-btn:hover,
+.ward-cancel-btn:hover {
+    background: #f4f8fd;
+}
+
+.ward-save-btn {
+    border: 0;
+    background: #1474ed;
+    color: white;
+}
+
+.ward-save-btn:hover {
+    background: #0d5fc9;
+}
+
+.ward-edit-name-input,
+.ward-edit-location-input {
+    width: 100%;
+    height: 34px;
+    border: 1px solid #d7e1ef;
+    border-radius: 6px;
+    padding: 0 8px;
+    font-size: calc(13px * var(--font-scale, 1));
+    box-sizing: border-box;
+}
+
+.ward-add-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.ward-add-row input {
+    flex: 1;
+    min-width: 120px;
+    height: 40px;
+    border: 1px solid #d7e1ef;
+    border-radius: 7px;
+    padding: 0 12px;
+    font-size: calc(13px * var(--font-scale, 1));
+    box-sizing: border-box;
+}
+
+.ward-add-row input:focus {
+    border-color: #1474ed;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(20, 116, 237, 0.08);
+}
+
+.ward-add-btn {
+    flex-shrink: 0;
+    height: 40px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 7px;
+    background: #1474ed;
+    color: white;
+    font-size: calc(13px * var(--font-scale, 1));
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.ward-add-btn:hover {
+    background: #0d5fc9;
+}
+
+.ward-form-message {
+    min-height: 16px;
+    margin: 10px 0 0;
+    font-size: calc(12px * var(--font-scale, 1));
+    color: #e44248;
+    text-align: center;
+}
+
+@media (max-width: 650px) {
+
+    .ward-add-row {
+        flex-direction: column;
+    }
+
+    .ward-add-row input,
+    .ward-add-btn {
+        width: 100%;
+    }
+}
+
+
+/* ================= 병동 관리 - 다크 모드 ================= */
+
+body.dark-mode .ward-table-wrapper th {
+    background: #273449;
+    color: #e2e8f0;
+}
+
+body.dark-mode .ward-table-wrapper td {
+    color: #e2e8f0;
+    border-color: #334155;
+}
+
+body.dark-mode .ward-add-row input {
+    background: #273449;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+
+body.dark-mode .ward-add-row input::placeholder {
+    color: #94a3b8;
+}
+
+body.dark-mode .ward-edit-btn,
+body.dark-mode .ward-cancel-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+
+body.dark-mode .ward-edit-name-input,
+body.dark-mode .ward-edit-location-input {
+    background: #273449;
+    border-color: #334155;
+    color: #e2e8f0;
+}
