@@ -12,8 +12,9 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 public class CameraController {
 
     // Python Flask에서 실행 중인 CCTV 영상 주소
+	// Python FastAPI에서 실행 중인 CCTV 영상 주소
     private static final String CAMERA_URL =
-            "http://localhost:5000/video";
+    		"http://127.0.0.1:8000/video/0";
 
 
     // 웹페이지에서 /camera/video 요청이 들어오면 실행

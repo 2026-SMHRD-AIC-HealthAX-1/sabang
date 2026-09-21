@@ -1,8 +1,16 @@
 import cv2
+import os
 
+from ultralytics import YOLO
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 
+
+# YOLO 세그멘테이션 모델 불러오기
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "best.pt")
+
+model = YOLO(MODEL_PATH)
 
 # FastAPI 서버 생성
 app = FastAPI()
@@ -22,6 +30,8 @@ cameras = {
 
 def generate_frames(camera_id):
 
+    print(">>> generate_frames 실행됨!", flush=True)
+
     # 요청한 카메라 가져오기
     camera = cameras.get(camera_id)
 
@@ -39,22 +49,29 @@ def generate_frames(camera_id):
             print(f"CAM {camera_id} 영상 읽기 실패")
             break
 
+        # YOLO 세그멘테이션 탐지
+        results = model(frame, conf=0.6, verbose=False)
+
+        # 탐지 개수 확인
+        print(f"DETECT_COUNT={len(results[0].boxes)}", flush=True)
+
+        # 탐지 결과를 프레임 위에 그리기
+        annotated_frame = results[0].plot()
+
         # JPG 형식으로 변환
-        success, buffer = cv2.imencode(".jpg", frame)
+        success, buffer = cv2.imencode(".jpg", annotated_frame)
 
         if not success:
             continue
 
         frame_bytes = buffer.tobytes()
 
-        # MJPEG 스트리밍
         yield (
             b"--frame\r\n"
             b"Content-Type: image/jpeg\r\n\r\n"
             + frame_bytes
             + b"\r\n"
         )
-
 
 # 실시간 영상 API
 
