@@ -883,6 +883,51 @@ const translations = {
         noOutboundDataMessage:
             "표시할 출고 데이터가 없습니다.",
 
+        wardManageTitle:
+            "병동 관리",
+
+        colWardId:
+            "병동번호",
+
+        colWardName:
+            "병동명",
+
+        colLocation:
+            "위치",
+
+        wardIdPlaceholder:
+            "예: 7병동",
+
+        wardNamePlaceholder:
+            "병동명",
+
+        locationPlaceholder:
+            "위치 (선택)",
+
+        addWardBtn:
+            "병동 추가",
+
+        editWardBtn:
+            "수정",
+
+        deleteWardBtn:
+            "삭제",
+
+        noWardMessage:
+            "등록된 병동이 없습니다.",
+
+        wardAddFailMessage:
+            "병동 추가에 실패했습니다. 다시 시도해 주세요.",
+
+        wardUpdateFailMessage:
+            "병동 수정에 실패했습니다. 다시 시도해 주세요.",
+
+        wardDeleteConfirmMessage:
+            "이 병동을 삭제하시겠습니까?",
+
+        wardDeleteFailMessage:
+            "병동 삭제에 실패했습니다. 다시 시도해 주세요.",
+
         profileTitle:
             "개인정보 설정",
 
@@ -1349,6 +1394,51 @@ const translations = {
 
         noOutboundDataMessage:
             "No outbound data to display.",
+
+        wardManageTitle:
+            "Ward Management",
+
+        colWardId:
+            "Ward No.",
+
+        colWardName:
+            "Ward Name",
+
+        colLocation:
+            "Location",
+
+        wardIdPlaceholder:
+            "e.g. Ward 7",
+
+        wardNamePlaceholder:
+            "Ward name",
+
+        locationPlaceholder:
+            "Location (optional)",
+
+        addWardBtn:
+            "Add Ward",
+
+        editWardBtn:
+            "Edit",
+
+        deleteWardBtn:
+            "Delete",
+
+        noWardMessage:
+            "No wards registered.",
+
+        wardAddFailMessage:
+            "Failed to add ward. Please try again.",
+
+        wardUpdateFailMessage:
+            "Failed to update ward. Please try again.",
+
+        wardDeleteConfirmMessage:
+            "Delete this ward?",
+
+        wardDeleteFailMessage:
+            "Failed to delete ward. Please try again.",
 
         profileTitle:
             "Profile Settings",

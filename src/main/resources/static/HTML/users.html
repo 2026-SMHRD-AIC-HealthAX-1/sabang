@@ -382,6 +382,58 @@
             </section>
 
 
+            <!-- ==================================================
+                 병동 관리
+            ================================================== -->
+
+            <section class="card ward-card" aria-labelledby="ward-title">
+
+                <h2 class="card-title" id="ward-title">
+                    <i class="fa-solid fa-hospital" aria-hidden="true"></i>
+                    <span data-i18n="wardManageTitle">병동 관리</span>
+                </h2>
+
+                <div class="ward-table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th scope="col" data-i18n="colWardId">병동번호</th>
+                                <th scope="col" data-i18n="colWardName">병동명</th>
+                                <th scope="col" data-i18n="colLocation">위치</th>
+                                <th scope="col" data-i18n="colAction">작업</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="wardTableBody">
+                            <tr>
+                                <td class="table-loading-row" colspan="4" data-i18n="loadingLabel">불러오는 중...</td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <form id="wardAddForm" class="ward-add-row">
+
+                    <input type="text" id="wardIdInput" placeholder="예: 7병동" data-i18n-placeholder="wardIdPlaceholder" autocomplete="off" required>
+                    <input type="text" id="wardNameInput" placeholder="병동명" data-i18n-placeholder="wardNamePlaceholder" autocomplete="off" required>
+                    <input type="text" id="wardLocationInput" placeholder="위치 (선택)" data-i18n-placeholder="locationPlaceholder" autocomplete="off">
+
+                    <button type="submit" class="ward-add-btn">
+                        <i class="fa-solid fa-plus"></i>
+                        <span data-i18n="addWardBtn">병동 추가</span>
+                    </button>
+
+                </form>
+
+                <p id="wardFormMessage" class="ward-form-message"></p>
+
+            </section>
+
+
         </main>
 
 
@@ -439,6 +491,7 @@
 
 
     <script src="../js/users.js"></script>
+    <script src="../js/ward-ui.js"></script>
 
     <script src="../js/zone-store.js"></script>
     <script src="../js/zone-ui.js"></script>
