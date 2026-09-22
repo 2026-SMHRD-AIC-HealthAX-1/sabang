@@ -143,7 +143,7 @@ function renderManageList() {
     cameraManageList.innerHTML = cameras.map(camera => `
 
         <li>
-            <span>${camera.cameraName}</span>
+            <span>${escapeHtml(camera.cameraName)}</span>
             <select class="camera-role-select" data-camera-id="${camera.cameraId}">
                 <option value="MONITOR" ${camera.cameraRole === "MONITOR" ? "selected" : ""}>${t("cameraRoleMonitor")}</option>
                 <option value="OCR_SCAN" ${camera.cameraRole === "OCR_SCAN" ? "selected" : ""}>${t("cameraRoleOcrScan")}</option>

@@ -277,12 +277,12 @@ function renderList() {
 
             <span class="zone-color-dot" style="background:${colorFor(zone.medicineId)}"></span>
 
-            <span class="zone-name-label" title="${zone.medicineName}">${zone.medicineName}</span>
+            <span class="zone-name-label" title="${escapeHtml(zone.medicineName)}">${escapeHtml(zone.medicineName)}</span>
 
             <select class="zone-camera-select" data-medicine-id="${zone.medicineId}">
                 ${cameras.map(camera => `
                     <option value="${camera.cameraId}" ${camera.cameraId === zone.cameraId ? "selected" : ""}>
-                        ${camera.cameraName}
+                        ${escapeHtml(camera.cameraName)}
                     </option>
                 `).join("")}
             </select>

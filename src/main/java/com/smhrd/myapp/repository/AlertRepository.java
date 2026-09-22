@@ -13,11 +13,17 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
     // 직원에게는 재고부족(LOW_STOCK)만 보여주므로, 알림 종류로 걸러서 조회
     List<Alert> findByMedicine_Admin_MemberIdAndAlertTypeOrderByAlertTimeDesc(String adminId, String alertType);
 
+    // 직원용 "알림(주의) 한 줄" 안내에 쓸, 종류 상관없이 가장 최근 미처리 알림
+    List<Alert> findByMedicine_Admin_MemberIdAndProcessStatusOrderByAlertTimeDesc(String adminId, String processStatus);
+
     // 관리자가 아직 처리하지 않은 알림 수
     long countByMedicine_Admin_MemberIdAndProcessStatus(String adminId, String processStatus);
 
     // 의약품 삭제 전 확인용: 이 의약품에 걸린 알림이 있는지
     long countByMedicine_MedicineId(Long medicineId);
+
+    // 재고부족 알림 중복 생성 방지용: 이 의약품에 이미 미처리 상태인 이 종류의 알림이 있는지
+    long countByMedicine_MedicineIdAndAlertTypeAndProcessStatus(Long medicineId, String alertType, String processStatus);
 
     // 회원탈퇴(관리자) 시 정리용: 이 관리자의 의약품에 걸린 알림 전체 삭제
     void deleteByMedicine_Admin_MemberId(String adminId);

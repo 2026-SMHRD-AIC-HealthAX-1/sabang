@@ -4,10 +4,11 @@ import cv2
 import os
 import requests
 
+from datetime import datetime
 from ultralytics import YOLO
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-from collections import deque, Counter
+from collections import Counter
 
 # 새로 만든 OCR 모듈 임포트
 import ocr_processor
@@ -16,12 +17,11 @@ import ocr_processor
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "best.pt")
 
-# ⭐ 스프링 웹 서버가 이미지를 읽어갈 수 있는 실제 저장 폴더 경로 설정
+# 스프링 웹 서버가 이미지를 읽어갈 수 있는 실제 저장 폴더 경로 설정
 SPRING_UPLOAD_DIR = os.path.join(BASE_DIR, "..", "src", "main", "resources", "static", "uploads")
-os.makedirs(SPRING_UPLOAD_DIR, exist_ok=True) # 폴더가 없으면 자동 생성
+os.makedirs(SPRING_UPLOAD_DIR, exist_ok=True)
 
-# 전표(slip) 인식을 위한 설정값 ⭐ (본인의 YOLO 클래스명에 맞게 변경하세요!)
-SLIP_CLASS_NAME = "slip"  # 예: "receipt", "document", "전표" 등 
+# 전표(slip) 인식을 위한 설정값
 SLIP_WAIT_TIME = 1.0      # 전표가 카메라에 1초 동안 유지되어야 캡처
 SLIP_COOLDOWN = 10.0      # 한 번 캡처 후 다음 캡처까지 10초 대기 (중복 캡처 방지)
 
@@ -30,29 +30,107 @@ model_lock = threading.Lock()
 SPRING_URL = "http://127.0.0.1:8089"
 ZONE_REFRESH_INTERVAL_SEC = 30
 
+# 구역별 개수를 "안정됐다"고 확정해서 출력/전송할지 판단하는 주기
+COUNT_DECISION_INTERVAL_SEC = 1.5
+
+# 전표 인식 후, 반출로 세그먼트 개수가 줄어드는 걸 이만큼(초) 안에 못 잡으면 포기한다
+DISPENSE_WATCH_TIMEOUT_SEC = 300
+
+# 이 파이썬 인스턴스가 담당하는 병원(관리자) 계정
+ADMIN_ID = "admin"
+
+
+# ====================================================
+# Spring API 연동 및 카메라 레지스트리 관리
+# ====================================================
+def fetch_camera_registry(admin_id):
+    try:
+        response = requests.get(f"{SPRING_URL}/api/cameras/by-admin/{admin_id}", timeout=5)
+        if response.status_code != 200:
+            print("카메라 목록 조회 실패:", response.status_code)
+            return None
+
+        python_id_to_spring_id = {}
+        ocr_python_id = None
+
+        for camera in response.json():
+            stream_url = camera.get("streamUrl") or ""
+            try:
+                python_id = int(stream_url.rstrip("/").rsplit("/", 1)[-1])
+            except ValueError:
+                continue
+
+            python_id_to_spring_id[python_id] = camera["cameraId"]
+
+            if camera.get("cameraRole") == "OCR_SCAN":
+                ocr_python_id = python_id
+
+        return python_id_to_spring_id, ocr_python_id
+
+    except Exception as e:
+        print("카메라 목록 조회 오류:", e)
+        return None
+
+
+def fetch_camera_registry_with_retry(admin_id, retry_interval_sec=5, max_attempts=12):
+    for attempt in range(max_attempts):
+        result = fetch_camera_registry(admin_id)
+        if result is not None:
+            return result
+        print(f"카메라 목록 조회 재시도 {attempt + 1}/{max_attempts}...")
+        time.sleep(retry_interval_sec)
+
+    print("카메라 목록 조회 계속 실패 - 일단 기본 매핑으로 시작")
+    # 기본값: 0번=OCR_SCAN(cameraId: 1), 1번=MONITOR(cameraId: 2)
+    return {0: 1, 1: 2}, 0
+
+
+PYTHON_ID_TO_SPRING_ID, OCR_PYTHON_ID = fetch_camera_registry_with_retry(ADMIN_ID)
+if OCR_PYTHON_ID is None:
+    OCR_PYTHON_ID = 0  # 기본값: 0번 카메라를 OCR로 설정
+
+
+def refresh_camera_registry_loop():
+    while True:
+        time.sleep(ZONE_REFRESH_INTERVAL_SEC)
+        result = fetch_camera_registry(ADMIN_ID)
+        if result is not None:
+            fresh_mapping, _ = result
+            PYTHON_ID_TO_SPRING_ID.clear()
+            PYTHON_ID_TO_SPRING_ID.update(fresh_mapping)
+
 
 def get_zones(camera_id):
+    spring_camera_id = PYTHON_ID_TO_SPRING_ID.get(camera_id, camera_id)
     try:
-        response = requests.get(f"{SPRING_URL}/api/medicine-zones/camera/{camera_id}", timeout=2)
+        response = requests.get(
+            f"{SPRING_URL}/api/medicine-zones/camera/{spring_camera_id}",
+            timeout=2
+        )
         if response.status_code == 200:
             return response.json()
-        print("구역 조회 실패:", response.status_code)
         return []
     except Exception as e:
         print("Spring 구역 API 연결 실패:", e)
         return []
 
+
 def send_counts(camera_id, counts):
+    spring_camera_id = PYTHON_ID_TO_SPRING_ID.get(camera_id, camera_id)
     try:
         response = requests.post(
             f"{SPRING_URL}/api/medicine-zones/count",
-            json={"cameraId": camera_id, "counts": counts},
+            json={
+                "cameraId": spring_camera_id,
+                "counts": counts
+            },
             timeout=2
         )
         if response.status_code != 200:
             print("카운트 전송 실패:", response.status_code)
     except Exception as e:
         print("Spring 카운트 전송 오류:", e)
+
 
 def is_inside_zone(center_x, center_y, zone, frame_width, frame_height):
     x1 = frame_width * (zone["regionX"] / 100)
@@ -61,37 +139,112 @@ def is_inside_zone(center_x, center_y, zone, frame_width, frame_height):
     y2 = frame_height * ((zone["regionY"] + zone["regionHeight"]) / 100)
     return x1 <= center_x <= x2 and y1 <= center_y <= y2
 
-# 백그라운드에서 전표 OCR을 처리할 함수 (카메라 렉 방지)
+
+# ====================================================
+# 반출 감시 및 알림 로직 (팀원 기능 완벽 통합)
+# ====================================================
+def report_outbound(slip_id, medicine_id, outbound_qty):
+    try:
+        response = requests.post(
+            f"{SPRING_URL}/api/outbound",
+            json={"slipId": slip_id, "medicineId": medicine_id, "outboundQty": outbound_qty},
+            timeout=5
+        )
+        if response.status_code == 200:
+            return response.json()
+        print("반출 보고 실패:", response.status_code, response.text)
+    except Exception as e:
+        print("반출 보고 오류:", e)
+    return None
+
+
+def snapshot_zone_counts():
+    counts = {}
+    for cam_id, state in camera_state.items():
+        if cam_id == OCR_PYTHON_ID:
+            continue
+        with state["lock"]:
+            for name, count in state["stable_zone_counts"].items():
+                counts[name] = counts.get(name, 0) + count
+    return counts
+
+
+_medicine_watch_lock_guard = threading.Lock()
+_medicine_watch_locks = {}
+
+
+def get_medicine_watch_lock(medicine_name):
+    with _medicine_watch_lock_guard:
+        if medicine_name not in _medicine_watch_locks:
+            _medicine_watch_locks[medicine_name] = threading.Lock()
+        return _medicine_watch_locks[medicine_name]
+
+
+def watch_single_item(slip_id, item):
+    medicine_name = item.get("medicineName") or item.get("의약품명")
+    medicine_id = item.get("medicineId")
+    request_qty = item.get("requestQty") or int(item.get("수량", 1))
+
+    if not medicine_name:
+        return
+
+    lock = get_medicine_watch_lock(medicine_name)
+    with lock:
+        baseline = snapshot_zone_counts().get(medicine_name, 0)
+        started = time.time()
+        print(f"[전표 {slip_id}] {medicine_name} 반출 감시 시작 (기준 {baseline}개)")
+
+        while time.time() - started < DISPENSE_WATCH_TIMEOUT_SEC:
+            time.sleep(1)
+            now_count = snapshot_zone_counts().get(medicine_name, 0)
+
+            if now_count < baseline:
+                dispensed = baseline - now_count
+                result = report_outbound(slip_id, medicine_id, dispensed)
+                if result is not None:
+                    tag = "이상" if result.get("abnormal") else "정상"
+                    print(f"[전표 {slip_id}] {medicine_name} 반출 {dispensed}개 확인 ({tag}, 요청 {request_qty}개)")
+                return
+
+        print(f"[전표 {slip_id}] {medicine_name} 시간 초과로 감시 종료")
+
+
+def watch_and_compare(slip_id, items):
+    for item in items:
+        threading.Thread(target=watch_single_item, args=(slip_id, item), daemon=True).start()
+
+
+# 백그라운드에서 실제 네이버 OCR 및 DB 저장 수행 후 반출 감시 트리거
 def run_ocr_background(image_path):
     print(f"\n[자동 캡처] 전표 OCR 분석 및 DB 저장을 시작합니다: {image_path}")
     result = ocr_processor.process_slip_image(image_path)
     print(f"[자동 캡처 결과] {result}\n")
 
+    if result and result.get("status") == "success":
+        basic_info = result.get("basic_info", {})
+        slip_id = basic_info.get("전표번호")
+        med_list = result.get("medicines", [])
+        if slip_id and slip_id != "찾지 못함" and med_list:
+            watch_and_compare(slip_id, med_list)
 
-app = FastAPI()
 
 # ====================================================
-# 카메라 매핑 설정 (DB 및 사용자 설정과 1:1 일치)
-# - video/0 (cam1, ID 1) : 새로 연결한 외장 웹캠 (장치 1) -> OCR 전표 인식용
-# - video/1 (cam2, ID 2) : 노트북 내장 카메라 (장치 0) -> 세그먼트(의약품 모니터링)용
+# 카메라 물리 장치 연결 (MSMF / DSHOW 자동 호환)
+# - 0번 (CAM 0, streamUrl /video/0) : 외장 웹캠 (장치 1) -> OCR 전표용
+# - 1번 (CAM 1, streamUrl /video/1) : 노트북 웹캠 (장치 0) -> 세그먼트용
 # ====================================================
-CAMERA_DEVICES = {
-    1: {"device_index": 1, "role": "OCR_SCAN", "name": "외장 웹캠 (ABKO, OCR 전표용)"},
-    2: {"device_index": 0, "role": "MONITOR", "name": "노트북 내장 웹캠 (HP, 세그먼트용)"}
-}
-
 def open_camera(index):
-    # 1) MSMF (Media Foundation) 우선 시도 (새 웹캠 및 내장 카메라 호환)
+    # 1) MSMF 우선 시도
     cap = cv2.VideoCapture(index, cv2.CAP_MSMF)
     if cap.isOpened():
         for _ in range(5):
             ret, frame = cap.read()
-            if ret and frame.std() > 2.0:  # 단순 검은 화면이 아닌 실제 정상 영상 확인
+            if ret and frame.std() > 2.0:
                 return cap
             time.sleep(0.05)
         cap.release()
 
-    # 2) 실패 시 DSHOW 시도
+    # 2) DSHOW 시도
     cap = cv2.VideoCapture(index, cv2.CAP_DSHOW)
     if cap.isOpened():
         ret, frame = cap.read()
@@ -99,12 +252,15 @@ def open_camera(index):
             return cap
         cap.release()
 
-    # 3) 최후 기본 백엔드
     return cv2.VideoCapture(index)
 
+
+app = FastAPI()
+
+# 0번 = 외장 웹캠(하드웨어 1), 1번 = 노트북 내장(하드웨어 0)
 cameras = {
-    cam_id: open_camera(cfg["device_index"])
-    for cam_id, cfg in CAMERA_DEVICES.items()
+    0: open_camera(1),
+    1: open_camera(0)
 }
 
 camera_state = {
@@ -112,14 +268,13 @@ camera_state = {
         "lock": threading.Lock(),
         "frame_bytes": None,
         "stable_zone_counts": {},
-        "role": CAMERA_DEVICES[camera_id]["role"]
     }
     for camera_id in cameras
 }
 
 
 # ====================================================
-# 1) 세그먼트 전용 루프 (노트북 카메라: 의약품 탐지 및 구역 카운트)
+# 1) 세그먼트 전용 감지 루프 (노트북 카메라: 시간 기반 안정화 적용)
 # ====================================================
 def segment_detection_loop(camera_id):
     camera = cameras[camera_id]
@@ -127,8 +282,10 @@ def segment_detection_loop(camera_id):
 
     zones = get_zones(camera_id)
     last_zone_refresh = time.time()
-    last_zone_counts = None
-    count_history = {}
+
+    stable_zone_counts = {}
+    count_accumulator = {}
+    last_decision_time = time.time()
 
     print(f"[시작] CAM {camera_id} : 세그먼트(의약품 모니터링) 루프 시작")
 
@@ -136,7 +293,7 @@ def segment_detection_loop(camera_id):
         if time.time() - last_zone_refresh > ZONE_REFRESH_INTERVAL_SEC:
             zones = get_zones(camera_id)
             last_zone_refresh = time.time()
-            count_history = {}
+            count_accumulator = {}
 
         success, frame = camera.read()
         if not success:
@@ -164,25 +321,28 @@ def segment_detection_loop(camera_id):
                 if is_inside_zone(center_x, center_y, zone, frame_width, frame_height):
                     zone_counts[medicine_name] += 1
 
-        # 최근 5프레임 기준으로 개수 안정화
-        stable_zone_counts = {}
         for name, count in zone_counts.items():
-            if name not in count_history:
-                count_history[name] = deque(maxlen=5)
-            count_history[name].append(count)
-            stable_count = Counter(count_history[name]).most_common(1)[0][0]
-            stable_zone_counts[name] = stable_count
+            count_accumulator.setdefault(name, []).append(count)
 
-        if stable_zone_counts != last_zone_counts:
-            print(f"\n===== CAM {camera_id} (세그먼트) 안정화된 구역별 개수 =====")
-            for name, count in stable_zone_counts.items():
-                print(f"{name}: {count}")
-            print("===================================================", flush=True)
+        # 판단 주기가 찼을 때만 안정값을 확정하고, 변경 시 Spring에 전송
+        if time.time() - last_decision_time >= COUNT_DECISION_INTERVAL_SEC:
+            new_stable_counts = {
+                name: Counter(counts).most_common(1)[0][0]
+                for name, counts in count_accumulator.items()
+            }
 
-            send_counts(camera_id, stable_zone_counts)
-            last_zone_counts = stable_zone_counts.copy()
+            if new_stable_counts != stable_zone_counts:
+                print(f"\n===== CAM {camera_id} 안정화된 구역별 개수 =====")
+                for name, count in new_stable_counts.items():
+                    print(f"{name}: {count}")
+                print("==============================================", flush=True)
 
-        # 의약품 탐지 박스가 표시된 화면 송출
+                send_counts(camera_id, new_stable_counts)
+
+            stable_zone_counts = new_stable_counts
+            count_accumulator = {}
+            last_decision_time = time.time()
+
         annotated_frame = results[0].plot()
         success, buffer = cv2.imencode(".jpg", annotated_frame)
         if not success:
@@ -194,7 +354,7 @@ def segment_detection_loop(camera_id):
 
 
 # ====================================================
-# OpenCV 기반 전표(문서/종이) 자동 감지 함수
+# OpenCV 기반 전표(종이/문서) 자동 감지 함수
 # ====================================================
 def detect_slip_contour(frame):
     h, w = frame.shape[:2]
@@ -203,7 +363,7 @@ def detect_slip_contour(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
-    # 1) Canny 엣지 검출 기반
+    # 1) Canny 엣지 검출
     edges = cv2.Canny(blurred, 30, 120)
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
     dilated = cv2.dilate(edges, kernel, iterations=2)
@@ -218,7 +378,7 @@ def detect_slip_contour(frame):
             if 4 <= len(approx) <= 6:
                 candidates.append((area, approx))
 
-    # 2) 밝기 이진화 보조 (흰색 종이 영역 검출)
+    # 2) 밝기 이진화 보조
     if not candidates:
         _, thresh = cv2.threshold(blurred, 130, 255, cv2.THRESH_BINARY)
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -265,9 +425,7 @@ def ocr_detection_loop(camera_id):
         slip_detected_now = paper_contour is not None
         current_time = time.time()
 
-        # 전표 감지 시 시각적 피드백
         if slip_detected_now:
-            # 감지된 전표 윤곽선 그리기 (초록색)
             cv2.drawContours(display_frame, [paper_contour], -1, (0, 255, 0), 3)
 
             if current_time - last_slip_capture_time > SLIP_COOLDOWN:
@@ -276,17 +434,17 @@ def ocr_detection_loop(camera_id):
                     cv2.putText(display_frame, "Slip Detected: Hold still...", (20, 40),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
                 elif current_time - slip_first_seen_time >= SLIP_WAIT_TIME:
-                    # 1초 이상 유지됨 -> 캡처 실행!
+                    # 1초 이상 유지 -> 캡처 실행!
                     filename = f"auto_slip_cam{camera_id}_{int(current_time)}.jpg"
                     filepath = os.path.join(SPRING_UPLOAD_DIR, filename)
 
-                    # 원본 깨끗한 프레임 저장 (OCR 분석용)
+                    # 깨끗한 원본 프레임 저장
                     cv2.imwrite(filepath, frame)
                     threading.Thread(target=run_ocr_background, args=(filepath,), daemon=True).start()
 
                     last_slip_capture_time = current_time
                     slip_first_seen_time = None
-                    capture_success_display_until = current_time + 4.0  # 4초간 안내 표시
+                    capture_success_display_until = current_time + 4.0
                 else:
                     remain = SLIP_WAIT_TIME - (current_time - slip_first_seen_time)
                     cv2.putText(display_frame, f"Capturing in {remain:.1f}s...", (20, 40),
@@ -297,14 +455,12 @@ def ocr_detection_loop(camera_id):
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 200, 200), 2)
         else:
             slip_first_seen_time = None
-            # 전표 대기 가이드라인 (중앙에 은은한 사각형)
             gw, gh = int(w * 0.75), int(h * 0.75)
             gx1, gy1 = (w - gw) // 2, (h - gh) // 2
             cv2.rectangle(display_frame, (gx1, gy1), (gx1 + gw, gy1 + gh), (255, 200, 100), 1)
             cv2.putText(display_frame, "Place Slip inside frame", (gx1 + 10, gy1 - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 200, 100), 2)
 
-        # 캡처 완료 안내 문구 표시
         if current_time < capture_success_display_until:
             cv2.putText(display_frame, "[SUCCESS] Slip Captured! Processing OCR & DB...", (20, 80),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
@@ -319,27 +475,16 @@ def ocr_detection_loop(camera_id):
         time.sleep(0.03)
 
 
-def resolve_camera_state(camera_id: int):
-    # DB의 STREAM_URL 매핑:
-    # /video/0 -> cam1 (OCR_SCAN: 외장 웹캠, ID 1)
-    if camera_id == 0:
-        return camera_state.get(1)
-    # /video/1 -> cam2 (MONITOR: 노트북 웹캠, ID 2)
-    if camera_id == 1:
-        return camera_state.get(2)
-    # /video/2 이상 -> cam3 등 (MONITOR: 노트북 웹캠, ID 2)
-    if camera_id >= 2:
-        return camera_state.get(2)
-
-    # 직접 ID가 있는 경우
-    if camera_id in camera_state:
-        return camera_state[camera_id]
-    # fallback
-    keys = list(camera_state.keys())
-    return camera_state[keys[0]] if keys else None
-
+# ====================================================
+# 스트리밍 및 엔드포인트
+# ====================================================
 def generate_frames(camera_id):
-    state = resolve_camera_state(camera_id)
+    # 요청된 ID가 없으면 기본 첫 번째 카메라 사용
+    state = camera_state.get(camera_id)
+    if state is None:
+        keys = list(camera_state.keys())
+        state = camera_state[keys[0]] if keys else None
+
     if state is None:
         print(f"[경고] 카메라 ID {camera_id} 에 해당하는 상태가 없습니다.")
         return
@@ -354,12 +499,15 @@ def generate_frames(camera_id):
         time.sleep(0.03)
 
 
-# 각 카메라 역할(MONITOR vs OCR_SCAN)에 맞게 백그라운드 탐지 스레드 시작
-for _camera_id, _cfg in CAMERA_DEVICES.items():
-    if _cfg["role"] == "MONITOR":
-        threading.Thread(target=segment_detection_loop, args=(_camera_id,), daemon=True).start()
-    else:
+# 백그라운드 스레드 시작
+# OCR_PYTHON_ID (기본 0번) 카메라는 ocr_detection_loop, 나머지는 segment_detection_loop 실행
+for _camera_id in cameras:
+    if _camera_id == OCR_PYTHON_ID:
         threading.Thread(target=ocr_detection_loop, args=(_camera_id,), daemon=True).start()
+    else:
+        threading.Thread(target=segment_detection_loop, args=(_camera_id,), daemon=True).start()
+
+threading.Thread(target=refresh_camera_registry_loop, daemon=True).start()
 
 
 @app.get("/video/{camera_id}")
@@ -369,9 +517,14 @@ def video(camera_id: int):
         media_type="multipart/x-mixed-replace; boundary=frame"
     )
 
+
 @app.get("/status")
 def status():
-    return {f"CAM_{cid}": cam.isOpened() for cid, cam in cameras.items()}
+    return {
+        f"CAM {camera_id}": camera.isOpened()
+        for camera_id, camera in cameras.items()
+    }
+
 
 @app.get("/")
 def home():

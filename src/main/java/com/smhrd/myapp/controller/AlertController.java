@@ -80,6 +80,33 @@ public class AlertController {
         return ResponseEntity.ok(result);
     }
 
+    // 직원 대시보드용 - 어떤 의약품인지/무슨 내용인지는 안 주고, 미처리 알림들이
+    // 언제·무슨 종류로 있었는지만 목록으로 알려준다 (회의 결과: 직원은 상세 내용 대신
+    // "OO시 OO분경에 OO 알림이 감지되었습니다" 문구만 여러 줄로 봄, 최신 1건만이 아님).
+    // 관리자가 호출해도 동작은 하지만, 관리자는 /api/alerts(전체 목록)를 쓰므로 실제로는 안 씀.
+    @GetMapping("/notices")
+    public ResponseEntity<?> notices(HttpSession session) {
+
+        String ownerAdminId = resolveOwnerAdminId(session);
+
+        if (ownerAdminId == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
+        }
+
+        List<Map<String, Object>> result = alertService.listPending(ownerAdminId).stream()
+                .map(alert -> {
+
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("alertType", alert.getAlertType());
+                    row.put("alertTime", alert.getAlertTime());
+
+                    return row;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
+
     // 헤더 종 아이콘에 표시할 미처리 알림 수
     @GetMapping("/pending-count")
     public ResponseEntity<?> pendingCount(HttpSession session) {

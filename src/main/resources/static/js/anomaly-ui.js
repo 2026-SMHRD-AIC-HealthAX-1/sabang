@@ -30,8 +30,12 @@
         catch (_) { /* 저장소를 못 쓰면 배너만 다시 뜰 뿐이다 */ }
     };
 
+    // 대시보드 상단 배너는 의약품명 등 상세 내용을 그대로 보여줘서 관리자 전용으로 둔다.
+    // 직원은 대시보드 "미처리 알림" 카드의 주의 문구 한 줄만 본다 (회의 결과, dashboard.js 참고).
+    const isAdmin = sessionStorage.getItem('framVision.isAdmin') === 'true';
+
     let banner;
-    if (page === 'dashboard') {
+    if (page === 'dashboard' && isAdmin) {
         banner = el('section', '', 'anomaly-banner');
         banner.setAttribute('aria-live', 'assertive');
         banner.setAttribute('aria-atomic', 'true');

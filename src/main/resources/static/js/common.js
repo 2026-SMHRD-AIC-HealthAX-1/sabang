@@ -573,7 +573,7 @@ const translations = {
             "최근 전표",
 
         dashCameraStatusTitle:
-            "카메라 현황",
+            "실시간 카메라",
 
         dashOutboundTodayTitle:
             "오늘 출고 현황",
@@ -586,6 +586,30 @@ const translations = {
 
         unitCameras:
             "대",
+
+        dashMonitorPreviewLabel:
+            "모니터링",
+
+        dashOcrPreviewLabel:
+            "OCR 인식",
+
+        dashNoOcrCameraMessage:
+            "등록된 OCR 카메라가 없습니다.",
+
+        dashNoSlipImageMessage:
+            "전표 이미지가 없습니다.",
+
+        dashMismatchNoticeType:
+            "이상반출",
+
+        dashAlertNoticeText:
+            "{time}경에 {type} 알림이 감지되었습니다.",
+
+        hourUnit:
+            "시 ",
+
+        minuteUnit:
+            "분",
 
         monitoringTitle:
             "실시간 모니터링",
@@ -1115,7 +1139,7 @@ const translations = {
             "Recent Slip",
 
         dashCameraStatusTitle:
-            "Camera Status",
+            "Live Cameras",
 
         dashOutboundTodayTitle:
             "Today's Outbound",
@@ -1128,6 +1152,30 @@ const translations = {
 
         unitCameras:
             "units",
+
+        dashMonitorPreviewLabel:
+            "Monitoring",
+
+        dashOcrPreviewLabel:
+            "OCR Scan",
+
+        dashNoOcrCameraMessage:
+            "No OCR camera registered.",
+
+        dashNoSlipImageMessage:
+            "No receipt image available.",
+
+        dashMismatchNoticeType:
+            "abnormal outbound",
+
+        dashAlertNoticeText:
+            "An alert ({type}) was detected around {time}.",
+
+        hourUnit:
+            ":",
+
+        minuteUnit:
+            "",
 
         monitoringTitle:
             "Live Monitoring",
@@ -1595,6 +1643,20 @@ function t(key) {
     const lang = localStorage.getItem("language") || "ko";
 
     return (translations[lang] && translations[lang][key]) || key;
+}
+
+
+// 관리자가 입력한 자유 텍스트(의약품명/카메라명/병동명/담당자명/알림내용 등)를
+// innerHTML로 그리는 곳에서 공통으로 쓰는 이스케이프 함수.
+// 서버가 이 값들을 HTML로 소독해주지 않으므로, 화면에 꽂아 넣기 전에 여기서 반드시 걸러야
+// "<img src=x onerror=...>" 같은 이름을 등록했을 때 보는 사람 브라우저에서 실행되는 걸 막을 수 있다.
+function escapeHtml(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
 }
 
 

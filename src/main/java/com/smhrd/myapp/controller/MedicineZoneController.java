@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -55,6 +56,39 @@ public class MedicineZoneController {
     }
     
     
+    // camera.py가 구역별 실시간 카운트를 보고하는 자리 - 최소수량 이하로 떨어지면 재고부족
+    // 알림을 자동 생성한다. 브라우저 세션이 없는 서버-서버 호출이라 인증 없이 연다
+    // (medicine-zones/camera/{cameraId}와 같은 패턴).
+    @PostMapping("/count")
+    public ResponseEntity<?> reportCounts(@RequestBody Map<String, Object> body) {
+
+        try {
+
+            Long cameraId = Long.valueOf(String.valueOf(body.get("cameraId")));
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> counts = (Map<String, Object>) body.get("counts");
+
+            if (counts == null) {
+                return ResponseEntity.status(400).body(Map.of("message", "counts가 없습니다."));
+            }
+
+            Map<String, Long> parsedCounts = new HashMap<>();
+
+            for (Map.Entry<String, Object> entry : counts.entrySet()) {
+                parsedCounts.put(entry.getKey(), Long.valueOf(String.valueOf(entry.getValue())));
+            }
+
+            medicineZoneService.recordZoneCounts(cameraId, parsedCounts);
+
+            return ResponseEntity.ok(Map.of("success", true));
+
+        } catch (NumberFormatException e) {
+
+            return ResponseEntity.status(400).body(Map.of("message", "입력값을 확인해 주세요."));
+        }
+    }
+
     @GetMapping
     public ResponseEntity<?> list(HttpSession session) {
 

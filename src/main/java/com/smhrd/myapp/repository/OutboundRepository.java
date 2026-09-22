@@ -21,4 +21,7 @@ public interface OutboundRepository extends JpaRepository<Outbound, Long> {
 
     // 전표 상세 화면용: 이 전표에 대해 실제로 반출된 기록(요청수량과 비교용)
     List<Outbound> findBySlip_SlipId(String slipId);
+
+    // 중복 기록 방지용: 이 전표의 이 의약품이 이미 반출 처리됐는지
+    long countBySlip_SlipIdAndMedicine_MedicineId(String slipId, Long medicineId);
 }

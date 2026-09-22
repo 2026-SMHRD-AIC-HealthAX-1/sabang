@@ -5,9 +5,12 @@ import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 // 이 클래스가 DB 테이블과 연결되는 JPA Entity라는 뜻
@@ -17,8 +20,11 @@ import jakarta.persistence.Table;
 public class Outbound {
 
     // 기본키(PK) 지정 - 반출ID
-    // IDENTITY 자동증가는 캠퍼스 오라클 DB 버전에서 지원 안 될 수 있어 제외 (필요 시 회의 후 재도입)
+    // IDENTITY 자동증가는 캠퍼스 오라클 DB 버전에서 지원 안 될 수 있어 제외, 대신 SEQUENCE 사용
+    // (OutboundService가 API로 직접 생성하기 시작하면서 동시 요청 시 PK 충돌 위험이 생겨 SEQUENCE로 부여)
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "outbound_seq")
+    @SequenceGenerator(name = "outbound_seq", sequenceName = "OUTBOUND_SEQ", allocationSize = 1)
     @Column(name = "OUTBOUND_ID")
     private Long outboundId;
 
