@@ -19,8 +19,10 @@ body[data-page="receipts"] .page-header p{font-size: calc(15px * var(--font-scal
 .receipt-details{display:flex;flex-direction:column;gap:20px;min-width:0;scroll-margin-top:20px}
 .receipt-details:focus-visible{outline:3px solid #70adff;outline-offset:4px;border-radius:12px}
 .receipt-image-area{padding:22px 20px;background:#f8fafc}
-.receipt-image-crop{position:relative;overflow:hidden;aspect-ratio:523 / 407}
-.receipt-image-crop img{position:absolute;width:309.17782%;height:auto;max-width:none;left:-205.54493%;top:-21.37592%}
+/* 예전엔 특정 예시 이미지 한 장에 맞춰 확대/이동 비율을 하드코딩해서 실제 촬영 사진은
+   일부만(확대된 채) 보였음 - object-fit:contain으로 바꿔서 어떤 비율의 사진이든 전체가 보이게 함 */
+.receipt-image-crop{display:flex;align-items:center;justify-content:center;max-height:520px;overflow:hidden;background:#eef2f7}
+.receipt-image-crop img{width:100%;height:auto;max-height:520px;object-fit:contain}
 .receipt-image-card figcaption{font-size: calc(15px * var(--font-scale, 1));line-height:1.7;color:#71849e;padding:16px 25px;border-top:1px solid #edf1f5}
 .ocr-note{padding:17px 25px;color:#71849e;font-size: calc(15px * var(--font-scale, 1));line-height:1.4}
 .receipt-ocr-table th,.receipt-ocr-table td{font-size: calc(16px * var(--font-scale, 1));padding:19px 25px;line-height:1.2;text-align:left}

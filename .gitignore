@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### OCR 자동 캡처 전표 이미지 (테스트마다 계속 쌓임 - 공유 저장소에 안 올라가게 함) ###
+src/main/resources/static/uploads/

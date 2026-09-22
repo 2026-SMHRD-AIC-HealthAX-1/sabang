@@ -6,7 +6,6 @@ import com.smhrd.myapp.entity.SlipItem;
 import com.smhrd.myapp.repository.OutboundRepository;
 import com.smhrd.myapp.service.HospitalStaffService;
 import com.smhrd.myapp.service.SlipService;
-import com.smhrd.myapp.service.SubscriptionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,25 +16,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-// receipts.html 전표 관리 화면용 - 조회는 관리자+직원 모두, 등록은 관리자 전용
-// (등록은 나중에 OCR 파이프라인이 대신 호출하게 될 수 있음 - 그때 인증 방식 재검토 필요)
+// receipts.html 전표 관리 화면용 - 조회는 관리자+직원 모두(세션 필요).
+// 등록은 ocr_processor.py(전표 OCR 파이프라인)가 호출하는 자리라, 브라우저 세션이 없는
+// 서버-서버 호출이라서 인증 없이 연다 (medicine-zones/camera/{id}, outbound 등과 같은 패턴).
 @RestController
 @RequestMapping("/api/slips")
 public class SlipController {
 
     private final SlipService slipService;
-    private final SubscriptionService subscriptionService;
     private final HospitalStaffService hospitalStaffService;
     private final OutboundRepository outboundRepository;
 
     public SlipController(
             SlipService slipService,
-            SubscriptionService subscriptionService,
             HospitalStaffService hospitalStaffService,
             OutboundRepository outboundRepository
     ) {
         this.slipService = slipService;
-        this.subscriptionService = subscriptionService;
         this.hospitalStaffService = hospitalStaffService;
         this.outboundRepository = outboundRepository;
     }
@@ -49,17 +46,6 @@ public class SlipController {
         }
 
         return hospitalStaffService.resolveActiveOwnerAdminId(memberId);
-    }
-
-    private String requireAdmin(HttpSession session) {
-
-        String memberId = (String) session.getAttribute("memberId");
-
-        if (memberId == null || !subscriptionService.isActiveAdmin(memberId)) {
-            return null;
-        }
-
-        return memberId;
     }
 
     // 전표 목록 (최신순) - 화면 진입 시 목록 + 가장 최신 전표를 같이 보여주기 위해 씀
@@ -99,15 +85,9 @@ public class SlipController {
         }
     }
 
-    // 전표 등록 (관리자 전용 - 나중엔 OCR 파이프라인이 호출할 자리)
+    // 전표 등록 - ocr_processor.py가 호출 (인증 없음, 클래스 상단 주석 참고)
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Map<String, Object> body, HttpSession session) {
-
-        String adminId = requireAdmin(session);
-
-        if (adminId == null) {
-            return ResponseEntity.status(403).body(Map.of("message", "관리자만 이용할 수 있습니다."));
-        }
+    public ResponseEntity<?> create(@RequestBody Map<String, Object> body) {
 
         try {
 

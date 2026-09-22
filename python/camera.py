@@ -90,16 +90,6 @@ if OCR_PYTHON_ID is None:
     OCR_PYTHON_ID = 0  # 기본값: 0번 카메라를 OCR로 설정
 
 
-def refresh_camera_registry_loop():
-    while True:
-        time.sleep(ZONE_REFRESH_INTERVAL_SEC)
-        result = fetch_camera_registry(ADMIN_ID)
-        if result is not None:
-            fresh_mapping, _ = result
-            PYTHON_ID_TO_SPRING_ID.clear()
-            PYTHON_ID_TO_SPRING_ID.update(fresh_mapping)
-
-
 def get_zones(camera_id):
     spring_camera_id = PYTHON_ID_TO_SPRING_ID.get(camera_id, camera_id)
     try:
@@ -217,7 +207,7 @@ def watch_and_compare(slip_id, items):
 # 백그라운드에서 실제 네이버 OCR 및 DB 저장 수행 후 반출 감시 트리거
 def run_ocr_background(image_path):
     print(f"\n[자동 캡처] 전표 OCR 분석 및 DB 저장을 시작합니다: {image_path}")
-    result = ocr_processor.process_slip_image(image_path)
+    result = ocr_processor.process_slip_image(image_path, ADMIN_ID)
     print(f"[자동 캡처 결과] {result}\n")
 
     if result and result.get("status") == "success":
@@ -276,7 +266,7 @@ camera_state = {
 # ====================================================
 # 1) 세그먼트 전용 감지 루프 (노트북 카메라: 시간 기반 안정화 적용)
 # ====================================================
-def segment_detection_loop(camera_id):
+def segment_detection_loop(camera_id, stop_event):
     camera = cameras[camera_id]
     state = camera_state[camera_id]
 
@@ -289,7 +279,7 @@ def segment_detection_loop(camera_id):
 
     print(f"[시작] CAM {camera_id} : 세그먼트(의약품 모니터링) 루프 시작")
 
-    while True:
+    while not stop_event.is_set():
         if time.time() - last_zone_refresh > ZONE_REFRESH_INTERVAL_SEC:
             zones = get_zones(camera_id)
             last_zone_refresh = time.time()
@@ -352,6 +342,8 @@ def segment_detection_loop(camera_id):
             state["frame_bytes"] = buffer.tobytes()
             state["stable_zone_counts"] = stable_zone_counts
 
+    print(f"[중지] CAM {camera_id} : 세그먼트 루프 중지 (카메라 역할 변경)")
+
 
 # ====================================================
 # OpenCV 기반 전표(종이/문서) 자동 감지 함수
@@ -400,7 +392,7 @@ def detect_slip_contour(frame):
 # ====================================================
 # 2) OCR 전용 루프 (외장 웹캠: 종이 윤곽 감지 및 1초 유지 시 자동 캡처)
 # ====================================================
-def ocr_detection_loop(camera_id):
+def ocr_detection_loop(camera_id, stop_event):
     camera = cameras[camera_id]
     state = camera_state[camera_id]
 
@@ -410,7 +402,7 @@ def ocr_detection_loop(camera_id):
 
     print(f"[시작] CAM {camera_id} : OCR 전표 인식 루프 시작 (종이 윤곽 자동 감지)")
 
-    while True:
+    while not stop_event.is_set():
         success, frame = camera.read()
         if not success:
             print(f"CAM {camera_id} (OCR) 영상 읽기 실패")
@@ -474,6 +466,8 @@ def ocr_detection_loop(camera_id):
 
         time.sleep(0.03)
 
+    print(f"[중지] CAM {camera_id} : OCR 루프 중지 (카메라 역할 변경)")
+
 
 # ====================================================
 # 스트리밍 및 엔드포인트
@@ -499,15 +493,89 @@ def generate_frames(camera_id):
         time.sleep(0.03)
 
 
-# 백그라운드 스레드 시작
-# OCR_PYTHON_ID (기본 0번) 카메라는 ocr_detection_loop, 나머지는 segment_detection_loop 실행
-for _camera_id in cameras:
-    if _camera_id == OCR_PYTHON_ID:
-        threading.Thread(target=ocr_detection_loop, args=(_camera_id,), daemon=True).start()
-    else:
-        threading.Thread(target=segment_detection_loop, args=(_camera_id,), daemon=True).start()
+# ====================================================
+# 카메라별 감지 스레드 관리
+#
+# 관리자가 카메라관리 화면에서 OCR 스캔용 카메라를 바꾸면, camera_control_loop가 그걸
+# 감지해서 해당 카메라들의 스레드를 멈췄다가 새 역할에 맞는 루프로 다시 띄운다
+# (재시작 없이 바로 반영됨). 스레드를 강제로 죽일 수는 없어서, 각 루프가 stop_event를
+# 매 프레임 확인하다가 멈추라는 신호를 받으면 스스로 빠져나오게 했다.
+# ====================================================
+camera_threads = {}  # camera_id -> {"thread":.., "stop_event":.., "role": "OCR_SCAN"|"MONITOR"}
 
-threading.Thread(target=refresh_camera_registry_loop, daemon=True).start()
+
+def start_camera_thread(camera_id, role):
+
+    stop_event = threading.Event()
+    target = ocr_detection_loop if role == "OCR_SCAN" else segment_detection_loop
+
+    thread = threading.Thread(target=target, args=(camera_id, stop_event), daemon=True)
+    thread.start()
+
+    camera_threads[camera_id] = {"thread": thread, "stop_event": stop_event, "role": role}
+
+
+def stop_camera_thread(camera_id):
+
+    entry = camera_threads.get(camera_id)
+
+    if entry is None:
+        return
+
+    entry["stop_event"].set()
+    entry["thread"].join(timeout=5)
+
+
+# 서버가 뜰 때 카메라마다 지금 등록된 역할에 맞는 감지 스레드를 하나씩 띄운다
+for _camera_id in cameras:
+    _role = "OCR_SCAN" if _camera_id == OCR_PYTHON_ID else "MONITOR"
+    start_camera_thread(_camera_id, _role)
+
+
+# 카메라 등록 정보를 주기적으로 다시 불러와서, OCR 스캔용 카메라가 바뀌었으면
+# 영향받는 카메라들의 스레드를 멈췄다가 새 역할로 다시 띄운다
+def camera_control_loop():
+
+    global OCR_PYTHON_ID
+
+    while True:
+
+        time.sleep(ZONE_REFRESH_INTERVAL_SEC)
+
+        result = fetch_camera_registry(ADMIN_ID)
+
+        if result is None:
+            continue
+
+        fresh_mapping, fresh_ocr_id = result
+
+        PYTHON_ID_TO_SPRING_ID.clear()
+        PYTHON_ID_TO_SPRING_ID.update(fresh_mapping)
+
+        if fresh_ocr_id is None:
+            fresh_ocr_id = 0  # 기존 기본 규칙과 동일
+
+        if fresh_ocr_id == OCR_PYTHON_ID:
+            continue
+
+        old_ocr_id = OCR_PYTHON_ID
+
+        print(f"[카메라 역할 변경 감지] OCR 스캔용 카메라가 {old_ocr_id}번 -> {fresh_ocr_id}번으로 바뀌어서 감지 스레드를 다시 시작합니다.")
+
+        # 예전 OCR 카메라(이제 모니터링으로 내려감)와 새 OCR 카메라, 둘 다 스레드를 바꿔야 한다
+        affected_ids = {cam_id for cam_id in (old_ocr_id, fresh_ocr_id) if cam_id in cameras}
+
+        for camera_id in affected_ids:
+            stop_camera_thread(camera_id)
+
+        OCR_PYTHON_ID = fresh_ocr_id
+
+        for camera_id in affected_ids:
+            role = "OCR_SCAN" if camera_id == OCR_PYTHON_ID else "MONITOR"
+            start_camera_thread(camera_id, role)
+
+
+threading.Thread(target=camera_control_loop, daemon=True).start()
 
 
 @app.get("/video/{camera_id}")
