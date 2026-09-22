@@ -73,6 +73,20 @@ public class CameraRegistryController {
         return ResponseEntity.ok(result);
     }
 
+    // 파이썬(camera.py)이 자기 병원(관리자)의 카메라 목록을 가져오는 자리 - 브라우저 세션이 없는
+    // 서버-서버 호출이라 인증 없이 연다 (medicine-zones/camera/{cameraId}와 같은 패턴).
+    // camera.py는 이 목록의 streamUrl 끝자리(파이썬 내부 카메라 인덱스)로 실제 CAMERA_ID를 찾고,
+    // cameraRole로 OCR_SCAN 카메라가 어느 것인지 알아낸다.
+    @GetMapping("/by-admin/{adminId}")
+    public ResponseEntity<?> listByAdminForService(@PathVariable String adminId) {
+
+        List<Map<String, Object>> result = cameraRegistryService.listByAdmin(adminId).stream()
+                .map(this::toMap)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping
     public ResponseEntity<?> add(@RequestBody Map<String, String> body, HttpSession session) {
 

@@ -17,4 +17,8 @@ public interface SlipItemRepository extends JpaRepository<SlipItem, SlipItemId> 
 
     // 의약품 삭제 전 확인용: 이 의약품이 적힌 전표 품목이 있는지
     long countByMedicine_MedicineId(Long medicineId);
+
+    // 반출 결과 비교용: 이 전표에서 이 의약품의 요청수량이 얼마였는지
+    // (SLIP_ID, MEDICINE_ID)는 UNIQUE라 있으면 한 건뿐)
+    java.util.Optional<SlipItem> findById_SlipIdAndMedicine_MedicineId(String slipId, Long medicineId);
 }

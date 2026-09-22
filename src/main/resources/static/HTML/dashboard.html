@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../CSS/style.css">
     <link rel="stylesheet" href="../CSS/dashboard.css">
     <link rel="stylesheet" href="../CSS/anomaly.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body data-page="dashboard">
 <div id="header"></div>
@@ -35,7 +36,7 @@
 
             <section class="card dash-card" aria-labelledby="dash-camera-title">
                 <div class="card-title">
-                    <span id="dash-camera-title"><i class="fa-solid fa-video" aria-hidden="true"></i> <span data-i18n="dashCameraStatusTitle">카메라 현황</span></span>
+                    <span id="dash-camera-title"><i class="fa-solid fa-video" aria-hidden="true"></i> <span data-i18n="dashCameraStatusTitle">실시간 카메라</span></span>
                     <a href="monitoring.html" class="dash-card-link" data-i18n="dashViewAllLink">전체보기</a>
                 </div>
                 <div class="dash-camera-body" id="dashCameraBody"></div>
@@ -46,7 +47,10 @@
                     <span id="dash-outbound-title"><i class="fa-solid fa-truck-fast" aria-hidden="true"></i> <span data-i18n="dashOutboundTodayTitle">오늘 출고 현황</span></span>
                     <a href="analytics.html" class="dash-card-link" data-i18n="dashViewAllLink">전체보기</a>
                 </div>
-                <div class="dash-outbound-body" id="dashOutboundBody"></div>
+                <div class="dash-outbound-summary" id="dashOutboundSummary"></div>
+                <div class="dash-outbound-body" id="dashOutboundBody">
+                    <div class="dash-chart-box"><canvas id="dashOutboundChart"></canvas></div>
+                </div>
             </section>
 
         </div>

@@ -573,7 +573,7 @@ const translations = {
             "최근 전표",
 
         dashCameraStatusTitle:
-            "카메라 현황",
+            "실시간 카메라",
 
         dashOutboundTodayTitle:
             "오늘 출고 현황",
@@ -586,6 +586,30 @@ const translations = {
 
         unitCameras:
             "대",
+
+        dashMonitorPreviewLabel:
+            "모니터링",
+
+        dashOcrPreviewLabel:
+            "OCR 인식",
+
+        dashNoOcrCameraMessage:
+            "등록된 OCR 카메라가 없습니다.",
+
+        dashNoSlipImageMessage:
+            "전표 이미지가 없습니다.",
+
+        dashMismatchNoticeType:
+            "이상반출",
+
+        dashAlertNoticeText:
+            "{time}경에 {type} 알림이 감지되었습니다.",
+
+        hourUnit:
+            "시 ",
+
+        minuteUnit:
+            "분",
 
         monitoringTitle:
             "실시간 모니터링",
@@ -1115,7 +1139,7 @@ const translations = {
             "Recent Slip",
 
         dashCameraStatusTitle:
-            "Camera Status",
+            "Live Cameras",
 
         dashOutboundTodayTitle:
             "Today's Outbound",
@@ -1128,6 +1152,30 @@ const translations = {
 
         unitCameras:
             "units",
+
+        dashMonitorPreviewLabel:
+            "Monitoring",
+
+        dashOcrPreviewLabel:
+            "OCR Scan",
+
+        dashNoOcrCameraMessage:
+            "No OCR camera registered.",
+
+        dashNoSlipImageMessage:
+            "No receipt image available.",
+
+        dashMismatchNoticeType:
+            "abnormal outbound",
+
+        dashAlertNoticeText:
+            "An alert ({type}) was detected around {time}.",
+
+        hourUnit:
+            ":",
+
+        minuteUnit:
+            "",
 
         monitoringTitle:
             "Live Monitoring",

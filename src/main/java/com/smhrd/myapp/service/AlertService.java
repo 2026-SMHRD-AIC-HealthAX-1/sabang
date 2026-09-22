@@ -28,6 +28,14 @@ public class AlertService {
         return alertRepository.findByMedicine_Admin_MemberIdAndAlertTypeOrderByAlertTimeDesc(adminId, alertType);
     }
 
+    // 직원용 "알림(주의) 문구" 목록에 쓸, 종류 상관없이 미처리 알림 전체 (최신순)
+    public List<Alert> listPending(String adminId) {
+
+        return alertRepository.findByMedicine_Admin_MemberIdAndProcessStatusOrderByAlertTimeDesc(
+                adminId, Alert.STATUS_PENDING
+        );
+    }
+
     public long countPending(String adminId) {
         return alertRepository.countByMedicine_Admin_MemberIdAndProcessStatus(adminId, Alert.STATUS_PENDING);
     }
