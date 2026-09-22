@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 // camera.py가 "이 전표의 이 의약품이 실제로 몇 개 반출됐다"를 보고하는 자리.
@@ -67,11 +68,13 @@ public class OutboundService {
             throw new IllegalStateException("이미 반출 처리된 전표·의약품입니다.");
         }
 
-        SlipItem slipItem = slipItemRepository.findById_SlipIdAndMedicine_MedicineId(slipId, medicineId).orElse(null);
+        List<SlipItem> slipItems = slipItemRepository.findById_SlipIdAndMedicine_MedicineId(slipId, medicineId);
 
-        if (slipItem == null) {
+        if (slipItems.isEmpty()) {
             throw new IllegalStateException("이 전표에 해당 의약품 품목이 없습니다.");
         }
+
+        SlipItem slipItem = slipItems.get(0);
 
         Long requestQty = slipItem.getRequestQty();
         boolean abnormal = !outboundQty.equals(requestQty);

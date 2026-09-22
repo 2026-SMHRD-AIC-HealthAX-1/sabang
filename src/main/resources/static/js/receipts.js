@@ -51,19 +51,19 @@ function renderTable() {
 
     receiptTableBody.innerHTML = slips.map(slip => `
         <tr>
-            <td><strong>${slip.slipId}</strong></td>
+            <td><strong>${escapeHtml(slip.slipId)}</strong></td>
             <td>${slip.slipDate || "-"}</td>
             <td>${t("typeOutbound")}</td>
-            <td>${slip.wardName}</td>
+            <td>${escapeHtml(slip.wardName)}</td>
             <td>${slip.itemCount}${t("unitSpecies")} / ${slip.totalQty}${t("unitPieces")}</td>
-            <td>${slip.requesterName}</td>
+            <td>${escapeHtml(slip.requesterName)}</td>
             <td>
                 <button
                     type="button"
                     class="view-receipt-btn"
-                    data-slip-id="${slip.slipId}"
+                    data-slip-id="${escapeHtml(slip.slipId)}"
                     aria-controls="receipt-details"
-                    aria-label="${slip.slipId} 전표 보기"
+                    aria-label="${escapeHtml(slip.slipId)} 전표 보기"
                 >${t("viewBtn")}</button>
             </td>
         </tr>
@@ -92,7 +92,7 @@ async function showDetail(slipId, focusAfterLoad) {
 
     ocrTableBody.innerHTML = detail.items.map(item => `
         <tr>
-            <td>${item.medicineName}</td>
+            <td>${escapeHtml(item.medicineName)}</td>
             <td>${item.requestQty}${t("unitPieces")}</td>
             <td>${item.outboundQty != null ? item.outboundQty + t("unitPieces") + (item.abnormal ? ` (${t("mismatchLabel")})` : "") : "-"}</td>
         </tr>

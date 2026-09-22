@@ -89,6 +89,8 @@ def send_counts(camera_id, counts):
 # 파이썬 내부 인덱스는 관리자마다 0부터 다시 매겨지는 별개의 번호라서, 그대로 CAMERA_ID인 것처럼
 # Spring을 호출하면(과거에 그랬음) 엉뚱한 카메라(혹은 존재하지 않는 카메라)를 조회하게 된다.
 # 같이 받아온 cameraRole로 OCR_SCAN 카메라의 내부 인덱스도 알아낸다.
+# 실패하면(Spring이 아직 안 떠 있는 등) None을 돌려준다 - "조회했는데 카메라가 0대"와
+# "조회 자체가 실패"를 구분해야 재시도 여부를 판단할 수 있어서다.
 def fetch_camera_registry(admin_id):
 
     try:
@@ -96,7 +98,7 @@ def fetch_camera_registry(admin_id):
 
         if response.status_code != 200:
             print("카메라 목록 조회 실패:", response.status_code)
-            return {}, None
+            return None
 
         python_id_to_spring_id = {}
         ocr_python_id = None
@@ -119,10 +121,49 @@ def fetch_camera_registry(admin_id):
 
     except Exception as e:
         print("카메라 목록 조회 오류:", e)
-        return {}, None
+        return None
 
 
-PYTHON_ID_TO_SPRING_ID, OCR_PYTHON_ID = fetch_camera_registry(ADMIN_ID)
+# 서버 시작 시점엔 Spring이 아직 안 떠 있을 수 있어서, 최초 조회는 잠깐 재시도한다.
+# (이게 없으면 Spring이 늦게 뜨는 순간 이 프로세스는 재시작 전까지 모든 카메라의
+# 구역감지가 영원히 조용히 먹통이 됨 - 카메라 목록을 못 받아서 PYTHON_ID_TO_SPRING_ID가
+# 계속 빈 채로 남기 때문)
+def fetch_camera_registry_with_retry(admin_id, retry_interval_sec=5, max_attempts=12):
+
+    for attempt in range(max_attempts):
+
+        result = fetch_camera_registry(admin_id)
+
+        if result is not None:
+            return result
+
+        print(f"카메라 목록 조회 재시도 {attempt + 1}/{max_attempts}...")
+        time.sleep(retry_interval_sec)
+
+    print("카메라 목록 조회 계속 실패 - 일단 빈 상태로 시작 (백그라운드에서 계속 재시도함)")
+    return {}, None
+
+
+PYTHON_ID_TO_SPRING_ID, OCR_PYTHON_ID = fetch_camera_registry_with_retry(ADMIN_ID)
+
+
+# 최초 조회 이후에도 주기적으로 다시 받아와서 PYTHON_ID_TO_SPRING_ID를 갱신한다.
+# (Spring이 나중에 떠도 재시작 없이 스스로 복구되게. 단, OCR_PYTHON_ID는 여기서 갱신하지 않는다 -
+#  어떤 카메라가 어떤 감지 루프로 도는지는 서버 시작 시점에 이미 스레드로 고정돼서, 이 값만
+#  나중에 바꾸면 "실제로 도는 스레드"와 "이 변수가 가리키는 카메라"가 어긋나는 새 버그가 생긴다.
+#  카메라 용도(MONITOR/OCR_SCAN)를 바꾸거나 카메라를 추가/삭제했다면 camera.py를 재시작해야 한다)
+def refresh_camera_registry_loop():
+
+    while True:
+
+        time.sleep(ZONE_REFRESH_INTERVAL_SEC)
+
+        result = fetch_camera_registry(ADMIN_ID)
+
+        if result is not None:
+            fresh_mapping, _ = result
+            PYTHON_ID_TO_SPRING_ID.clear()
+            PYTHON_ID_TO_SPRING_ID.update(fresh_mapping)
 
 
 def is_inside_zone(center_x, center_y, zone, frame_width, frame_height):
@@ -308,7 +349,9 @@ def run_ocr_stub(frame):
 
 def create_slip_from_ocr(ocr_result):
 
-    slip_id = f"OCR-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    # 초 단위까지만 쓰면 같은 초에 2건이 감지될 때 전표번호가 겹쳐서 등록이 실패한다 -
+    # 마이크로초(%f)까지 붙여 충돌 가능성을 사실상 없앤다
+    slip_id = f"OCR-{datetime.now().strftime('%Y%m%d-%H%M%S%f')}"
 
     body = {
         "slipId": slip_id,
@@ -357,56 +400,81 @@ def report_outbound(slip_id, medicine_id, outbound_qty):
     return None
 
 
-# 전표 인식 시점의 구역 카운트를 기준(baseline)으로 잡고, 그 이후 MONITOR 카메라들의
-# 안정화된 카운트가 baseline보다 줄어들 때까지 지켜본다. 줄어들어 다시 안정되면 그 차이를
-# 실제 반출 수량으로 보고, 의약품마다 독립적으로 요청수량과 비교해 /api/outbound로 보고한다.
-# (여러 카메라에 구역이 나뉘어 있을 수 있어서 같은 이름의 구역 카운트는 합산한다)
-def watch_and_compare(slip_id, items):
+# 모든 MONITOR 카메라의 안정화된 구역 카운트를 이름별로 합산한다
+# (여러 카메라에 같은 의약품 구역이 나뉘어 있을 수 있어서 합산해야 정확함)
+def snapshot_zone_counts():
 
-    def snapshot():
+    counts = {}
 
-        counts = {}
+    for cam_id, state in camera_state.items():
 
-        for cam_id, state in camera_state.items():
+        if cam_id == OCR_PYTHON_ID:
+            continue
 
-            if cam_id == OCR_PYTHON_ID:
-                continue
+        with state["lock"]:
+            for name, count in state["stable_zone_counts"].items():
+                counts[name] = counts.get(name, 0) + count
 
-            with state["lock"]:
-                for name, count in state["stable_zone_counts"].items():
-                    counts[name] = counts.get(name, 0) + count
+    return counts
 
-        return counts
 
-    baseline = snapshot()
-    pending = {item["medicineName"]: item for item in items}
-    started = time.time()
+# 의약품 이름별 락 - 같은 의약품을 여러 전표가 동시에 감시하는 걸 막는 데 쓴다.
+_medicine_watch_lock_guard = threading.Lock()
+_medicine_watch_locks = {}
 
-    print(f"[전표 {slip_id}] 반출 감시 시작: {list(pending.keys())}")
 
-    while pending and time.time() - started < DISPENSE_WATCH_TIMEOUT_SEC:
+def get_medicine_watch_lock(medicine_name):
 
-        time.sleep(1)
-        current = snapshot()
+    with _medicine_watch_lock_guard:
 
-        for medicine_name in list(pending.keys()):
+        if medicine_name not in _medicine_watch_locks:
+            _medicine_watch_locks[medicine_name] = threading.Lock()
 
-            before = baseline.get(medicine_name, 0)
-            now_count = current.get(medicine_name, 0)
+        return _medicine_watch_locks[medicine_name]
 
-            if now_count < before:
 
-                item = pending.pop(medicine_name)
-                dispensed = before - now_count
+# 의약품 하나의 반출을 감시한다. 전표 인식 시점이 아니라 "이 락을 실제로 잡은 시점"의
+# 카운트를 기준(baseline)으로 삼는다 - 같은 의약품을 두 전표가 거의 동시에 요청하면
+# 뒤 전표는 앞 전표 감시가 끝날 때까지 기다렸다가, 그 끝난 시점 카운트를 새 기준으로 감시를
+# 시작해야 카운트 감소분을 서로 자기 것이라고 잘못 가로채지 않는다.
+def watch_single_item(slip_id, item):
 
+    medicine_name = item["medicineName"]
+    lock = get_medicine_watch_lock(medicine_name)
+
+    with lock:
+
+        baseline = snapshot_zone_counts().get(medicine_name, 0)
+        started = time.time()
+
+        print(f"[전표 {slip_id}] {medicine_name} 반출 감시 시작 (기준 {baseline}개)")
+
+        while time.time() - started < DISPENSE_WATCH_TIMEOUT_SEC:
+
+            time.sleep(1)
+            now_count = snapshot_zone_counts().get(medicine_name, 0)
+
+            if now_count < baseline:
+
+                dispensed = baseline - now_count
                 result = report_outbound(slip_id, item["medicineId"], dispensed)
 
                 if result is not None:
                     tag = "이상" if result.get("abnormal") else "정상"
                     print(f"[전표 {slip_id}] {medicine_name} 반출 {dispensed}개 확인 ({tag}, 요청 {item['requestQty']}개)")
 
-    if pending:
-        print(f"[전표 {slip_id}] 시간 초과로 감시 종료 (미확인: {list(pending.keys())})")
+                return
+
+        print(f"[전표 {slip_id}] {medicine_name} 시간 초과로 감시 종료")
+
+
+# 전표의 품목마다 독립적으로(각자 자기 스레드에서) 반출을 감시한다.
+# 의약품별 락(get_medicine_watch_lock)이 있어서, 같은 의약품을 동시에 감시하는 전표가
+# 여러 개여도 실제로는 한 번에 하나씩만 그 의약품을 지켜본다.
+def watch_and_compare(slip_id, items):
+
+    for item in items:
+        threading.Thread(target=watch_single_item, args=(slip_id, item), daemon=True).start()
 
 
 # OCR 스캔용 카메라 전용 감지 루프 - YOLO 대신 프레임 차이로 "전표가 놓였다/치워졌다"만 본다.
@@ -422,10 +490,13 @@ def ocr_detection_loop(camera_id):
     stable_streak = 0
     placed = False
 
-    STABLE_STREAK_NEEDED = 10   # 이 프레임 수만큼 연속으로 안 움직이면 "고정됐다"고 판단
-    PLACED_DIFF_THRESHOLD = 15  # 배경과의 평균 밝기 차이(0~255) - 이보다 크면 "뭔가 놓여있다"
-    FRAME_DIFF_THRESHOLD = 3    # 프레임간 평균 밝기 차이 - 이보다 작으면 "안 움직인다"
-    # 위 세 값은 실제 카메라/조명 환경에 맞춰 조정이 필요할 수 있다
+    STABLE_STREAK_NEEDED = 10     # 이 프레임 수만큼 연속으로 안 움직이면 "고정됐다"고 판단
+    PLACED_ENTER_THRESHOLD = 15   # 배경과의 평균 밝기 차이(0~255) - 이보다 커야 "뭔가 놓였다"(진입)
+    PLACED_EXIT_THRESHOLD = 8     # 이보다 작아야 "치워졌다"(이탈) - 진입 기준보다 낮게 둬서
+                                   # 경계값 근처에서 값이 오락가락해도(조명 흔들림 등) 감지가
+                                   # 반복 트리거되지 않게 한다 (히스테리시스)
+    FRAME_DIFF_THRESHOLD = 3      # 프레임간 평균 밝기 차이 - 이보다 작으면 "안 움직인다"
+    # 위 값들은 실제 카메라/조명 환경에 맞춰 조정이 필요할 수 있다
 
     while True:
 
@@ -449,7 +520,7 @@ def ocr_detection_loop(camera_id):
 
             background_diff = cv2.absdiff(cv2.convertScaleAbs(background), gray).mean()
 
-            if not placed and stable_streak >= STABLE_STREAK_NEEDED and background_diff > PLACED_DIFF_THRESHOLD:
+            if not placed and stable_streak >= STABLE_STREAK_NEEDED and background_diff > PLACED_ENTER_THRESHOLD:
 
                 placed = True
                 print(f"CAM {camera_id} 전표 감지됨 - 인식 시도")
@@ -464,7 +535,7 @@ def ocr_detection_loop(camera_id):
                         daemon=True
                     ).start()
 
-            elif placed and background_diff <= PLACED_DIFF_THRESHOLD:
+            elif placed and background_diff <= PLACED_EXIT_THRESHOLD:
 
                 placed = False
                 print(f"CAM {camera_id} 전표 치워짐 - 다음 전표 대기")
@@ -520,6 +591,8 @@ for _camera_id in cameras:
         threading.Thread(target=ocr_detection_loop, args=(_camera_id,), daemon=True).start()
     else:
         threading.Thread(target=detection_loop, args=(_camera_id,), daemon=True).start()
+
+threading.Thread(target=refresh_camera_registry_loop, daemon=True).start()
 
 
 # 실시간 영상 API

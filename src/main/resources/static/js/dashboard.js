@@ -77,12 +77,12 @@ async function loadAlertCard() {
     list.innerHTML = pending.slice(0, 5).map(alert => `
         <li>
             <span class="dash-row-top">
-                <span>${alert.medicineName}</span>
+                <span>${escapeHtml(alert.medicineName)}</span>
                 <span class="dash-row-badge ${alert.alertType === TYPE_LOW_STOCK ? "low-stock" : ""}">
                     ${alert.alertType === TYPE_LOW_STOCK ? t("dashLowStockLabel") : t("dashAbnormalLabel")}
                 </span>
             </span>
-            <span class="dash-row-sub">${alert.alertContent} · ${formatTime(alert.alertTime)}</span>
+            <span class="dash-row-sub">${escapeHtml(alert.alertContent)} · ${formatTime(alert.alertTime)}</span>
         </li>
     `).join("");
 }
@@ -164,11 +164,11 @@ async function loadSlipCard() {
 
     body.innerHTML = `
         ${detail && detail.imagePath
-            ? `<img class="dash-slip-image" src="${detail.imagePath}" alt="${latest.slipId}">`
+            ? `<img class="dash-slip-image" src="${escapeHtml(detail.imagePath)}" alt="${escapeHtml(latest.slipId)}">`
             : `<p class="dash-empty">${t("dashNoSlipImageMessage")}</p>`}
         <div class="dash-slip-meta">
-            <span class="dash-slip-id">${latest.slipId}</span>
-            <span class="dash-slip-sub">${latest.slipDate || "-"} · ${latest.wardName} · ${t("colStaff")} ${latest.requesterName}</span>
+            <span class="dash-slip-id">${escapeHtml(latest.slipId)}</span>
+            <span class="dash-slip-sub">${latest.slipDate || "-"} · ${escapeHtml(latest.wardName)} · ${t("colStaff")} ${escapeHtml(latest.requesterName)}</span>
         </div>
         <table class="dash-slip-ocr-table">
             <thead>
@@ -178,7 +178,7 @@ async function loadSlipCard() {
                 ${detail && detail.items && detail.items.length > 0
                     ? detail.items.map(item => `
                         <tr>
-                            <td>${item.medicineName}</td>
+                            <td>${escapeHtml(item.medicineName)}</td>
                             <td>${item.requestQty}${t("unitPieces")}</td>
                             <td>${item.outboundQty != null ? item.outboundQty + t("unitPieces") + (item.abnormal ? ` (${t("mismatchLabel")})` : "") : "-"}</td>
                         </tr>
@@ -221,17 +221,17 @@ async function loadCameraCard() {
         <div class="dash-camera-preview">
             ${monitorCameras.length > 0
                 ? `<select class="dash-camera-select" id="dashMonitorCameraSelect" aria-label="${t("dashMonitorPreviewLabel")}">
-                    ${monitorCameras.map(camera => `<option value="${camera.cameraId}">${camera.cameraName}</option>`).join("")}
+                    ${monitorCameras.map(camera => `<option value="${camera.cameraId}">${escapeHtml(camera.cameraName)}</option>`).join("")}
                    </select>`
                 : `<span class="dash-camera-preview-label">${t("dashMonitorPreviewLabel")}</span>`}
             ${monitorCameras.length > 0
-                ? `<img id="dashMonitorCameraImg" src="${monitorCameras[0].streamUrl}" alt="${monitorCameras[0].cameraName}">`
+                ? `<img id="dashMonitorCameraImg" src="${escapeHtml(monitorCameras[0].streamUrl)}" alt="${escapeHtml(monitorCameras[0].cameraName)}">`
                 : `<p class="dash-empty">${t("cameraEmptyMessage")}</p>`}
         </div>
         <div class="dash-camera-preview">
             <span class="dash-camera-preview-label">${t("dashOcrPreviewLabel")}</span>
             ${ocrCamera
-                ? `<img src="${ocrCamera.streamUrl}" alt="${ocrCamera.cameraName}">`
+                ? `<img src="${escapeHtml(ocrCamera.streamUrl)}" alt="${escapeHtml(ocrCamera.cameraName)}">`
                 : `<p class="dash-empty">${t("dashNoOcrCameraMessage")}</p>`}
         </div>
     `;
