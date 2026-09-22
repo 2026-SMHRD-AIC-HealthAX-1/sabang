@@ -10,6 +10,9 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
     // 관리자(=병원)의 알림 목록 - 의약품을 등록한 관리자 기준, 최신순
     List<Alert> findByMedicine_Admin_MemberIdOrderByAlertTimeDesc(String adminId);
 
+    // 직원에게는 재고부족(LOW_STOCK)만 보여주므로, 알림 종류로 걸러서 조회
+    List<Alert> findByMedicine_Admin_MemberIdAndAlertTypeOrderByAlertTimeDesc(String adminId, String alertType);
+
     // 관리자가 아직 처리하지 않은 알림 수
     long countByMedicine_Admin_MemberIdAndProcessStatus(String adminId, String processStatus);
 

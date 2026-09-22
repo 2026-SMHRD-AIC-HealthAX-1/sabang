@@ -23,6 +23,11 @@ public class AlertService {
         return alertRepository.findByMedicine_Admin_MemberIdOrderByAlertTimeDesc(adminId);
     }
 
+    // 직원용: 이상(MISMATCH)은 빼고 재고부족(LOW_STOCK)만
+    public List<Alert> listByAdminAndType(String adminId, String alertType) {
+        return alertRepository.findByMedicine_Admin_MemberIdAndAlertTypeOrderByAlertTimeDesc(adminId, alertType);
+    }
+
     public long countPending(String adminId) {
         return alertRepository.countByMedicine_Admin_MemberIdAndProcessStatus(adminId, Alert.STATUS_PENDING);
     }

@@ -548,38 +548,44 @@ const translations = {
         dashboardDescription:
             "Fram Vision 의약품 관리 현황을 확인합니다.",
 
-        ocrTitle:
-            "최근 전표 OCR 인식 결과",
-
-        ocrDescription:
-            "예시 데이터 · ORD-20250910-001 · 2025-09-10 · 출고 · 7병동 · 담당자 김지은",
-
-        ocrColMedicine:
-            "필요한 의약품명",
-
-        ocrColQuantity:
-            "개수",
-
         ocrColRequestQty:
             "요청수량",
 
         ocrColOutboundQty:
             "실제 반출",
 
-        medicinePropofol:
-            "프로포폴",
+        dashPendingAlertsTitle:
+            "미처리 알림",
 
-        medicineFentanyl:
-            "펜타닐",
+        dashViewAllLink:
+            "전체보기",
 
-        medicineKetamine:
-            "케타민",
+        dashAbnormalLabel:
+            "이상",
 
-        qty1:
-            "1개",
+        dashLowStockLabel:
+            "재고부족",
 
-        qty2:
-            "2개",
+        dashNoAlertMessage:
+            "미처리 알림이 없습니다.",
+
+        dashRecentSlipTitle:
+            "최근 전표",
+
+        dashCameraStatusTitle:
+            "카메라 현황",
+
+        dashOutboundTodayTitle:
+            "오늘 출고 현황",
+
+        dashOutboundNoDataMessage:
+            "오늘 출고 기록이 없습니다.",
+
+        dashOutboundQtyLabel:
+            "총 수량",
+
+        unitCameras:
+            "대",
 
         monitoringTitle:
             "실시간 모니터링",
@@ -1084,38 +1090,44 @@ const translations = {
         dashboardDescription:
             "Check Fram Vision medicine management status.",
 
-        ocrTitle:
-            "Recent Receipt OCR Results",
-
-        ocrDescription:
-            "Sample Data · ORD-20250910-001 · 2025-09-10 · Outbound · Ward 7 · Staff Kim Ji-eun",
-
-        ocrColMedicine:
-            "Required Medicine",
-
-        ocrColQuantity:
-            "Quantity",
-
         ocrColRequestQty:
             "Requested Qty",
 
         ocrColOutboundQty:
             "Actual Outbound",
 
-        medicinePropofol:
-            "Propofol",
+        dashPendingAlertsTitle:
+            "Pending Alerts",
 
-        medicineFentanyl:
-            "Fentanyl",
+        dashViewAllLink:
+            "View all",
 
-        medicineKetamine:
-            "Ketamine",
+        dashAbnormalLabel:
+            "Abnormal",
 
-        qty1:
-            "1",
+        dashLowStockLabel:
+            "Low stock",
 
-        qty2:
-            "2",
+        dashNoAlertMessage:
+            "No pending alerts.",
+
+        dashRecentSlipTitle:
+            "Recent Slip",
+
+        dashCameraStatusTitle:
+            "Camera Status",
+
+        dashOutboundTodayTitle:
+            "Today's Outbound",
+
+        dashOutboundNoDataMessage:
+            "No outbound records today.",
+
+        dashOutboundQtyLabel:
+            "Total Qty",
+
+        unitCameras:
+            "units",
 
         monitoringTitle:
             "Live Monitoring",

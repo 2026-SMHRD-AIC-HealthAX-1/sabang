@@ -2,6 +2,7 @@ package com.smhrd.myapp.controller;
 
 import com.smhrd.myapp.entity.Alert;
 import com.smhrd.myapp.service.AlertService;
+import com.smhrd.myapp.service.HospitalStaffService;
 import com.smhrd.myapp.service.SubscriptionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -12,17 +13,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-// 이상 알림은 구독 중인 관리자만 조회/처리할 수 있다
+// 목록 조회는 관리자+직원 모두 가능하지만, 직원에게는 재고부족(LOW_STOCK) 알림만 보여준다
+// (이상/불일치 알림은 관리자만 볼 수 있음). 확인 처리는 관리자만 가능하다.
 @RestController
 @RequestMapping("/api/alerts")
 public class AlertController {
 
     private final AlertService alertService;
     private final SubscriptionService subscriptionService;
+    private final HospitalStaffService hospitalStaffService;
 
-    public AlertController(AlertService alertService, SubscriptionService subscriptionService) {
+    public AlertController(
+            AlertService alertService,
+            SubscriptionService subscriptionService,
+            HospitalStaffService hospitalStaffService
+    ) {
         this.alertService = alertService;
         this.subscriptionService = subscriptionService;
+        this.hospitalStaffService = hospitalStaffService;
     }
 
     private String requireAdmin(HttpSession session) {
@@ -36,17 +44,36 @@ public class AlertController {
         return memberId;
     }
 
-    // 알림 목록 (최신순)
+    // 카메라/전표 조회와 같은 패턴: 관리자 본인이거나, 그 관리자에게 속한(구독 유효한) 직원이면 통과
+    private String resolveOwnerAdminId(HttpSession session) {
+
+        String memberId = (String) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return null;
+        }
+
+        return hospitalStaffService.resolveActiveOwnerAdminId(memberId);
+    }
+
+    // 알림 목록 (최신순). 관리자는 전체, 직원은 재고부족만 받는다.
     @GetMapping
     public ResponseEntity<?> list(HttpSession session) {
 
-        String adminId = requireAdmin(session);
+        String memberId = (String) session.getAttribute("memberId");
+        String ownerAdminId = resolveOwnerAdminId(session);
 
-        if (adminId == null) {
-            return ResponseEntity.status(403).body(Map.of("message", "관리자만 이용할 수 있습니다."));
+        if (ownerAdminId == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "로그인이 필요합니다."));
         }
 
-        List<Map<String, Object>> result = alertService.listByAdmin(adminId).stream()
+        boolean isAdmin = subscriptionService.isActiveAdmin(memberId);
+
+        List<Alert> alerts = isAdmin
+                ? alertService.listByAdmin(ownerAdminId)
+                : alertService.listByAdminAndType(ownerAdminId, Alert.TYPE_LOW_STOCK);
+
+        List<Map<String, Object>> result = alerts.stream()
                 .map(this::toMap)
                 .collect(Collectors.toList());
 
