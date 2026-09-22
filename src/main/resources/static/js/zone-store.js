@@ -29,7 +29,12 @@
         ]);
 
         zones = zoneResponse.ok ? await zoneResponse.json() : [];
-        cameras = cameraResponse.ok ? await cameraResponse.json() : [];
+
+        // OCR 스캔용 카메라는 의약품 구역을 둘 수 없어서, 이 화면(구역설정)에서는 처음부터 뺀다.
+        // (드롭다운/카메라 전환/기본 선택 카메라 전부 이 목록을 그대로 쓰므로, 여기서 한 번만
+        // 걸러내면 이 화면 어디에서도 OCR 카메라가 안 보이고 선택도 안 된다)
+        const allCameras = cameraResponse.ok ? await cameraResponse.json() : [];
+        cameras = allCameras.filter(camera => camera.cameraRole !== "OCR_SCAN");
 
         if (currentCameraId === null && cameras.length > 0) {
             currentCameraId = cameras[0].cameraId;

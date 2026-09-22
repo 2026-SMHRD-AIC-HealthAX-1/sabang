@@ -27,6 +27,7 @@ const cameraModalCloseBtn = document.getElementById("cameraModalCloseBtn");
 const cameraManageList = document.getElementById("cameraManageList");
 const cameraAddForm = document.getElementById("cameraAddForm");
 const cameraAddInput = document.getElementById("cameraAddInput");
+const cameraRoleInput = document.getElementById("cameraRoleInput");
 const cameraManageMessage = document.getElementById("cameraManageMessage");
 
 /*
@@ -143,15 +144,51 @@ function renderManageList() {
 
         <li>
             <span>${camera.cameraName}</span>
+            <select class="camera-role-select" data-camera-id="${camera.cameraId}">
+                <option value="MONITOR" ${camera.cameraRole === "MONITOR" ? "selected" : ""}>${t("cameraRoleMonitor")}</option>
+                <option value="OCR_SCAN" ${camera.cameraRole === "OCR_SCAN" ? "selected" : ""}>${t("cameraRoleOcrScan")}</option>
+            </select>
             <button type="button" data-camera-id="${camera.cameraId}">삭제</button>
         </li>
 
     `).join("");
 
+    cameraManageList.querySelectorAll("select[data-camera-id]").forEach(select => {
+
+        select.addEventListener("change", () => changeCameraRole(select.dataset.cameraId, select.value));
+    });
+
     cameraManageList.querySelectorAll("button[data-camera-id]").forEach(button => {
 
         button.addEventListener("click", () => deleteCamera(button.dataset.cameraId));
     });
+}
+
+async function changeCameraRole(cameraId, cameraRole) {
+
+    try {
+
+        const response = await fetch(`/api/cameras/${cameraId}/role`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cameraRole })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            cameraManageMessage.textContent = data.message || "용도 변경에 실패했습니다.";
+            return;
+        }
+
+        // OCR_SCAN은 1대 제한이라, 이 카메라를 OCR_SCAN으로 바꾸면 기존 OCR_SCAN 카메라는
+        // 서버에서 자동으로 MONITOR로 내려간다 - 목록을 다시 받아와서 그 결과를 반영한다
+        await loadCameras();
+        renderManageList();
+
+    } catch (error) {
+        cameraManageMessage.textContent = "용도 변경에 실패했습니다. 다시 시도해 주세요.";
+    }
 }
 
 async function deleteCamera(cameraId) {
@@ -196,7 +233,7 @@ cameraAddForm.addEventListener("submit", async function(event) {
         const response = await fetch("/api/cameras", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cameraName })
+            body: JSON.stringify({ cameraName, cameraRole: cameraRoleInput.value })
         });
 
         const data = await response.json();
@@ -207,6 +244,7 @@ cameraAddForm.addEventListener("submit", async function(event) {
         }
 
         cameraAddInput.value = "";
+        cameraRoleInput.value = "MONITOR";
 
         await loadCameras();
 

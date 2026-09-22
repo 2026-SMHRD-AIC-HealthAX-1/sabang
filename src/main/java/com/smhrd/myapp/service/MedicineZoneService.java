@@ -51,12 +51,18 @@ public class MedicineZoneService {
     }
     
 
+    // create()/update() 둘 다 여기를 거쳐서 카메라를 지정하므로, OCR 스캔용 카메라는
+    // 여기서 한 번에 막아준다 (OCR_SCAN 카메라엔 의약품 구역을 같이 둘 수 없음)
     private Camera requireOwnedCamera(String adminId, Long cameraId) {
 
         Camera camera = cameraRepository.findById(cameraId).orElse(null);
 
         if (camera == null || !camera.getAdmin().getMemberId().equals(adminId)) {
             throw new IllegalStateException("존재하지 않거나 권한이 없는 카메라입니다.");
+        }
+
+        if ("OCR_SCAN".equals(camera.getCameraRole())) {
+            throw new IllegalStateException("OCR 스캔용 카메라에는 의약품 구역을 설정할 수 없습니다. 다른 카메라를 선택해 주세요.");
         }
 
         return camera;

@@ -88,9 +88,43 @@ public class CameraRegistryController {
             return ResponseEntity.status(400).body(Map.of("message", "카메라 이름을 입력해 주세요."));
         }
 
-        Camera saved = cameraRegistryService.add(adminId, cameraName);
+        try {
 
-        return ResponseEntity.ok(toMap(saved));
+            // 안 넘어오면 CameraRegistryService.add()가 기본값(MONITOR)로 처리함
+            Camera saved = cameraRegistryService.add(adminId, cameraName, body.get("cameraRole"));
+
+            return ResponseEntity.ok(toMap(saved));
+
+        } catch (IllegalStateException e) {
+
+            return ResponseEntity.status(400).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 카메라 용도 변경 (모니터링용 <-> OCR 스캔용)
+    @PutMapping("/{cameraId}/role")
+    public ResponseEntity<?> updateRole(
+            @PathVariable Long cameraId,
+            @RequestBody Map<String, String> body,
+            HttpSession session
+    ) {
+
+        String adminId = requireAdmin(session);
+
+        if (adminId == null) {
+            return ResponseEntity.status(403).body(Map.of("message", "관리자만 이용할 수 있습니다."));
+        }
+
+        try {
+
+            Camera updated = cameraRegistryService.setRole(adminId, cameraId, body.get("cameraRole"));
+
+            return ResponseEntity.ok(toMap(updated));
+
+        } catch (IllegalStateException e) {
+
+            return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{cameraId}")
@@ -120,7 +154,8 @@ public class CameraRegistryController {
                 "cameraId", camera.getCameraId(),
                 "cameraName", camera.getCameraName(),
                 "connectionStatus", camera.getConnectionStatus(),
-                "streamUrl", camera.getStreamUrl()
+                "streamUrl", camera.getStreamUrl(),
+                "cameraRole", camera.getCameraRole()
         );
     }
 }

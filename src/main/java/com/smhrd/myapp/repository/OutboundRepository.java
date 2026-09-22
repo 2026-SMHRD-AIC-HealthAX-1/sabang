@@ -18,4 +18,7 @@ public interface OutboundRepository extends JpaRepository<Outbound, Long> {
 
     // 의약품 삭제 전 확인용: 이 의약품에 대한 출고 기록이 있는지
     long countByMedicine_MedicineId(Long medicineId);
+
+    // 전표 상세 화면용: 이 전표에 대해 실제로 반출된 기록(요청수량과 비교용)
+    List<Outbound> findBySlip_SlipId(String slipId);
 }

@@ -560,6 +560,12 @@ const translations = {
         ocrColQuantity:
             "개수",
 
+        ocrColRequestQty:
+            "요청수량",
+
+        ocrColOutboundQty:
+            "실제 반출",
+
         medicinePropofol:
             "프로포폴",
 
@@ -595,6 +601,12 @@ const translations = {
 
         cameraAddPlaceholder:
             "새 카메라 이름 (예: CAM 03)",
+
+        cameraRoleMonitor:
+            "모니터링용",
+
+        cameraRoleOcrScan:
+            "OCR 스캔용",
 
         addBtn:
             "추가",
@@ -638,20 +650,23 @@ const translations = {
         typeOutbound:
             "출고",
 
-        ward7:
-            "7병동",
-
-        medicineCount34:
-            "3종 / 4개",
-
-        staffKimJieun:
-            "김지은",
-
-        sampleData:
-            "예시 데이터",
-
         viewBtn:
             "보기",
+
+        unitSpecies:
+            "종",
+
+        unitPieces:
+            "개",
+
+        mismatchLabel:
+            "불일치",
+
+        noSlipMessage:
+            "등록된 전표가 없습니다.",
+
+        slipLoadFailMessage:
+            "전표를 불러오지 못했습니다.",
 
         receiptImageTitle:
             "촬영한 전표 이미지",
@@ -663,7 +678,7 @@ const translations = {
             "OCR 인식 결과",
 
         receiptOcrNote:
-            "예시 데이터 · 첨부 전표를 보고 입력한 결과입니다.",
+            "전표 이미지를 OCR로 인식한 결과입니다.",
 
         colMedicineName:
             "의약품명",
@@ -1081,6 +1096,12 @@ const translations = {
         ocrColQuantity:
             "Quantity",
 
+        ocrColRequestQty:
+            "Requested Qty",
+
+        ocrColOutboundQty:
+            "Actual Outbound",
+
         medicinePropofol:
             "Propofol",
 
@@ -1116,6 +1137,12 @@ const translations = {
 
         cameraAddPlaceholder:
             "New camera name (e.g. CAM 03)",
+
+        cameraRoleMonitor:
+            "Monitoring",
+
+        cameraRoleOcrScan:
+            "OCR Scan",
 
         addBtn:
             "Add",
@@ -1159,20 +1186,24 @@ const translations = {
         typeOutbound:
             "Outbound",
 
-        ward7:
-            "Ward 7",
-
-        medicineCount34:
-            "3 types / 4 units",
-
-        staffKimJieun:
-            "Kim Ji-eun",
-
-        sampleData:
-            "Sample Data",
 
         viewBtn:
             "View",
+
+        unitSpecies:
+            "types",
+
+        unitPieces:
+            "units",
+
+        mismatchLabel:
+            "mismatch",
+
+        noSlipMessage:
+            "No receipts registered.",
+
+        slipLoadFailMessage:
+            "Failed to load receipts.",
 
         receiptImageTitle:
             "Captured Receipt Image",
@@ -1184,7 +1215,7 @@ const translations = {
             "OCR Recognition Results",
 
         receiptOcrNote:
-            "Sample data · Entered based on the attached receipt.",
+            "OCR recognition results from the receipt image.",
 
         colMedicineName:
             "Medicine Name",

@@ -107,6 +107,11 @@
 
                 <input type="text" id="cameraAddInput" placeholder="새 카메라 이름 (예: CAM 03)" data-i18n-placeholder="cameraAddPlaceholder" required>
 
+                <select id="cameraRoleInput" class="camera-role-select">
+                    <option value="MONITOR" data-i18n="cameraRoleMonitor">모니터링용</option>
+                    <option value="OCR_SCAN" data-i18n="cameraRoleOcrScan">OCR 스캔용</option>
+                </select>
+
                 <button type="submit" class="camera-add-btn" data-i18n="addBtn">추가</button>
 
             </form>

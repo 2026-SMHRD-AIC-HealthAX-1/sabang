@@ -1,6 +1,7 @@
 package com.smhrd.myapp.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,6 +35,14 @@ public class Slip {
     // 전표 일자 (NULL 허용)
     @Column(name = "SLIP_DATE")
     private LocalDate slipDate;
+
+    // 스캔한 전표 원본 이미지 경로 (전표 상세 화면에서 원본 이미지를 보여줄 때 사용, NULL 허용)
+    @Column(name = "IMAGE_PATH", length = 255)
+    private String imagePath;
+
+    // 생성 시각 (전표목록에서 "가장 최신 전표"를 정확히 가리기 위함 - SLIP_DATE는 날짜만이라 같은 날짜끼리는 순서를 못 가림)
+    @Column(name = "CREATED_AT")
+    private LocalDateTime createdAt;
 
     // 기본 생성자 (JPA는 파라미터 없는 생성자가 필수예요)
     public Slip() {
@@ -71,5 +80,21 @@ public class Slip {
 
     public void setSlipDate(LocalDate slipDate) {
         this.slipDate = slipDate;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

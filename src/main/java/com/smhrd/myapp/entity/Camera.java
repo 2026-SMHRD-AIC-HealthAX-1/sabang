@@ -43,6 +43,11 @@ public class Camera {
     @Column(name = "STREAM_URL", length = 255)
     private String streamUrl;
 
+    // 카메라 용도 - MONITOR(구역 감지용, 여러 대 가능) / OCR_SCAN(전표 스캔용, 관리자당 1대만)
+    // DB에 관리자당 OCR_SCAN 1대 제한 조건부 UNIQUE 인덱스가 걸려있음 (UK_CAMERA_ADMIN_OCR)
+    @Column(name = "CAMERA_ROLE", length = 20, nullable = false)
+    private String cameraRole = "MONITOR";
+
     // 기본 생성자 (JPA는 파라미터 없는 생성자가 필수예요)
     public Camera() {
     }
@@ -87,5 +92,13 @@ public class Camera {
 
     public void setStreamUrl(String streamUrl) {
         this.streamUrl = streamUrl;
+    }
+
+    public String getCameraRole() {
+        return cameraRole;
+    }
+
+    public void setCameraRole(String cameraRole) {
+        this.cameraRole = cameraRole;
     }
 }
