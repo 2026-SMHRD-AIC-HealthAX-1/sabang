@@ -22,6 +22,9 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
     // 의약품 삭제 전 확인용: 이 의약품에 걸린 알림이 있는지
     long countByMedicine_MedicineId(Long medicineId);
 
+    // 재고부족 알림 중복 생성 방지용: 이 의약품에 이미 미처리 상태인 이 종류의 알림이 있는지
+    long countByMedicine_MedicineIdAndAlertTypeAndProcessStatus(Long medicineId, String alertType, String processStatus);
+
     // 회원탈퇴(관리자) 시 정리용: 이 관리자의 의약품에 걸린 알림 전체 삭제
     void deleteByMedicine_Admin_MemberId(String adminId);
 }
