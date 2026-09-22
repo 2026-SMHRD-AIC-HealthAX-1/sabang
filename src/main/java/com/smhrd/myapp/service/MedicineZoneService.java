@@ -1,5 +1,6 @@
 package com.smhrd.myapp.service;
 
+import com.smhrd.myapp.entity.Alert;
 import com.smhrd.myapp.entity.Camera;
 import com.smhrd.myapp.entity.Medicine;
 import com.smhrd.myapp.entity.Member;
@@ -11,7 +12,9 @@ import com.smhrd.myapp.repository.SlipItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 // 의약품 = 구역(Zone) 1:1. 약품을 추가하면 카메라 화면 위 구역이 함께 생기고,
 // 삭제하면 구역과 의약품 데이터가 함께 사라진다.
@@ -49,7 +52,53 @@ public class MedicineZoneService {
     public List<Medicine> listByCamera(Long cameraId) {
         return medicineRepository.findByCamera_CameraId(cameraId);
     }
-    
+
+    // camera.py가 실시간 구역 카운트를 보고할 때 호출된다. 최소수량(MIN_QTY)이 설정된
+    // 의약품 중 카운트가 그 이하로 떨어진 게 있으면 재고부족(LOW_STOCK) 알림을 만든다.
+    // 이미 그 의약품에 미처리(PENDING) 상태인 같은 종류 알림이 있으면 또 만들지 않는다
+    // (카운트가 바뀔 때마다 계속 보고가 들어오므로, 안 그러면 낮은 재고 상태 내내 알림이 쏟아짐).
+    // 재고가 다시 차도 기존 PENDING 알림은 자동으로 닫지 않는다 - 관리자가 직접 확인 처리해야
+    // 한다(이상 알림과 동일한 방식) - 카메라 오인식일 수도 있어서 시스템이 임의로 닫으면 안 됨.
+    public void recordZoneCounts(Long cameraId, Map<String, Long> counts) {
+
+        for (Map.Entry<String, Long> entry : counts.entrySet()) {
+
+            String medicineName = entry.getKey();
+            Long count = entry.getValue();
+
+            List<Medicine> matches = medicineRepository.findByCamera_CameraIdAndMedicineName(cameraId, medicineName);
+
+            if (matches.isEmpty()) {
+                continue;
+            }
+
+            Medicine medicine = matches.get(0);
+            Long minQty = medicine.getMinQty();
+
+            if (minQty == null || count > minQty) {
+                continue;
+            }
+
+            boolean alreadyPending = alertRepository.countByMedicine_MedicineIdAndAlertTypeAndProcessStatus(
+                    medicine.getMedicineId(), Alert.TYPE_LOW_STOCK, Alert.STATUS_PENDING
+            ) > 0;
+
+            if (alreadyPending) {
+                continue;
+            }
+
+            Alert alert = new Alert();
+            alert.setMedicine(medicine);
+            alert.setAlertType(Alert.TYPE_LOW_STOCK);
+            alert.setAlertContent(String.format("현재 %d개 / 최소 %d개", count, minQty));
+            alert.setAlertTime(LocalDateTime.now());
+            alert.setProcessStatus(Alert.STATUS_PENDING);
+
+            alertRepository.save(alert);
+        }
+    }
+
+
 
     // create()/update() 둘 다 여기를 거쳐서 카메라를 지정하므로, OCR 스캔용 카메라는
     // 여기서 한 번에 막아준다 (OCR_SCAN 카메라엔 의약품 구역을 같이 둘 수 없음)
