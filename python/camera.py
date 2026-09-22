@@ -9,7 +9,7 @@ from datetime import datetime
 from ultralytics import YOLO
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-from collections import deque, Counter
+from collections import Counter
 
 
 # YOLO 세그멘테이션 모델 불러오기
@@ -27,6 +27,11 @@ SPRING_URL = "http://127.0.0.1:8089"
 
 # 구역 설정을 얼마 만에 다시 불러올지 (관리자가 구역을 바꿔도, 서버 재시작 없이 이 주기마다 반영됨)
 ZONE_REFRESH_INTERVAL_SEC = 30
+
+# 구역별 개수를 "안정됐다"고 확정해서 출력/전송할지 판단하는 주기.
+# 짧을수록 반응은 빠르지만 손이 스치는 정도의 순간 흔들림에도 반응하기 쉽고,
+# 길수록 오탐은 줄지만 실제 변화 반영이 그만큼 늦어진다.
+COUNT_DECISION_INTERVAL_SEC = 1.5
 
 # 전표 인식 후, 반출로 세그먼트 개수가 줄어드는 걸 이만큼(초) 안에 못 잡으면 포기한다
 DISPENSE_WATCH_TIMEOUT_SEC = 300
@@ -212,6 +217,13 @@ camera_state = {
 
 # 카메라 한 대를 계속 읽으면서 감지하는 백그라운드 작업.
 # 서버 시작할 때 카메라마다 이 함수를 스레드로 하나씩 띄워서, 프로세스가 살아있는 동안 계속 돈다.
+#
+# 프레임 읽기/YOLO추론/영상 스트리밍은 카메라가 주는 속도 그대로 매 프레임 계속한다(화면이
+# 끊기지 않게). 다만 "안정화된 개수를 확정해서 보낼지" 판단만 COUNT_DECISION_INTERVAL_SEC
+# 주기로 따로 늦춘다 - 매 프레임 raw count를 count_accumulator에 쌓아두다가, 주기가 차면
+# 그동안 쌓인 값들 중 가장 많이 나온 값(최빈값)을 그 구간의 안정값으로 확정한다.
+# (예전엔 "최근 5프레임"으로만 판단해서, 카메라가 30fps면 5프레임=0.16초밖에 안 돼 손이
+# 잠깐 스치기만 해도 안정됐다고 오판하기 쉬웠음 - 판단 주기를 시간 기준으로 늦추면 해결됨)
 def detection_loop(camera_id):
 
     camera = cameras[camera_id]
@@ -220,8 +232,9 @@ def detection_loop(camera_id):
     zones = get_zones(camera_id)
     last_zone_refresh = time.time()
 
-    last_zone_counts = None
-    count_history = {}
+    stable_zone_counts = {}   # 마지막으로 확정된 안정값 - 판단 주기마다만 갱신되고, 그 사이엔 그대로 유지
+    count_accumulator = {}    # 이번 판단 주기 동안 프레임마다 쌓이는 raw count들
+    last_decision_time = time.time()
 
     while True:
 
@@ -229,7 +242,7 @@ def detection_loop(camera_id):
         if time.time() - last_zone_refresh > ZONE_REFRESH_INTERVAL_SEC:
             zones = get_zones(camera_id)
             last_zone_refresh = time.time()
-            count_history = {}  # 구역이 바뀌었을 수 있으니 안정화 이력도 같이 초기화
+            count_accumulator = {}  # 구역이 바뀌었을 수 있으니 이번 주기 누적치도 초기화
 
         success, frame = camera.read()
 
@@ -280,36 +293,34 @@ def detection_loop(camera_id):
                 ):
                     zone_counts[medicine_name] += 1
 
-        # 최근 5프레임 기준으로 개수 안정화
-        stable_zone_counts = {}
-
+        # 이번 프레임의 raw count를 이번 판단 주기 누적치에 쌓는다 (영상은 그대로 매 프레임 부드럽게)
         for name, count in zone_counts.items():
+            count_accumulator.setdefault(name, []).append(count)
 
-            if name not in count_history:
-                count_history[name] = deque(maxlen=5)
+        # 판단 주기가 찼을 때만 안정값을 다시 확정하고, 바뀌었으면 출력 + Spring 전송
+        if time.time() - last_decision_time >= COUNT_DECISION_INTERVAL_SEC:
 
-            count_history[name].append(count)
+            new_stable_counts = {
+                name: Counter(counts).most_common(1)[0][0]
+                for name, counts in count_accumulator.items()
+            }
 
-            # 최근 값 중 가장 많이 나온 개수를 안정값으로 사용
-            stable_count = Counter(count_history[name]).most_common(1)[0][0]
+            if new_stable_counts != stable_zone_counts:
 
-            stable_zone_counts[name] = stable_count
+                print(f"\n===== CAM {camera_id} 안정화된 구역별 개수 =====")
 
-        # 안정화된 값이 바뀔 때만 출력 + Spring으로 전송
-        if stable_zone_counts != last_zone_counts:
+                for name, count in new_stable_counts.items():
+                    print(f"{name}: {count}")
 
-            print(f"\n===== CAM {camera_id} 안정화된 구역별 개수 =====")
+                print("==============================", flush=True)
 
-            for name, count in stable_zone_counts.items():
-                print(f"{name}: {count}")
+                send_counts(camera_id, new_stable_counts)
 
-            print("==============================", flush=True)
+            stable_zone_counts = new_stable_counts
+            count_accumulator = {}
+            last_decision_time = time.time()
 
-            send_counts(camera_id, stable_zone_counts)
-
-            last_zone_counts = stable_zone_counts.copy()
-
-        # YOLO 결과를 그려넣은 프레임을 JPEG로 인코딩해서 "최신 상태"에 반영
+        # YOLO 결과를 그려넣은 프레임을 JPEG로 인코딩해서 "최신 상태"에 반영 (매 프레임, 끊김 없이)
         annotated_frame = results[0].plot()
 
         success, buffer = cv2.imencode(".jpg", annotated_frame)
