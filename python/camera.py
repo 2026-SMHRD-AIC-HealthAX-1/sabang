@@ -24,6 +24,10 @@ os.makedirs(SPRING_UPLOAD_DIR, exist_ok=True)
 # 전표(slip) 인식을 위한 설정값
 SLIP_WAIT_TIME = 1.0      # 전표가 카메라에 1초 동안 유지되어야 캡처
 SLIP_COOLDOWN = 10.0      # 한 번 캡처 후 다음 캡처까지 10초 대기 (중복 캡처 방지)
+# 같은 전표 반복 촬영 방지: 직전에 찍은 전표와 ORB 특징점이 이만큼 이상 맞으면 같은 전표로 보고 건너뜀
+# (실측: 같은 전표 259~300개 / 사람·옷 등 다른 장면 3~16개)
+SAME_SLIP_MIN_MATCHES = 60
+SAME_SLIP_MEMORY_SEC = 300  # 이 시간 동안 같은 전표가 안 보이면 잊어버림 (다시 찍을 수 있음)
 
 model = YOLO(MODEL_PATH)
 model_lock = threading.Lock()
@@ -206,6 +210,23 @@ def watch_and_compare(slip_id, items):
         threading.Thread(target=watch_single_item, args=(slip_id, item), daemon=True).start()
 
 
+# OCR로 읽은 전표 내용(기본정보 + 의약품명/수량)을 콘솔에 보기 좋게 찍는다
+def print_slip_summary(result):
+    basic_info = result.get("basic_info") or {}
+    medicines = result.get("medicines") or []
+
+    print(f"  전표번호: {basic_info.get('전표번호', '-')}   일자: {basic_info.get('일자', '-')}")
+    print(f"  요청병동: {basic_info.get('요청병동', '-')}   담당자: {basic_info.get('담당자', '-')}")
+
+    if not medicines:
+        print("  의약품: (인식된 의약품 없음)")
+        return
+
+    print(f"  의약품 {len(medicines)}종:")
+    for i, med in enumerate(medicines, 1):
+        print(f"    {i}. {med.get('의약품명')} - {med.get('수량')}개")
+
+
 # 백그라운드에서 실제 네이버 OCR 및 DB 저장 수행 후 반출 감시 트리거
 def run_ocr_background(image_path):
     print(f"\n[자동 캡처] 전표 OCR 분석 및 DB 저장을 시작합니다: {image_path}")
@@ -215,7 +236,14 @@ def run_ocr_background(image_path):
         result = {"status": "error", "stage": "예외", "message": f"{type(e).__name__}: {e}"}
 
     if result and result.get("status") == "success":
-        print(f"[자동 캡처 결과] 성공 - {result}\n")
+        print("=" * 60)
+        print("[전표 인식 성공] DB 저장 완료")
+        print_slip_summary(result)
+        print("=" * 60 + "\n")
+    elif result and "이미 등록된 전표번호" in str(result.get("message", "")):
+        print(f"[중복 전표] {result.get('basic_info', {}).get('전표번호')} 는 이미 저장된 전표라 건너뜀")
+        print_slip_summary(result)
+        print()
     else:
         stage = result.get("stage", "?") if result else "?"
         message = result.get("message", "원인 불명") if result else "결과 없음"
@@ -223,8 +251,7 @@ def run_ocr_background(image_path):
         print(f"[전표 인식 실패] 단계: {stage}")
         print(f"  원인: {message}")
         if result and result.get("basic_info"):
-            print(f"  인식된 기본정보: {result['basic_info']}")
-            print(f"  인식된 의약품: {result.get('medicines')}")
+            print_slip_summary(result)
         print("=" * 60 + "\n")
 
     if result and result.get("status") == "success":
@@ -365,6 +392,23 @@ def segment_detection_loop(camera_id, stop_event):
 # ====================================================
 # OpenCV 기반 전표(종이/문서) 자동 감지 함수
 # ====================================================
+_orb = cv2.ORB_create(1000)
+_orb_matcher = cv2.BFMatcher(cv2.NORM_HAMMING)
+
+
+def compute_slip_descriptors(frame):
+    _, descriptors = _orb.detectAndCompute(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), None)
+    return descriptors
+
+
+def count_slip_matches(desc_a, desc_b):
+    """두 프레임의 ORB 특징점 중 확실히 맞는(ratio test 통과) 개수 - 흔들려도 같은 전표면 수백 개가 나온다."""
+    if desc_a is None or desc_b is None or len(desc_a) < 2 or len(desc_b) < 2:
+        return 0
+    matches = _orb_matcher.knnMatch(desc_a, desc_b, k=2)
+    return sum(1 for m in matches if len(m) == 2 and m[0].distance < 0.75 * m[1].distance)
+
+
 def detect_slip_contour(frame):
     h, w = frame.shape[:2]
     frame_area = h * w
@@ -416,9 +460,10 @@ def ocr_detection_loop(camera_id, stop_event):
     slip_first_seen_time = None
     last_slip_capture_time = 0
     capture_success_display_until = 0
-    # 한 번 캡처한 전표가 치워질 때까지(윤곽이 사라질 때까지) 다시 찍지 않는다
-    waiting_for_slip_removal = False
-    last_slip_seen_time = 0
+    # 마지막으로 찍은 전표의 ORB 특징점 - 같은 전표를 계속 들고 있으면 다시 찍지 않게 비교용으로 들고 있는다
+    last_slip_descriptors = None
+    last_slip_match_time = 0
+    same_slip_display_until = 0
 
     print(f"[시작] CAM {camera_id} : OCR 전표 인식 루프 시작 (종이 윤곽 자동 감지)")
 
@@ -439,29 +484,38 @@ def ocr_detection_loop(camera_id, stop_event):
 
         if slip_detected_now:
             cv2.drawContours(display_frame, [paper_contour], -1, (0, 255, 0), 3)
-            last_slip_seen_time = current_time
 
-            if waiting_for_slip_removal:
-                cv2.putText(display_frame, "Done. Remove slip for next scan", (20, 40),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 200, 200), 2)
-            elif current_time - last_slip_capture_time > SLIP_COOLDOWN:
+            if current_time - last_slip_capture_time > SLIP_COOLDOWN:
                 if slip_first_seen_time is None:
                     slip_first_seen_time = current_time
                     cv2.putText(display_frame, "Slip Detected: Hold still...", (20, 40),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
                 elif current_time - slip_first_seen_time >= SLIP_WAIT_TIME:
-                    # 1초 이상 유지 -> 캡처 실행!
-                    filename = f"auto_slip_cam{camera_id}_{int(current_time)}.jpg"
-                    filepath = os.path.join(SPRING_UPLOAD_DIR, filename)
+                    # 1초 이상 유지 -> 캡처 실행! (단, 방금 찍은 전표를 계속 들고 있는 거면 건너뜀)
+                    descriptors = compute_slip_descriptors(frame)
+                    same_matches = count_slip_matches(last_slip_descriptors, descriptors)
+                    is_same_slip = (current_time - last_slip_match_time <= SAME_SLIP_MEMORY_SEC
+                                    and same_matches >= SAME_SLIP_MIN_MATCHES)
 
-                    # 깨끗한 원본 프레임 저장
-                    cv2.imwrite(filepath, frame)
-                    threading.Thread(target=run_ocr_background, args=(filepath,), daemon=True).start()
+                    if is_same_slip:
+                        print(f"[중복 촬영 방지] 방금 찍은 전표와 같은 전표라 건너뜀 (특징점 매칭 {same_matches}개)")
+                        # 계속 들고 있는 동안은 기억 시간을 연장해서 계속 건너뛰게 한다
+                        last_slip_match_time = current_time
+                        same_slip_display_until = current_time + 3.0
+                    else:
+                        filename = f"auto_slip_cam{camera_id}_{int(current_time)}.jpg"
+                        filepath = os.path.join(SPRING_UPLOAD_DIR, filename)
+
+                        # 깨끗한 원본 프레임 저장
+                        cv2.imwrite(filepath, frame)
+                        threading.Thread(target=run_ocr_background, args=(filepath,), daemon=True).start()
+
+                        capture_success_display_until = current_time + 4.0
+                        last_slip_descriptors = descriptors
+                        last_slip_match_time = current_time
 
                     last_slip_capture_time = current_time
                     slip_first_seen_time = None
-                    capture_success_display_until = current_time + 4.0
-                    waiting_for_slip_removal = True
                 else:
                     remain = SLIP_WAIT_TIME - (current_time - slip_first_seen_time)
                     cv2.putText(display_frame, f"Capturing in {remain:.1f}s...", (20, 40),
@@ -472,16 +526,16 @@ def ocr_detection_loop(camera_id, stop_event):
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 200, 200), 2)
         else:
             slip_first_seen_time = None
-            # 윤곽이 한두 프레임 깜빡 끊기는 건 무시하고, 1초 이상 안 보여야 "치웠다"고 본다
-            if waiting_for_slip_removal and current_time - last_slip_seen_time >= 1.0:
-                waiting_for_slip_removal = False
             gw, gh = int(w * 0.75), int(h * 0.75)
             gx1, gy1 = (w - gw) // 2, (h - gh) // 2
             cv2.rectangle(display_frame, (gx1, gy1), (gx1 + gw, gy1 + gh), (255, 200, 100), 1)
             cv2.putText(display_frame, "Place Slip inside frame", (gx1 + 10, gy1 - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 200, 100), 2)
 
-        if current_time < capture_success_display_until:
+        if current_time < same_slip_display_until:
+            cv2.putText(display_frame, "Already scanned. Show a new slip", (20, 80),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 200, 255), 2)
+        elif current_time < capture_success_display_until:
             cv2.putText(display_frame, "[SUCCESS] Slip Captured! Processing OCR & DB...", (20, 80),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
 

@@ -239,8 +239,9 @@ def find_ward_seq_id(ward_text, admin_id):
 
         # 이름이 같은 다른 병원(관리자)의 병동을 잘못 가져오지 않게 ADMIN_ID를 반드시 같이 건다
         cursor.execute(
-            "SELECT MIN(WARD_SEQ_ID) FROM WARD WHERE (WARD_CODE = :1 OR WARD_NAME = :1) AND ADMIN_ID = :2",
-            [ward_text, admin_id],
+            # thick 모드에선 같은 :1을 두 번 써도 자리마다 값을 따로 요구해서(ORA-01008) 이름 바인드로 쓴다
+            "SELECT MIN(WARD_SEQ_ID) FROM WARD WHERE (WARD_CODE = :ward OR WARD_NAME = :ward) AND ADMIN_ID = :admin_id",
+            {"ward": ward_text, "admin_id": admin_id},
         )
         row = cursor.fetchone()
 
