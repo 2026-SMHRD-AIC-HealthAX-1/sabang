@@ -81,13 +81,15 @@ def fetch_camera_registry_with_retry(admin_id, retry_interval_sec=5, max_attempt
         time.sleep(retry_interval_sec)
 
     print("카메라 목록 조회 계속 실패 - 일단 기본 매핑으로 시작")
-    # 기본값: 0번=OCR_SCAN(cameraId: 1), 1번=MONITOR(cameraId: 2)
-    return {0: 1, 1: 2}, 0
+    # Spring을 아예 못 불러온 상태라 실제 역할을 모른다. OCR로 등록된 카메라가 있는지 확인이
+    # 안 되니, 함부로 어떤 카메라를 OCR로 단정하지 않는다(None = "아직 모름, 전부 모니터링으로
+    # 취급"). 관리자가 실제로 OCR_SCAN으로 등록한 카메라가 없다면 절대 OCR 루프가 돌면 안 된다 -
+    # 예전엔 여기서 무조건 0번을 OCR로 정해서, 약품 모니터링용으로 등록된 카메라가 강제로
+    # OCR 스캔 모드로 도는 문제가 있었다.
+    return {0: 1, 1: 2}, None
 
 
 PYTHON_ID_TO_SPRING_ID, OCR_PYTHON_ID = fetch_camera_registry_with_retry(ADMIN_ID)
-if OCR_PYTHON_ID is None:
-    OCR_PYTHON_ID = 0  # 기본값: 0번 카메라를 OCR로 설정
 
 
 def get_zones(camera_id):
@@ -207,8 +209,23 @@ def watch_and_compare(slip_id, items):
 # 백그라운드에서 실제 네이버 OCR 및 DB 저장 수행 후 반출 감시 트리거
 def run_ocr_background(image_path):
     print(f"\n[자동 캡처] 전표 OCR 분석 및 DB 저장을 시작합니다: {image_path}")
-    result = ocr_processor.process_slip_image(image_path, ADMIN_ID)
-    print(f"[자동 캡처 결과] {result}\n")
+    try:
+        result = ocr_processor.process_slip_image(image_path, ADMIN_ID)
+    except Exception as e:
+        result = {"status": "error", "stage": "예외", "message": f"{type(e).__name__}: {e}"}
+
+    if result and result.get("status") == "success":
+        print(f"[자동 캡처 결과] 성공 - {result}\n")
+    else:
+        stage = result.get("stage", "?") if result else "?"
+        message = result.get("message", "원인 불명") if result else "결과 없음"
+        print("=" * 60)
+        print(f"[전표 인식 실패] 단계: {stage}")
+        print(f"  원인: {message}")
+        if result and result.get("basic_info"):
+            print(f"  인식된 기본정보: {result['basic_info']}")
+            print(f"  인식된 의약품: {result.get('medicines')}")
+        print("=" * 60 + "\n")
 
     if result and result.get("status") == "success":
         basic_info = result.get("basic_info", {})
@@ -399,6 +416,9 @@ def ocr_detection_loop(camera_id, stop_event):
     slip_first_seen_time = None
     last_slip_capture_time = 0
     capture_success_display_until = 0
+    # 한 번 캡처한 전표가 치워질 때까지(윤곽이 사라질 때까지) 다시 찍지 않는다
+    waiting_for_slip_removal = False
+    last_slip_seen_time = 0
 
     print(f"[시작] CAM {camera_id} : OCR 전표 인식 루프 시작 (종이 윤곽 자동 감지)")
 
@@ -419,8 +439,12 @@ def ocr_detection_loop(camera_id, stop_event):
 
         if slip_detected_now:
             cv2.drawContours(display_frame, [paper_contour], -1, (0, 255, 0), 3)
+            last_slip_seen_time = current_time
 
-            if current_time - last_slip_capture_time > SLIP_COOLDOWN:
+            if waiting_for_slip_removal:
+                cv2.putText(display_frame, "Done. Remove slip for next scan", (20, 40),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 200, 200), 2)
+            elif current_time - last_slip_capture_time > SLIP_COOLDOWN:
                 if slip_first_seen_time is None:
                     slip_first_seen_time = current_time
                     cv2.putText(display_frame, "Slip Detected: Hold still...", (20, 40),
@@ -437,6 +461,7 @@ def ocr_detection_loop(camera_id, stop_event):
                     last_slip_capture_time = current_time
                     slip_first_seen_time = None
                     capture_success_display_until = current_time + 4.0
+                    waiting_for_slip_removal = True
                 else:
                     remain = SLIP_WAIT_TIME - (current_time - slip_first_seen_time)
                     cv2.putText(display_frame, f"Capturing in {remain:.1f}s...", (20, 40),
@@ -447,6 +472,9 @@ def ocr_detection_loop(camera_id, stop_event):
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 200, 200), 2)
         else:
             slip_first_seen_time = None
+            # 윤곽이 한두 프레임 깜빡 끊기는 건 무시하고, 1초 이상 안 보여야 "치웠다"고 본다
+            if waiting_for_slip_removal and current_time - last_slip_seen_time >= 1.0:
+                waiting_for_slip_removal = False
             gw, gh = int(w * 0.75), int(h * 0.75)
             gx1, gy1 = (w - gw) // 2, (h - gh) // 2
             cv2.rectangle(display_frame, (gx1, gy1), (gx1 + gw, gy1 + gh), (255, 200, 100), 1)
@@ -552,9 +580,9 @@ def camera_control_loop():
         PYTHON_ID_TO_SPRING_ID.clear()
         PYTHON_ID_TO_SPRING_ID.update(fresh_mapping)
 
-        if fresh_ocr_id is None:
-            fresh_ocr_id = 0  # 기존 기본 규칙과 동일
-
+        # fresh_ocr_id가 None이면 "지금 이 관리자에게 OCR_SCAN으로 등록된 카메라가 없다"는
+        # 뜻이라 그대로 둔다 - 함부로 아무 카메라나 OCR로 단정하지 않는다. affected_ids/역할
+        # 계산 로직이 None도 정상적으로 처리한다(카메라 목록엔 None이 없어서 자연히 걸러짐).
         if fresh_ocr_id == OCR_PYTHON_ID:
             continue
 

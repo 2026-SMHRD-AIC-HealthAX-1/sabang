@@ -28,8 +28,14 @@ ORACLE_INSTANT_CLIENT_DIR = r"C:\Users\smhrd\instantclient-basic-windows.x64-23.
 try:
     oracledb.init_oracle_client(lib_dir=ORACLE_INSTANT_CLIENT_DIR)
 except Exception as e:
-    # 스프링과 연동할 때는 print 대신 json으로 에러를 넘겨주는 것이 좋지만, 일단 로그용으로 둡니다.
-    pass 
+    # 여기서 실패하면 thin 모드로 떨어져서 DB 접속이 전부 실패한다 (병동/의약품 조회 불가 -> 전표 저장 전부 실패)
+    # 예전엔 pass로 조용히 넘겨서 "병동을 못 찾음"처럼 엉뚱한 증상으로만 보였음
+    print("!" * 60)
+    print(f"[Oracle 초기화 실패] Instant Client를 불러오지 못함 -> DB 접속 불가")
+    print(f"  경로: {ORACLE_INSTANT_CLIENT_DIR}")
+    print(f"  원인: {e}")
+    print(f"  해결: Oracle Instant Client Basic(64-bit, 19 이상)을 위 경로에 설치")
+    print("!" * 60)
 
 # 하드코딩된 키워드 목록 대신, 실제로 그 병원(관리자)이 등록한 의약품 목록으로
 # OCR 텍스트를 매칭한다 (fetch_admin_medicines 참고) - 새 의약품을 등록해도 코드 수정 없이 바로 인식됨
@@ -82,10 +88,16 @@ def recognize_with_naver_ocr(image_path):
     with open(image_path, "rb") as f:
         files_data = [("file", f.read())]
 
-    response = requests.post(NAVER_OCR_URL, headers=headers, data=payload, files=files_data)
+    try:
+        response = requests.post(NAVER_OCR_URL, headers=headers, data=payload, files=files_data, timeout=15)
+    except Exception as e:
+        print(f"[OCR API 오류] 요청 실패: {e}")
+        return None
 
     if response.status_code == 200:
         return response.json()
+
+    print(f"[OCR API 오류] HTTP {response.status_code}: {response.text[:300]}")
     return None
 
 # ==========================================
@@ -129,8 +141,16 @@ def extract_information(ocr_result, medicine_lookup):
     date_match = re.search(r'\d{4}-\d{2}-\d{2}', full_text_str)
     if date_match: extra_info["일자"] = date_match.group()
 
-    ward_match = re.search(r'\d+병동', full_text_str)
-    if ward_match: extra_info["요청병동"] = ward_match.group()
+    # 네이버 OCR이 "7"과 "병동"을 서로 다른 필드로 나눠 인식하면 합칠 때 "7 병동"처럼
+    # 띄어쓰기가 생길 수 있어서, 정규식은 띄어쓰기를 허용하고 매칭된 값에서 그 공백은 지운다
+    # (DB의 WARD_CODE/WARD_NAME엔 공백 없이 "7병동"으로 저장돼 있어서 그대로 맞춰줘야 함)
+    ward_match = re.search(r'\d+\s*병동', full_text_str)
+    if ward_match:
+        extra_info["요청병동"] = re.sub(r'\s+', '', ward_match.group())
+    else:
+        # 병동을 못 찾으면 원문 OCR 텍스트를 남겨서, 다음에 또 실패했을 때 정확한 원인을
+        # (표기가 다른지, OCR이 아예 못 읽었는지) 바로 확인할 수 있게 한다
+        print(f"[OCR 병동 인식 실패] 원문 텍스트: {full_text_str}")
 
     for i, text in enumerate(naver_texts):
         if "담당자" in text:
@@ -170,13 +190,21 @@ def extract_information(ocr_result, medicine_lookup):
             current_med_name = None
             current_med_id = None
 
+    if not extracted_data:
+        if not medicine_lookup:
+            print(f"[OCR 의약품 인식 실패] 이 관리자에게 등록된 의약품이 0개임 (MEDICINE 테이블 조회 결과 없음)")
+        else:
+            print(f"[OCR 의약품 인식 실패] 등록 의약품 {len(medicine_lookup)}개 중 이름+수량이 매칭된 항목 없음\n"
+                  f"    등록 의약품: {list(medicine_lookup.keys())}\n"
+                  f"    OCR 원문: {full_text_str}")
+
     return extra_info, extracted_data
 
 # ==========================================
 # 5. 관리자(병원)별 등록 의약품 목록 조회
 # ==========================================
 def fetch_admin_medicines(admin_id):
-    """이 관리자가 등록한 의약품을 {의약품명: MEDICINE_ID}로 돌려준다 (없으면 빈 dict)."""
+    """이 관리자가 등록한 의약품을 {의약품명: MEDICINE_ID}로 돌려준다 (없으면 빈 dict, DB 오류면 None)."""
     try:
         connection = oracledb.connect(user=DB_USER, password=DB_PASSWORD, dsn=DB_DSN)
         cursor = connection.cursor()
@@ -186,8 +214,9 @@ def fetch_admin_medicines(admin_id):
 
         return {name: medicine_id for medicine_id, name in rows}
 
-    except oracledb.Error:
-        return {}
+    except oracledb.Error as e:
+        print(f"[의약품 목록 조회 오류] {e}")
+        return None
     finally:
         if 'cursor' in locals(): cursor.close()
         if 'connection' in locals(): connection.close()
@@ -199,6 +228,10 @@ def fetch_admin_medicines(admin_id):
 # 이건 사람이 읽는 텍스트(OCR로 읽은 병동명)를 PK로 바꾸는 단순 조회라 별다른
 # 검증/업무 로직이 없어서, 여기서는 계속 직접 SQL로 읽기만 한다(쓰기는 없음).
 # ==========================================
+class DbLookupError(Exception):
+    """DB 접속/조회 자체가 실패한 경우 - '데이터가 없음'과 구분하기 위해 따로 둔다."""
+
+
 def find_ward_seq_id(ward_text, admin_id):
     try:
         connection = oracledb.connect(user=DB_USER, password=DB_PASSWORD, dsn=DB_DSN)
@@ -213,8 +246,8 @@ def find_ward_seq_id(ward_text, admin_id):
 
         return row[0] if row and row[0] is not None else None
 
-    except oracledb.Error:
-        return None
+    except oracledb.Error as e:
+        raise DbLookupError(f"병동 조회 중 DB 오류: {e}")
     finally:
         if 'cursor' in locals(): cursor.close()
         if 'connection' in locals(): connection.close()
@@ -229,16 +262,22 @@ def find_ward_seq_id(ward_text, admin_id):
 # 그 검증이 항상 같이 적용되고, 로직이 한 곳(Java)에만 있으면 된다.
 # ==========================================
 def save_slip(basic_info, med_data, image_path, admin_id):
+    """(성공 여부, 실패 원인)을 돌려준다 - 실패 원인은 콘솔에 그대로 찍혀서 바로 확인할 수 있게 한다."""
 
-    ward_seq_id = find_ward_seq_id(basic_info['요청병동'], admin_id)
+    if basic_info['요청병동'] == "찾지 못함":
+        return False, "OCR 텍스트에서 'N병동' 표기를 찾지 못함 (위 [OCR 병동 인식 실패] 원문 텍스트 참고)"
+
+    try:
+        ward_seq_id = find_ward_seq_id(basic_info['요청병동'], admin_id)
+    except DbLookupError as e:
+        return False, f"DB 접속/조회 실패 (Oracle Instant Client 설치 확인) - {e}"
 
     if ward_seq_id is None:
-        print(f"전표 저장 실패: 병동 정보를 찾지 못함 ({basic_info['요청병동']})")
-        return False
+        return False, (f"DB WARD 테이블에 병동이 없음 - 인식값='{basic_info['요청병동']}', ADMIN_ID='{admin_id}' "
+                       f"(WARD_CODE/WARD_NAME 표기와 ADMIN_ID가 맞는지 확인)")
 
     if not med_data:
-        print("전표 저장 실패: OCR에서 저장할 의약품 정보를 찾지 못함")
-        return False
+        return False, "OCR 텍스트에서 '등록된 의약품명 + 수량' 쌍을 하나도 찾지 못함 (위 [OCR 의약품 인식 실패] 로그 참고)"
 
     items = []
 
@@ -247,8 +286,7 @@ def save_slip(basic_info, med_data, image_path, admin_id):
         medicine_id = item.get('medicineId')
 
         if not medicine_id:
-            print(f"전표 저장 실패: 의약품 정보를 찾지 못함 ({item.get('의약품명')})")
-            return False
+            return False, f"의약품 ID 없음 ({item.get('의약품명')})"
 
         items.append({"medicineId": medicine_id, "requestQty": int(item['수량'])})
 
@@ -269,48 +307,53 @@ def save_slip(basic_info, med_data, image_path, admin_id):
         response = requests.post(f"{SPRING_URL}/api/slips", json=body, timeout=5)
 
         if response.status_code == 200:
-            return True
+            return True, None
 
-        print("전표 저장 실패:", response.status_code, response.text)
-        return False
+        return False, f"Spring API 거부 - HTTP {response.status_code}: {response.text[:300]}"
 
     except Exception as e:
-        print("전표 저장 오류:", e)
-        return False
+        return False, f"Spring API 연결 실패 ({SPRING_URL}): {e}"
 
 # ==========================================
 # 7. 메인 파이프라인
 # ==========================================
 def process_slip_image(image_path, admin_id):
-    enhanced_path = "enhanced_" + os.path.basename(image_path)
+    # 임시 화질개선 파일은 원본 옆에 만든다 (파일명만 쓰면 실행 폴더(python/)에 쌓임)
+    enhanced_path = os.path.join(os.path.dirname(os.path.abspath(image_path)),
+                                 "enhanced_" + os.path.basename(image_path))
 
-    # 1. 화질 개선
-    enhance_image_for_ocr(image_path, enhanced_path)
+    try:
+        # 1. 화질 개선 (원본을 못 읽으면 원본 경로가 그대로 돌아온다)
+        ocr_input_path = enhance_image_for_ocr(image_path, enhanced_path)
 
-    # 2. OCR API 호출
-    ocr_result = recognize_with_naver_ocr(enhanced_path)
-    if not ocr_result:
-        return {"status": "error", "message": "OCR API 호출 실패"}
+        # 2. OCR API 호출
+        ocr_result = recognize_with_naver_ocr(ocr_input_path)
+        if not ocr_result:
+            return {"status": "error", "stage": "OCR", "message": "네이버 OCR API 호출 실패 (위 [OCR API 오류] 로그 참고)"}
 
-    # 3. 데이터 추출 - 이 관리자가 실제 등록한 의약품 목록과 대조해서 medicineId까지 채운다
-    medicine_lookup = fetch_admin_medicines(admin_id)
-    basic_info, med_data = extract_information(ocr_result, medicine_lookup)
+        # 3. 데이터 추출 - 이 관리자가 실제 등록한 의약품 목록과 대조해서 medicineId까지 채운다
+        medicine_lookup = fetch_admin_medicines(admin_id)
+        if medicine_lookup is None:
+            return {"status": "error", "stage": "DB",
+                    "message": "의약품 목록 DB 조회 실패 (위 [의약품 목록 조회 오류] / [Oracle 초기화 실패] 로그 참고)"}
+        basic_info, med_data = extract_information(ocr_result, medicine_lookup)
 
-    # 4. 저장 (Spring API 경유 - 전표번호는 extract_information에서 항상 채워지므로 스킵될 일이 없음)
-    if basic_info['전표번호'] != "찾지 못함":
-        # 원래 이미지 경로(C드라이브)를 넘겨주면, 함수 안에서 웹 경로로 바꿔 저장함
-        if not save_slip(basic_info, med_data, image_path, admin_id):
-            return {"status": "error", "message": "DB 저장 실패"}
+        # 4. 저장 (Spring API 경유) - 원래 이미지 경로를 넘기면 함수 안에서 웹 경로로 바꿔 저장함
+        ok, reason = save_slip(basic_info, med_data, image_path, admin_id)
+        if not ok:
+            return {"status": "error", "stage": "저장", "message": reason,
+                    "basic_info": basic_info, "medicines": med_data}
 
-    # 임시 화질개선 파일 삭제
-    if os.path.exists(enhanced_path):
-        os.remove(enhanced_path)
+        return {
+            "status": "success",
+            "basic_info": basic_info,
+            "medicines": med_data
+        }
 
-    return {
-        "status": "success",
-        "basic_info": basic_info,
-        "medicines": med_data
-    }
+    finally:
+        # 성공/실패와 상관없이 임시 화질개선 파일은 항상 지운다
+        if os.path.exists(enhanced_path):
+            os.remove(enhanced_path)
 
 # ==========================================
 # 8. 스프링 연동을 위한 실행부
