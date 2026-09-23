@@ -40,6 +40,10 @@ COUNT_DECISION_INTERVAL_SEC = 1.5
 # 전표 인식 후, 반출로 세그먼트 개수가 줄어드는 걸 이만큼(초) 안에 못 잡으면 포기한다
 DISPENSE_WATCH_TIMEOUT_SEC = 300
 
+# 반출 감시 중 개수 확인 주기, 그리고 개수가 이 시간 동안 안 변하면 "꺼내기 끝남"으로 보고 판단
+DISPENSE_POLL_SEC = 0.5
+DISPENSE_SETTLE_SEC = 3.0
+
 # 이 파이썬 인스턴스가 담당하는 병원(관리자) 계정
 ADMIN_ID = "admin"
 
@@ -176,7 +180,7 @@ def get_medicine_watch_lock(medicine_name):
         return _medicine_watch_locks[medicine_name]
 
 
-def watch_single_item(slip_id, item):
+def watch_single_item(slip_id, item, baseline_counts=None):
     medicine_name = item.get("medicineName") or item.get("의약품명")
     medicine_id = item.get("medicineId")
     request_qty = item.get("requestQty") or int(item.get("수량", 1))
@@ -186,28 +190,50 @@ def watch_single_item(slip_id, item):
 
     lock = get_medicine_watch_lock(medicine_name)
     with lock:
-        baseline = snapshot_zone_counts().get(medicine_name, 0)
+        # 기준 수량은 "전표를 촬영한 순간" 값을 쓴다. OCR 처리(수 초)가 끝난 뒤에 재면
+        # 그 사이에 이미 꺼낸 약이 기준에서 빠져서 반출을 아예 못 잡는 경우가 있었음
+        if baseline_counts is not None and medicine_name in baseline_counts:
+            baseline = baseline_counts[medicine_name]
+        else:
+            baseline = snapshot_zone_counts().get(medicine_name, 0)
+
         started = time.time()
-        print(f"[전표 {slip_id}] {medicine_name} 반출 감시 시작 (기준 {baseline}개)")
+        print(f"[전표 {slip_id}] {medicine_name} 반출 감시 시작 (기준 {baseline}개, 요청 {request_qty}개)")
+
+        # 처음 줄어든 순간 바로 판단하면 하나씩 꺼낼 때 첫 1개만 보고 "이상"이 돼버려서,
+        # 개수가 DISPENSE_SETTLE_SEC 동안 더 안 변할 때(= 꺼내기 끝남) 총 반출량으로 판단한다
+        last_count = baseline
+        last_change_time = started
 
         while time.time() - started < DISPENSE_WATCH_TIMEOUT_SEC:
-            time.sleep(1)
+            time.sleep(DISPENSE_POLL_SEC)
             now_count = snapshot_zone_counts().get(medicine_name, 0)
+            now = time.time()
 
-            if now_count < baseline:
+            if now_count != last_count:
+                if now_count < baseline:
+                    print(f"[전표 {slip_id}] {medicine_name} 감소 감지: 현재 {baseline - now_count}개 반출 중 "
+                          f"({DISPENSE_SETTLE_SEC:.0f}초간 변화 없으면 확정)")
+                last_count = now_count
+                last_change_time = now
+                continue
+
+            if now_count < baseline and now - last_change_time >= DISPENSE_SETTLE_SEC:
                 dispensed = baseline - now_count
                 result = report_outbound(slip_id, medicine_id, dispensed)
                 if result is not None:
-                    tag = "이상" if result.get("abnormal") else "정상"
-                    print(f"[전표 {slip_id}] {medicine_name} 반출 {dispensed}개 확인 ({tag}, 요청 {request_qty}개)")
+                    if result.get("abnormal"):
+                        print(f"[전표 {slip_id}] ⚠ {medicine_name} 이상 반출 - 반출 {dispensed}개 / 요청 {request_qty}개 → 알림 생성")
+                    else:
+                        print(f"[전표 {slip_id}] {medicine_name} 정상 반출 - {dispensed}개 (요청 {request_qty}개)")
                 return
 
-        print(f"[전표 {slip_id}] {medicine_name} 시간 초과로 감시 종료")
+        print(f"[전표 {slip_id}] {medicine_name} 시간 초과로 감시 종료 (반출 감지 안 됨)")
 
 
-def watch_and_compare(slip_id, items):
+def watch_and_compare(slip_id, items, baseline_counts=None):
     for item in items:
-        threading.Thread(target=watch_single_item, args=(slip_id, item), daemon=True).start()
+        threading.Thread(target=watch_single_item, args=(slip_id, item, baseline_counts), daemon=True).start()
 
 
 # OCR로 읽은 전표 내용(기본정보 + 의약품명/수량)을 콘솔에 보기 좋게 찍는다
@@ -228,7 +254,7 @@ def print_slip_summary(result):
 
 
 # 백그라운드에서 실제 네이버 OCR 및 DB 저장 수행 후 반출 감시 트리거
-def run_ocr_background(image_path):
+def run_ocr_background(image_path, baseline_counts=None):
     print(f"\n[자동 캡처] 전표 OCR 분석 및 DB 저장을 시작합니다: {image_path}")
     try:
         result = ocr_processor.process_slip_image(image_path, ADMIN_ID)
@@ -259,7 +285,7 @@ def run_ocr_background(image_path):
         slip_id = basic_info.get("전표번호")
         med_list = result.get("medicines", [])
         if slip_id and slip_id != "찾지 못함" and med_list:
-            watch_and_compare(slip_id, med_list)
+            watch_and_compare(slip_id, med_list, baseline_counts)
 
 
 # ====================================================
@@ -508,7 +534,9 @@ def ocr_detection_loop(camera_id, stop_event):
 
                         # 깨끗한 원본 프레임 저장
                         cv2.imwrite(filepath, frame)
-                        threading.Thread(target=run_ocr_background, args=(filepath,), daemon=True).start()
+                        # 반출 감시 기준 수량은 OCR 처리 전, 지금(촬영 순간) 값으로 잡아서 넘긴다
+                        baseline_counts = snapshot_zone_counts()
+                        threading.Thread(target=run_ocr_background, args=(filepath, baseline_counts), daemon=True).start()
 
                         capture_success_display_until = current_time + 4.0
                         last_slip_descriptors = descriptors

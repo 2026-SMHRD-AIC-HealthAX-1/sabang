@@ -392,6 +392,8 @@ function updateSidebarLanguage(lang) {
 
         if (me.isAdmin) {
             updateNotificationCount();
+            // 반출 이상 알림은 페이지를 보고 있는 도중에도 생기므로 주기적으로 다시 센다
+            setInterval(updateNotificationCount, 5000);
         }
 
         // 캐시로 미리 그린 상태와 실제 값이 다를 때만(드묾) 반영

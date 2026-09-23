@@ -351,31 +351,50 @@ async function loadOutboundCard() {
 
 /*
 ===========================
-    OCR 인식(=새 전표 등록) 감지용 폴링
+    OCR 인식(=새 전표 등록) / 반출 감지용 폴링
 
-    아직 실시간 푸시가 없어서, 최신 전표번호가 바뀌었는지를 주기적으로 확인하는 걸로
-    대신한다. 바뀌었을 때만 알림/전표/출고 카드를 다시 그린다 (카메라 미리보기는
-    스트림이라 항상 실시간이라 다시 그릴 필요 없음).
+    아직 실시간 푸시가 없어서, (1) 최신 전표번호가 바뀌었는지, (2) 반출 기록이 바뀌었는지를
+    주기적으로 확인하는 걸로 대신한다. 바뀌었을 때만 알림/전표/출고 카드를 다시 그린다
+    (차트를 매번 새로 그리면 깜빡이므로). 카메라 미리보기는 스트림이라 다시 그릴 필요 없음.
+
+    예전엔 (1)만 봐서, 전표 등록 "뒤에" 생기는 반출 결과/이상 알림은 새로고침 전까지 안 보였다.
+    반출 1건마다 OUTBOUND 행이 생기고 이상이면 ALERT도 같이 생기므로 (2)로 둘 다 잡힌다.
 ===========================
 */
 
-let lastSeenSlipId;
+const DASHBOARD_POLL_MS = 4000;
 
-async function pollForNewSlip() {
+let lastSeenSlipId;
+let lastSeenOutboundSignature;
+
+async function pollDashboardChanges() {
 
     try {
 
-        const response = await fetch("/api/slips");
-        const slips = response.ok ? await response.json() : [];
-        const currentLatestId = slips.length > 0 ? slips[0].slipId : null;
+        const [slipResponse, outboundResponse] = await Promise.all([
+            fetch("/api/slips"),
+            fetch("/api/analytics/outbound-log")
+        ]);
 
-        if (lastSeenSlipId !== undefined && currentLatestId !== lastSeenSlipId) {
+        const slips = slipResponse.ok ? await slipResponse.json() : [];
+        const currentLatestId = slips.length > 0 ? slips[0].slipId : null;
+        const outboundSignature = outboundResponse.ok ? await outboundResponse.text() : null;
+
+        const slipChanged = lastSeenSlipId !== undefined && currentLatestId !== lastSeenSlipId;
+        const outboundChanged = lastSeenOutboundSignature !== undefined && outboundSignature !== lastSeenOutboundSignature;
+
+        if (slipChanged || outboundChanged) {
             loadAlertCard();
             loadSlipCard();
             loadOutboundCard();
+
+            if (isAdmin) {
+                updateNotificationCount();
+            }
         }
 
         lastSeenSlipId = currentLatestId;
+        lastSeenOutboundSignature = outboundSignature;
 
     } catch (error) {
         // 폴링 실패는 조용히 넘어가고 다음 주기에 다시 시도
@@ -387,4 +406,4 @@ loadSlipCard();
 loadCameraCard();
 loadOutboundCard();
 
-setInterval(pollForNewSlip, 8000);
+setInterval(pollDashboardChanges, DASHBOARD_POLL_MS);
