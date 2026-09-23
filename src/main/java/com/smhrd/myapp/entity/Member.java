@@ -3,8 +3,6 @@ package com.smhrd.myapp.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 // 회원(관리자) 정보를 관리하는 JPA Entity
@@ -56,17 +54,6 @@ public class Member {
     // Light / Dark 등의 화면 설정
     @Column(name = "SCREEN_THEME", length = 20)
     private String screenTheme;
-
-
-    // 알림소리 ID
-    // MEMBER.SOUND_ID →
-    // SOUND.SOUND_ID를 참조하는 Foreign Key
-    @ManyToOne
-    @JoinColumn(
-        name = "SOUND_ID",
-        referencedColumnName = "SOUND_ID"
-    )
-    private Sound sound;
 
 
     // Getter / Setter
@@ -124,13 +111,5 @@ public class Member {
 
     public void setScreenTheme(String screenTheme) {
         this.screenTheme = screenTheme;
-    }
-
-    public Sound getSound() {
-        return sound;
-    }
-
-    public void setSound(Sound sound) {
-        this.sound = sound;
     }
 }
