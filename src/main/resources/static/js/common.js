@@ -113,7 +113,7 @@ document.getElementById("header").innerHTML = `
         <div class="logo-text">
 
             <h2>
-                Fram <span>Vision</span>
+                Fharm <span>Vision</span>
             </h2>
 
             <p>
@@ -509,7 +509,7 @@ const translations = {
         settingsTitle: "⚙ 설정",
 
         settingsDescription:
-            "Fram Vision 시스템 환경을 설정합니다.",
+            "Fharm Vision 시스템 환경을 설정합니다.",
 
         environmentSettings:
             "환경 설정",
@@ -548,7 +548,7 @@ const translations = {
             "대시보드",
 
         dashboardDescription:
-            "Fram Vision 의약품 관리 현황을 확인합니다.",
+            "Fharm Vision 의약품 관리 현황을 확인합니다.",
 
         ocrColRequestQty:
             "요청수량",
@@ -1075,7 +1075,7 @@ const translations = {
             "⚙ Settings",
 
         settingsDescription:
-            "Configure the Fram Vision system.",
+            "Configure the Fharm Vision system.",
 
         environmentSettings:
             "Environment Settings",
@@ -1114,7 +1114,7 @@ const translations = {
             "Dashboard",
 
         dashboardDescription:
-            "Check Fram Vision medicine management status.",
+            "Check Fharm Vision medicine management status.",
 
         ocrColRequestQty:
             "Requested Qty",
